@@ -1,6 +1,5 @@
 #ifndef TILE_H
 #define TILE_H
-#include "SFML/Graphics.hpp" 
 #include "Sprite.h"
 #include "Renderer.h"
 
@@ -10,7 +9,8 @@ protected:
 	sf::Vector2i mLocation;
 	Sprite mSprite;
 	Renderer* ren;
-	int mType, mSize;
+	int mType, mSize, mLayer;
+	bool mOccupied = false;
 public:
 	Tile(sf::Vector2i, int, int, Renderer* r);
 	Tile(){};
@@ -19,6 +19,8 @@ public:
 	sf::Vector2i Location() const;
 	int Type() const;
 	virtual void Draw(sf::Vector2f, float);
+	void SetOccupied(bool);
+	bool Occupied();
 	~Tile();
 };
 

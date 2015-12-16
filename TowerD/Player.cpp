@@ -119,6 +119,20 @@ void Player::Update(float t, sf::Vector2f offset, float scale)
 	{
 		Entity::Update(t, offset, scale);
 
+		//jetpack will only work while player has fuel
+		//if jetpack is completely depleted it is disabled till it has been refilled halfway
+		if (mJetFuel > mJetFuelMax / 2 && mJetPackEmptied)
+			mJetPackEmptied = false;
+		float change = ((mJetpack && mJetFuel > 0) && !mJetPackEmptied ? t : -t) * 160;
+		//player height increases/decreases depending on jetpack/if theyre on a wall
+		mHeight += mOnWall ? abs(change) : change;
+		mHeight = fmax(fmin(mHeight, mTileSize + (mJetpack ? 5 : 0)), 0);
+		//jetfuel increases/decreases at different rates depending on whether jetpack is in use
+		mJetFuel -= change * (mJetpack && !mJetPackEmptied ? 1.5f : 1);
+		mJetFuel = fmax(fmin(mJetFuel, mJetFuelMax), 0);
+		if (mJetFuel == 0)
+			mJetPackEmptied = true;
+
 		//angles for forwards and sideways leg animations
 		//makes sure legs are always facing forward
 		mBaseAngle2 = mBaseAngle + 90;

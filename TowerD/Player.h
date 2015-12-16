@@ -20,6 +20,9 @@ private:
 	bool mVisible = true;
 	sf::Clock mInvulnTimer;
 	sf::Vector2f mSpawnPos;
+	bool mJetpack = false, mJetPackEmptied = false;
+	float mJetFuel;
+	float mJetFuelMax = 300;
 
 public:
 	Player(sf::Vector2f, int, Renderer*);

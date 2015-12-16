@@ -11,14 +11,15 @@ void Core::LoadAssets()
 	mSprite = new Sprite("../Sprites/Core.png");
 	mBaseSprite = new Sprite("../Sprites/CoreBase.png");
 	mSize = sf::Vector2f(mSprite->getTextureRect().height, mSprite->getTextureRect().height);
+	mSpriteSize = sf::Vector2f(mSprite->getTextureRect().height, mSprite->getTextureRect().height);
 	mSprite->setOrigin(mSize.x / 2, mSize.y / 2);
 	mBaseSprite->setOrigin(mSize.x / 2, mSize.y / 2);
-	mBaseSpriteLayer = 1;
 	Entity::LoadAssets();
 }
 
-void Core::Update(float t)
+//animates the core
+void Core::Update(float t, sf::Vector2f offset, float scale)
 {
 	anmFrame += t * 10;
 	mAngle += t * 20;
-}	
+}

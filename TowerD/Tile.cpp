@@ -1,7 +1,8 @@
 #include "stdafx.h"
 #include "Tile.h"
 
-Tile::Tile(sf::Vector2i loc, int s, int type, Renderer* r) : mType(type), mLocation(loc), ren(r), mSize(s)
+//tile class used for all tiles
+Tile::Tile(sf::Vector2i loc, int s, int type, Renderer* r) : mType(type), mLocation(loc), ren(r), mSize(s), mLayer(TILE)
 {
 }
 
@@ -15,7 +16,7 @@ void Tile::LoadAssets()
 		mSprite.setTexture("../Sprites/Wall.png");
 	mSprite.setPosition(mLocation.x, mLocation.y);
 	mSprite.setOrigin(mSprite.getTextureRect().width / 2, mSprite.getTextureRect().height / 2);
-	ren->Add(&mSprite, 0);
+	ren->Add(&mSprite, mLayer);
 }
 
 sf::IntRect Tile::Rect() const
@@ -37,6 +38,16 @@ void Tile::Draw(sf::Vector2f offset, float scale)
 {
 	mSprite.setScale(scale, scale);
 	mSprite.setPosition((sf::Vector2f(mLocation) + sf::Vector2f(-offset))* scale);
+}
+
+void Tile::SetOccupied(bool o)
+{
+	mOccupied = o;
+}
+
+bool Tile::Occupied()
+{
+	return mOccupied;
 }
 
 Tile::~Tile()
