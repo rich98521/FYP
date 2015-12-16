@@ -209,16 +209,22 @@ bool Level::CalcArrowPath(sf::Vector2i newPos)
 	return true;
 }
 
+//update scale and offset of arrows, tiles and entities and then draws
 void Level::Draw(sf::RenderWindow* win)
 {
+	for (int i = 0; i < mArrows.size(); i++)
+	{
+		for (int i2 = 0; i2 < mArrows[i].size(); i2++)
+		{
+			mArrows[i][i2]->setPosition((sf::Vector2f(mArrowPaths[i][i2].first * 32) - mCam.Offset())*mCam.Scale());
+			mArrows[i][i2]->setScale(mCam.Scale()*.5f, mCam.Scale()*.5f);
+		}
+	}
 	for (int x = 0; x < mTiles.size(); x++)
 		for (int y = 0; y < mTiles[0].size(); y++)
 			mTiles[x][y]->Draw(mCam.Offset(), mCam.Scale());
-	for each (Player* p in mPlayers)
-		p->Draw(mCam.Offset(), mCam.Scale());
-	for each (Core* c in mCores)
-		c->Draw(mCam.Offset(), mCam.Scale());
-	enemy->Draw(mCam.Offset(), mCam.Scale());
+	for each (Entity* e in mEntities)
+		e->Draw(mCam.Offset(), mCam.Scale());
 	mRen->Draw(win);
 }
 
