@@ -124,6 +124,7 @@ void Level::Update(float t, sf::Vector2i mPos)
 			mSpawnCount--;
 		}
 	}
+
 	for each (Player* p in mPlayers)
 	{
 		//checks if player wants to place a wall/turret and then does so
@@ -154,6 +155,79 @@ void Level::Update(float t, sf::Vector2i mPos)
 				}
 			}
 		}
+		//if player is not alive starts the spawn timer and then spawns player
+		if (!p->Alive())
+		{
+			if (!mPlayerSpawning){
+				mRespawnTimer.restart();
+				mPlayerSpawning = true;
+			}
+			if (mRespawnTimer.getElapsedTime().asSeconds() > 3){
+				p->Respawn();
+				mPlayerSpawning = false;
+			}
+		}
+		//prevents player from shooting while ontop of a placed wall
+		if (mTiles[((p->Location().y + mTileSize / 2) / mTileSize)][((p->Location().x + mTileSize / 2) / mTileSize)]->Type() != 2)
+			p->Shoot();
+	}
+
+	for each (Turret* t in mTurrets)
+	{
+		t->Shoot();
+	}
+
+	for each (Enemy* e in mEnemies)
+	{
+		//finds the closest player that enemy can see
+		float minDist = 1000000;
+		sf::Vector2f player;
+		for each (Player* p in mPlayers)
+		{
+			sf::Vector2i startPos = sf::Vector2i(e->Location() + sf::Vector2f(mTileSize / 2, mTileSize / 2));
+			sf::Vector2i endPos = sf::Vector2i(p->Location() + sf::Vector2f(mTileSize / 2, mTileSize / 2));
+			sf::Vector2i temp = startPos;
+			if (startPos.x > endPos.x)
+			{
+				startPos = endPos;
+				endPos = temp;
+			}
+			sf::Vector2f diff = p->Location() - e->Location();
+			float dist = sqrt(diff.y * diff.y + diff.x * diff.x);
+			bool line = true;
+			//iterates along the x tiles from player to enemy
+			for (int x = startPos.x / mTileSize; x <= endPos.x / mTileSize; x++)
+			{
+				//finds what y position the line from enemy to player will be at either side of tiles at x
+				int yStart = max((int)((diff.y / diff.x) * (max(x * mTileSize, startPos.x) - startPos.x) + startPos.y), startPos.y) / mTileSize;
+				int yEnd = max((int)((diff.y / diff.x) * (min((x + 1) * mTileSize, endPos.x) - endPos.x) + endPos.y), endPos.y) / mTileSize;
+				int yTemp = yStart;
+				if (yStart > yEnd)
+				{
+					yStart = yEnd;
+					yEnd = yTemp;
+				}
+				//iterates down row of tiles the line crosses and checks for wall
+				for (int y = yStart; y <= yEnd; y++)
+				{
+					int type = mTiles.at(y).at(x)->Type();
+					if (type == 1 || type == 2)
+					{
+						line = false;
+						break;
+					}
+				}
+				if (!line)
+					break;
+			}
+			//makes sure theres a line and its the closest player
+			if (dist < minDist && line)
+			{
+				minDist = dist;
+				player = p->Location();
+			}
+		}
+		e->Shoot(player, minDist);
 	}
 	//update all entities and camera
 	for each (Entity* e in mEntities)
