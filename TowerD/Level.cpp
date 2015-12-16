@@ -101,64 +101,112 @@ void Level::Update(float t, sf::Vector2i mPos)
 }
 
 
-void Level::CalcArrowPath()
+//calculates the paths from each enemy spawn to the core
+//also takes the position of a possible newly placed tile
+//and returns whether or not a path was found
+bool Level::CalcArrowPath(sf::Vector2i newPos)
 {
-	mArrowPaths.clear();
+	std::vector<std::vector<Sprite*>> tempArrows;
+	std::vector<std::vector<std::pair<sf::Vector2i, float>>> tempArrowPaths;
 	for each (sf::Vector2i start in mEnemySpawns)
 	{
 		start /= 32;
 		sf::Vector2i goal = sf::Vector2i(mCores[0]->Location() / 32.f);
+		std::vector<std::vector<Tile*>> mTempTiles = mTiles;
+		mTempTiles[newPos.y][newPos.x] = new Tile(newPos * mTileSize, mTileSize, 2, mRen);
 		Node* goalNode = mNodes[goal.y*mMapSize.x + goal.x];
+		//modified Dijkstras algorithm
 		priority_queue<Node*, vector<Node*>, Compare> pq;
-		list<Node*> previousNodes;
 		for (int i = 0; i < mMapSize.x*mMapSize.y; i++) {
 			mNodes[i]->Distance = INT_MAX;
 			mNodes[i]->Previous = 0;
+			mNodes[i]->Marked = false;
+			mNodes[i]->Visited = false;
 		}
-		Node* startNode = mNodes[start.y*mMapSize.x+start.x];
+		Node* startNode = mNodes[start.y*mMapSize.x + start.x];
 		startNode->Distance = 0;
 		startNode->Marked = true;
 		pq.push(startNode);
+		Node* top = pq.top();
 		while (pq.size() > 0 && pq.top() != goalNode)
 		{
-			previousNodes.push_back(pq.top());
 			int n = 0;
-			for each (sf::Vector2i dir in mDirections)
+			top = pq.top();
+			pq.pop();
+			top->Visited = true;
+			for (int i = 1; i < mDirections.size(); i++)
 			{
-				if (pq.top()->Position.x + dir.x > 0 && pq.top()->Position.x + dir.x < mMapSize.x && pq.top()->Position.y + dir.y > 0 && pq.top()->Position.y + dir.y < mMapSize.y && mTiles[pq.top()->Position.y + dir.y][pq.top()->Position.x + dir.x]->Type() == 0)
+				sf::Vector2i dir = mDirections[i];
+				//makes sure potential tiles are within maps bounds and are of type floor
+				if (top->Position.x + dir.x > 0 && top->Position.x + dir.x < mMapSize.x && top->Position.y + dir.y > 0 && top->Position.y + dir.y < mMapSize.y
+					&& mTempTiles[top->Position.y + dir.y][top->Position.x + dir.x]->Type() == 0)
 				{
-					Node* c = mNodes[(pq.top()->Position.y + dir.y)*mMapSize.x + pq.top()->Position.x + dir.x];
-					if (!(std::find(previousNodes.begin(), previousNodes.end(), c) != previousNodes.end()))
+					//makes sure path doesnt go in between diagonal walls and doesnt cut corners
+					//makes use of the order it checks the directions
+					if (n <= 3 || (mTempTiles[top->Position.y][top->Position.x + dir.x]->Type() == 0 && mTempTiles[top->Position.y + dir.y][top->Position.x]->Type() == 0))
 					{
-						int distC = n > 3 ? 7 : 5 + pq.top()->Distance;
-						if (distC < c->Distance)
+						Node* c = mNodes[(top->Position.y + dir.y)*mMapSize.x + top->Position.x + dir.x];
+						if (!c->Visited)
 						{
-							c->Distance = distC;
-							c->Previous = pq.top();
-						}
-						if (!c->Marked)
-						{
-							pq.push(c);
-							c->Marked = true;
+							int distC = (n > 3 ? 7 : 5) + top->Distance;
+							if (distC < c->Distance)
+							{
+								c->Distance = distC;
+								c->Previous = top;
+								if (!c->Marked)
+								{
+									c->Marked = true;
+									pq.push(c);
+								}
+								else //ensures queue has been sorted correctly
+									make_heap(const_cast<Node**>(&pq.top()), const_cast<Node**>(&pq.top()) + pq.size(), Compare());
+							}
 						}
 					}
-
 				}
 				n++;
 			}
-			pq.pop();
 		}
-		mArrowPaths.push_back(std::vector<std::pair<sf::Vector2i, float>>());
-		std::vector<std::pair<sf::Vector2i, float>> path = mArrowPaths.back();
+		if (pq.size() == 0 && top != goalNode)
+			return false;
+		//creates paths from the results
+		std::vector<std::pair<sf::Vector2i, float>> path;
 		std::vector<std::pair<sf::Vector2i, float>>::iterator it = path.begin();
 		path.insert(it, std::pair<sf::Vector2i, float>(goalNode->Position, 0));
 		for (Node* temp = goalNode->Previous; temp != 0; temp = temp->Previous)
 		{
 			it = path.begin();
-			std::pair < sf::Vector2i, float > thing(temp->Position, atan2(temp->Position.y - it->first.y, temp->Position.x - it->first.x));
+			std::pair < sf::Vector2i, float > thing(temp->Position, atan2(it->first.y - temp->Position.y, it->first.x - temp->Position.x));
 			path.insert(it, thing);
 		}
+		//creates the arrow sprites
+		tempArrowPaths.push_back(path);
+		std::vector<Sprite*> arrows;
+		for (int i = 0; i < path.size() - 1; i++)
+		{
+			Sprite* s = new Sprite("../Sprites/Arrow.png");
+			s->setOrigin(s->getTextureRect().width / 2, s->getTextureRect().height / 2);
+			s->setRotation(path[i].second / 3.14159 * 180);
+			arrows.push_back(s);
+			mRen->Add(s, TILE);
+		}
+		tempArrows.push_back(arrows);
 	}
+	//cleans up old arrows
+	mArrowPaths.clear();
+	for each (std::vector<Sprite*> v in mArrows)
+	{
+		for each (Sprite* a in v)
+		{
+			mRen->Remove(a, 12);
+		}
+		ClearVector(&v);
+	}
+	mArrows.clear();
+	mArrowPaths = tempArrowPaths;
+	mArrows = tempArrows;
+
+	return true;
 }
 
 void Level::Draw(sf::RenderWindow* win)
