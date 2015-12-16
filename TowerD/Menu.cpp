@@ -11,6 +11,7 @@ Menu::Menu(Renderer* ren, sf::Window* win, Level* l)
 	:mLevel(l), mWin(win)
 {
 	//sets up menu items (buttons, texts, scenes, rectangleshapes, panels)
+
 	mScenes.push_back(Scene(ren, new Sprite("../Sprites/MainMenu.png")));
 	Text* t = new Text("Robot Defense", "DISTGRG_.ttf");
 	t->setCharacterSize(100);
@@ -57,7 +58,6 @@ Menu::Menu(Renderer* ren, sf::Window* win, Level* l)
 	p->AddButton(new Button(sf::IntRect(10, 190, 220, 80), "Start Server", ren));
 	p->AddButton(new Button(sf::IntRect(10, 280, 220, 80), "Quit", ren));
 	mScenes.back().AddPanel(p);
-
 	SetScene(0);
 }
 
@@ -139,14 +139,6 @@ void Menu::Update()
 			}
 		}
 		//window.setMouseCursorVisible(false);
-	}
-	if (mScene == 2)
-	{
-		//updates the HUD
-		std::pair<int, int> ammo = mLevel->GetPlayer()->GetGun()->GetAmmo();
-		mHudTexts[0]->setString(std::to_string(ammo.first) + " / " + std::to_string(ammo.second));
-		mHudRects[0]->first.setScale(mLevel->GetPlayer()->Health() / 10.f, 1);
-		mHudRects[1]->first.setScale(mLevel->GetPlayer()->JetFuel() / 300.f, 1);
 	}
 }
 
