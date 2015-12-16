@@ -235,44 +235,45 @@ void Level::CheckCollision()
 	for each (Player* p in mPlayers)
 		for each (sf::Vector2f* h in p->GetGun()->GetBullets())
 		{
-			bool hit = false;
-			sf::Vector2f halfTile = sf::Vector2f(mTileSize / 2.f, mTileSize / 2.f);
-			sf::Vector2f hitPos = *h + halfTile;
-			sf::Vector2f start = p->Location() + halfTile;
-			if (mTiles[start.y / mTileSize][start.x / mTileSize]->Type() == 2)
+		bool hit = false;
+		sf::Vector2f halfTile = sf::Vector2f(mTileSize / 2.f, mTileSize / 2.f);
+		sf::Vector2f hitPos = *h + halfTile;
+		sf::Vector2f start = p->Location() + halfTile;
+		if (mTiles[start.y / mTileSize][start.x / mTileSize]->Type() == 2)
+		{
+			hit = true;
+			*h = start - halfTile;
+			p->GetGun()->SetDrawRange(0);
+			break;
+		}
+		sf::Vector2f dir = hitPos - start;
+		dir /= sqrt(dir.x*dir.x + dir.y*dir.y);
+		//every loop will find the next tile along the bullets path by finding the closest edge to the current position with the given direction
+		while (!hit)
+		{
+			sf::Vector2f next = sf::Vector2f((int)(start.x + mTileSize * (dir.x / fabs(dir.x))) / mTileSize, (int)(start.y + mTileSize * (dir.y / fabs(dir.y))) / mTileSize) * (float)mTileSize + sf::Vector2f((dir.x < 0 ? mTileSize - 0.001f : 0), (dir.y < 0 ? mTileSize - 0.001f : 0));
+			if (fabs((start.x - next.x) / dir.x) > fabs((start.y - next.y) / dir.y))
+			{
+				start.x += ((next.y - start.y) / dir.y) * dir.x;
+				start.y = next.y;
+			}
+			else
+			{
+				start.y += ((next.x - start.x) / dir.x) * dir.y;
+				start.x = next.x;
+			}
+			sf::Vector2i index = sf::Vector2i((start.x) / mTileSize, (start.y) / mTileSize);
+			//if a wall is hit the bullets hitpos is updated and the drawn bullet trail is scaled down
+			if (mTiles[index.y][index.x]->Type() == 2 || mTiles[index.y][index.x]->Type() == 1)
 			{
 				hit = true;
 				*h = start - halfTile;
-				p->GetGun()->SetDrawRange(0);
-				break;
-			}
-			sf::Vector2f dir = hitPos - start;
-			dir /= sqrt(dir.x*dir.x + dir.y*dir.y);
-			//every loop will find the next tile along the bullets path by finding the closest edge to the current position with the given direction
-			while (!hit)
-			{
-				sf::Vector2f next = sf::Vector2f((int)(start.x + mTileSize * (dir.x / fabs(dir.x))) / mTileSize, (int)(start.y + mTileSize * (dir.y / fabs(dir.y))) / mTileSize) * (float)mTileSize + sf::Vector2f((dir.x < 0 ? mTileSize - 0.001f : 0), (dir.y < 0 ? mTileSize - 0.001f : 0));
-				if (fabs((start.x - next.x) / dir.x) > fabs((start.y - next.y) / dir.y))
-				{
-					start.x += ((next.y - start.y) / dir.y) * dir.x;
-					start.y = next.y;
-				}
-				else
-				{
-					start.y += ((next.x - start.x) / dir.x) * dir.y;
-					start.x = next.x;
-				}
-				sf::Vector2i index = sf::Vector2i((start.x) / mTileSize, (start.y) / mTileSize);
-				//if a wall is hit the bullets hitpos is updated and the drawn bullet trail is scaled down
-				if (mTiles[index.y][index.x]->Type() == 2 || mTiles[index.y][index.x]->Type() == 1)
-				{
-					hit = true;
-					*h = start - halfTile;
-					sf::Vector2f diff = *h - p->Location();
-					p->GetGun()->SetDrawRange(sqrt(diff.x*diff.x + diff.y*diff.y));
-				}
+				sf::Vector2f diff = *h - p->Location();
+				p->GetGun()->SetDrawRange(sqrt(diff.x*diff.x + diff.y*diff.y));
 			}
 		}
+		}
+	//entities that have been hit by bullets
 	vector<Entity*> hit;
 	for each (Entity* e in mEntities)
 	{
@@ -305,6 +306,80 @@ void Level::CheckCollision()
 				}
 			}
 			e->SetOnWall(onWall);
+		}
+		//checks for player bullets hitting enemies using bullethit function above
+		//this check comes after bullets hitting walls check to ensure enemies are not hit through walls
+		if (dynamic_cast<Enemy*>(e) != 0)
+		{
+			float minDist = 10000000;
+			Entity* tempHit = 0;
+			for each (Player* p in mPlayers){
+				for each (sf::Vector2f* h in p->GetGun()->GetBullets())
+				{
+					std::pair<bool, float> hit = BulletHit(p->Location(), e->Rect(), *h);
+					if (hit.first)
+					{
+						if (minDist > hit.second)
+						{
+							tempHit = e;
+							minDist = hit.second;
+							p->GetGun()->SetDrawRange(hit.second - e->Size().x / 2);
+							*h = sf::Vector2f();
+						}
+					}
+				}
+			}
+			//hit entities are added to the hit vector
+			if (tempHit != 0)
+				hit.push_back(tempHit);
+			minDist = 10000000;
+			tempHit = 0;
+			//checks for enemy bullets hitting players using same method as before
+			//enemies only shoot directly at the player and only if they have line of sight
+			//so no additional wall collision check is needed
+			Enemy* en = static_cast<Enemy*>(e);
+			for each (Player* p in mPlayers){
+				if (p->Alive())
+				{
+					for each (sf::Vector2f* h in en->GetGun()->GetBullets())
+					{
+						std::pair<bool, float> hit = BulletHit(en->Location(), p->Rect(), *h);
+						if (hit.first)
+						{
+							if (minDist > hit.second)
+							{
+								tempHit = p;
+								minDist = hit.second;
+								en->GetGun()->SetDrawRange(hit.second - e->Size().x / 2);
+								*h = sf::Vector2f();
+							}
+						}
+					}
+				}
+			}
+			if (tempHit != 0)
+				hit.push_back(tempHit);
+			minDist = 10000000;
+			tempHit = 0;
+			//checks for turret bullets hitting enemies using the same method
+			for each (Turret* t in mTurrets){
+				for each (sf::Vector2f* h in t->GetGun()->GetBullets())
+				{
+					std::pair<bool, float> hit = BulletHit(t->Location(), e->Rect(), *h);
+					if (hit.first)
+					{
+						if (minDist > hit.second)
+						{
+							tempHit = e;
+							minDist = hit.second;
+							t->GetGun()->SetDrawRange(hit.second - e->Size().x / 2);
+							*h = sf::Vector2f();
+						}
+					}
+				}
+			}
+			if (tempHit != 0)
+				hit.push_back(tempHit);
 		}
 	}
 }
