@@ -1,19 +1,30 @@
 #include "stdafx.h"
 #include "Enemy.h"
 
-Enemy::Enemy(sf::Vector2f loc, int tSize, Renderer* r)
-	: Entity(loc, tSize, r), mGun(r)
+Enemy::Enemy(sf::Vector2f loc, int tSize, Renderer* r, std::vector<sf::Vector2f*> players)
+	: Entity(loc, tSize, r), mGun(r, -1)
 {
+	mBaseSpriteLayer = CHARACTERBASE;
+	mSpriteLayer = CHARACTERTOP;
+	mPlayers = players;
+	mGun.SetRate(1);
 }
 
 void Enemy::LoadAssets()
 {
-	mSprite = new Sprite("../Sprites/Enemy1.png");
+	mSprite = new Sprite("../Sprites/Enemy2.png");
 	mBaseSprite = new Sprite("../Sprites/Enemy1Base.png");
-	mSize = sf::Vector2f(mSprite->getTextureRect().height, mSprite->getTextureRect().height);
-	mSprite->setOrigin(mSize.x / 2, mSize.y / 2);
-	mBaseSprite->setOrigin(mSize.x / 2, mSize.y / 2);
+	mSize = sf::Vector2f(22, 22);
+	mScale = 0.6;
+	mSpriteSize = sf::Vector2f(mSprite->getTextureRect().height, mSprite->getTextureRect().height);
+	mSprite->setOrigin(mSpriteSize.x / 2, mSpriteSize.y / 2);
+	mBaseSprite->setOrigin(mSpriteSize.x / 2, mSpriteSize.y / 2);
 	Entity::LoadAssets();
+}
+
+float ManhDist(float x1, float y1, float x2, float y2)
+{
+	return (x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1);
 }
 
 void Enemy::Update(float t, sf::Vector2f offset, float scale)
@@ -50,6 +61,28 @@ void Enemy::Update(float t, sf::Vector2f offset, float scale)
 	}
 }
 
+void Enemy::Shoot(sf::Vector2f player, float dist)
+{
+	mAngle = mBaseAngle;
+	if (dist < 96)
+	{
+		float ang = atan2(player.y - mLocation.y, player.x - mLocation.x);
+		mAngle = ang / 3.14159f * 180;
+		mGun.Shoot(mLocation, ang);
+	}
+}
+
+void Enemy::Draw(sf::Vector2f offset, float scale)
+{
+	mGun.Draw(mLocation, offset, scale);
+	Entity::Draw(offset, scale);
+}
+
+bool Enemy::GoalReached()
+{
+	return mGoalReached;
+}
+
 void Enemy::SetPath(std::vector<std::pair<sf::Vector2i, float>> p)
 {
 	mPath = p;
@@ -68,4 +101,14 @@ void Enemy::SetPath(std::vector<std::pair<sf::Vector2i, float>> p)
 		}
 	}
 	mGoalReached = false;
+}
+
+Gun* Enemy::GetGun()
+{
+	return &mGun;
+}
+
+Enemy::~Enemy()
+{
+
 }

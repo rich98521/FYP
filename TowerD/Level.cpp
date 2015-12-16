@@ -9,6 +9,16 @@ Level::Level(int tileSize, sf::Vector2i screenSize, Renderer* ren)
 	Sprite::SetKeep("../Sprites/Arrow.png", true);
 }
 
+template<typename T>
+void Level::ClearVector(std::vector<T>* v)
+{
+	for each (T o in *v)
+	{
+		delete(o);
+	}
+	v->clear();
+}
+
 //Load map and wave info from file
 void Level::LoadLevel(int level)
 {
@@ -87,6 +97,58 @@ void Level::LoadLevel(int level)
 		}
 	CalcArrowPath(sf::Vector2i());
 	mCam = Camera(mPlayers[0]->AimPos(), mPlayers[0]->Pos(), sf::Vector2f(mScreenSize));
+}
+
+//makes sure new entities are stored in both the entity vector as well as their own
+//also loads assets and other initializations
+void Level::AddEntity(Entity* e)
+{
+	if (dynamic_cast<Player*>(e) != 0)
+	{
+		mPlayers.push_back(static_cast<Player*>(e));
+	}
+	else if (dynamic_cast<Enemy*>(e) != 0)
+	{
+		Enemy* en = static_cast<Enemy*>(e);
+		en->SetPath(mArrowPaths[0]);
+		mEnemies.push_back(static_cast<Enemy*>(e));
+	}
+	else if (dynamic_cast<Core*>(e) != 0)
+	{
+		mCores.push_back(static_cast<Core*>(e));
+	}
+	else if (dynamic_cast<Turret*>(e) != 0)
+	{
+		mTurrets.push_back(static_cast<Turret*>(e));
+	}
+	e->LoadAssets();
+	mEntities.push_back(e);
+}
+
+void Level::RemoveEntity(Entity* e)
+{
+	if (dynamic_cast<Player*>(e) != 0)
+	{
+		mPlayers.erase(std::find(mPlayers.begin(), mPlayers.end(), static_cast<Player*>(e)));
+		delete static_cast<Player*>(e);
+	}
+	else if (dynamic_cast<Enemy*>(e) != 0)
+	{
+		mEnemies.erase(std::find(mEnemies.begin(), mEnemies.end(), static_cast<Enemy*>(e)));
+		mEnemiesLeft--;
+		delete static_cast<Enemy*>(e);
+	}
+	else if (dynamic_cast<Core*>(e) != 0)
+	{
+		mCores.erase(std::find(mCores.begin(), mCores.end(), static_cast<Core*>(e)));
+		delete static_cast<Core*>(e);
+	}
+	else if (dynamic_cast<Turret*>(e) != 0)
+	{
+		mTurrets.erase(std::find(mTurrets.begin(), mTurrets.end(), static_cast<Turret*>(e)));
+		delete static_cast<Turret*>(e);
+	}
+	mEntities.erase(std::find(mEntities.begin(), mEntities.end(), e));
 }
 
 void Level::Update(float t, sf::Vector2i mPos)
@@ -235,7 +297,6 @@ void Level::Update(float t, sf::Vector2i mPos)
 	mCam.Update(mPos);
 }
 
-
 //calculates the paths from each enemy spawn to the core
 //also takes the position of a possible newly placed tile
 //and returns whether or not a path was found
@@ -361,6 +422,18 @@ void Level::Draw(sf::RenderWindow* win)
 	for each (Entity* e in mEntities)
 		e->Draw(mCam.Offset(), mCam.Scale());
 	mRen->Draw(win);
+}
+
+//function to test if a bullet shot from a position and hitting another position will pass through a rectangle target
+std::pair<bool, float> BulletHit(sf::Vector2f startPos, sf::IntRect target, sf::Vector2f hitPos)
+{
+	sf::Vector2f diff = startPos - sf::Vector2f(target.left, target.top);
+	sf::Vector2f dir = hitPos - startPos;
+	dir /= sqrt(dir.x*dir.x + dir.y*dir.y);
+	float dist = sqrt(diff.x*diff.x + diff.y*diff.y);
+	target.top -= target.width / 2;
+	target.left -= target.height / 2;
+	return std::pair<bool, float>(target.contains(sf::Vector2i(startPos + dir * dist)), dist);
 }
 
 //all collisions are checked here
@@ -517,12 +590,53 @@ void Level::CheckCollision()
 				hit.push_back(tempHit);
 		}
 	}
+	//deals damage to each hit enemy
+	for each (Entity* e in hit)
+	{
+		if (!e->Hit(0.4f))
+			RemoveEntity(e);
+	}
+	//checks if enemies have collided with the core
+	for (int i = 0; i < mEnemies.size(); i++)
+	{
+		if (mEnemies[i]->GoalReached())
+		{
+			if (mCores.size() > 0)
+			{
+				//damages core and kills enemy
+				if (!mCores[0]->Hit(2))
+					RemoveEntity(mCores[0]);
+				if (!mEnemies[i]->Hit(10))
+					RemoveEntity(mEnemies[i]);
+				i--;
+			}
+		}
+	}
 }
 
 void Level::ProcessInput(sf::Event e)
 {
+	if (e.type == sf::Event::KeyReleased && e.key.code == sf::Keyboard::Return && mDefensePhase)
+	{
+		mDefensePhase = false;
+		mGameClock.restart();
+		mWave++;
+		mEnemiesLeft = 0;
+		for (int i = 0; i < mWaves[mWave].size(); i++){
+			std::map<int, std::pair<int, int>>::iterator it = mWaves[mWave][i].begin();
+			for (int i2 = 0; i2 < mWaves[mWave][i].size(); i2++, it++)
+				mEnemiesLeft += it->second.first;
+		}
+
+	}
 	for each (Player* p in mPlayers)
 	{
 		p->ProcessInput(e, mCam.Offset(), mCam.Scale());
 	}
+}
+
+
+Player* Level::GetPlayer()
+{
+	return mPlayers[0];
 }

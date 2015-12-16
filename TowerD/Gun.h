@@ -1,6 +1,5 @@
 #ifndef GUN_H
 #define GUN_H
-#include "SFML/Graphics.hpp" 
 #include "Sprite.h" 
 #include "Renderer.h" 
 
@@ -9,24 +8,29 @@ class Gun
 {
 private:
 	float mAccuracy = 0.98f;
+	//float mAccuracy = 1;
 	float mDamage = 1;
 	float mRate = 0.15f;
-	int mMag = 20;
+	int mMag;
 	int mMagTotal = 20;
-	float mRange = 480;
+	float mRange = 480, mDrawRange = 480;
 	int mBulletCount = 1;
 	sf::Clock mClock;
 	Renderer* mRen;
 	bool mShot;
 	std::vector<Sprite*> mBulletSprites;
-	std::vector<sf::Vector2f> mBulletHitPos;
+	std::vector<sf::Vector2f*> mBulletHitPos;
 public:
-	Gun(Renderer*);
-	std::vector<sf::Vector2f> Shoot(sf::Vector2f, float, sf::Vector2f, float);
-	std::vector<sf::Vector2f> GetBullets() const;
+	Gun(Renderer*, int);
+	std::vector<sf::Vector2f*> Shoot(sf::Vector2f, float);
+	std::vector<sf::Vector2f*> GetBullets();
 	void Collision(int, float);
-	void Draw();
+	void Draw(sf::Vector2f, sf::Vector2f, float);
 	void Reload();
+	void SetDrawRange(float);
+	void SetRate(float);
+	std::pair<int, int> GetAmmo();
+	~Gun();
 };
 
 

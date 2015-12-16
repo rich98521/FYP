@@ -9,6 +9,9 @@
 
 #include <stdio.h>
 #include <tchar.h>
+#include "SFML/Graphics.hpp" 
+#include "SFML/OpenGL.hpp" 
+#include "Config.h" 
 
 
 
