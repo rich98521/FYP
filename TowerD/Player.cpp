@@ -39,18 +39,26 @@ void Player::ProcessInput(sf::Event e, sf::Vector2f offset, float scale)
 			dir.y = 1;
 		else if (e.key.code == sf::Keyboard::R)
 			mGun.Reload();
+		//equips selected item and shows/hides placeable ghosts
 		else if (e.key.code == sf::Keyboard::Num1)
 		{
-			if (mEquipped != 1)
-				mGhosts[mEquipped]->SetVisible(false);
+			if (mEquipped > 0)
+				mGhosts[mEquipped - 1]->SetVisible(false);
 			mEquipped = 0;
-			mGhosts[mEquipped]->SetVisible(true);
 		}
 		else if (e.key.code == sf::Keyboard::Num2)
 		{
-			if(mEquipped != 1)
-				mGhosts[mEquipped]->SetVisible(false);
+			if (mEquipped > 0)
+				mGhosts[mEquipped - 1]->SetVisible(false);
 			mEquipped = 1;
+			mGhosts[mEquipped - 1]->SetVisible(true);
+		}
+		else if (e.key.code == sf::Keyboard::Num3)
+		{
+			if (mEquipped > 0)
+				mGhosts[mEquipped - 1]->SetVisible(false);
+			mEquipped = 2;
+			mGhosts[mEquipped - 1]->SetVisible(true);
 		}
 	}
 	else if (e.type == sf::Event::KeyReleased)
