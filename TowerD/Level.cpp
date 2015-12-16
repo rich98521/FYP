@@ -91,26 +91,74 @@ void Level::LoadLevel(int level)
 
 void Level::Update(float t, sf::Vector2i mPos)
 {
-	for each (Player* p in mPlayers)	
+	t = 0.002f;
+	//enemy spawning
+	if (!mDefensePhase)
 	{
-		p->Update(t, mCam.Offset(), mCam.Scale());
-		std::pair<int, sf::Vector2i> toPlace = p->GetPlace();
-		if (toPlace.first == 0)
+		int sec = (int)mGameClock.getElapsedTime().asSeconds();
+		if (sec != mSecond)
 		{
-			Tile* t = mTiles[toPlace.second.y / mTileSize][toPlace.second.x / mTileSize];
-			if (t->Type() == 0)
+			mSecond = sec;
+			for (int i2 = 0; i2 < mEnemySpawns.size(); i2++)
 			{
-				delete(t);
-				mTiles[toPlace.second.y / mTileSize][toPlace.second.x / mTileSize] = new Tile(toPlace.second, mTileSize, 2, mRen);
-				mTiles[toPlace.second.y / mTileSize][toPlace.second.x / mTileSize]->LoadAssets();
-				//CalcArrowPath();
+				//if map contains the current second enemies are queued to be spawned
+				if (mWaves[mWave][i2].count(sec))
+				{
+					mSpawningEnemy = mWaves[mWave][i2][sec].second;
+					mSpawnCount = mWaves[mWave][i2][sec].first;
+					mSpawn = i2;
+				}
+			}
+		}
+		//no enemies left means wave is over
+		if (mEnemiesLeft == 0)
+			mDefensePhase = true;
+	}
+	//staggered enemy spawning 
+	if (mSpawnCount > 0)
+	{
+		if ((int)mGameClock.getElapsedTime().asMilliseconds() % 200 == 0)
+		{
+			AddEntity(new Enemy(sf::Vector2f(mEnemySpawns[mSpawn]) + sf::Vector2f(8 - rand() % 16, 8 - rand() % 16), mTileSize, mRen, mPlayerLocs));
+			mEnemies.back()->SetPath(mArrowPaths[mSpawn]);
+			mSpawnCount--;
+		}
+	}
+	for each (Player* p in mPlayers)
+	{
+		//checks if player wants to place a wall/turret and then does so
+		if (mDefensePhase)
+		{
+			std::pair<int, sf::Vector2i> toPlace = p->GetPlace();
+			if (toPlace.first == 1)
+			{
+				Tile* t = mTiles[toPlace.second.y / mTileSize][toPlace.second.x / mTileSize];
+				if (t->Type() == 0)
+				{
+					if (CalcArrowPath(toPlace.second / mTileSize))
+					{
+						delete(t);
+						mTiles[toPlace.second.y / mTileSize][toPlace.second.x / mTileSize] = new Tile(toPlace.second, mTileSize, 2, mRen);
+						mTiles[toPlace.second.y / mTileSize][toPlace.second.x / mTileSize]->LoadAssets();
+					}
+				}
+			}
+			else if (toPlace.first == 2)
+			{
+				Tile* t = mTiles[toPlace.second.y / mTileSize][toPlace.second.x / mTileSize];
+				if (t->Type() == 2 && !t->Occupied())
+				{
+					AddEntity(new Turret(sf::Vector2f(toPlace.second), mTileSize, mRen, &mEnemies));
+					mTurrets.back()->LoadAssets();
+					t->SetOccupied(true);
+				}
 			}
 		}
 	}
-	for each (Core* c in mCores)
-		c->Update(t);
+	//update all entities and camera
+	for each (Entity* e in mEntities)
+		e->Update(t, mCam.Offset(), mCam.Scale());
 	mCam.Update(mPos);
-	enemy->Update(t, mCores[0]->Location());
 }
 
 
