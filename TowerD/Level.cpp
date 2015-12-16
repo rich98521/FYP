@@ -228,30 +228,84 @@ void Level::Draw(sf::RenderWindow* win)
 	mRen->Draw(win);
 }
 
+//all collisions are checked here
 void Level::CheckCollision()
 {
+	//checks for player bullets hitting a wall
 	for each (Player* p in mPlayers)
-	{
-		sf::Vector2i index = sf::Vector2i((p->Location().x + mTileSize / 2) / mTileSize, (p->Location().y + mTileSize / 2) / mTileSize);
-		for each (sf::Vector2i t in mDirections)
+		for each (sf::Vector2f* h in p->GetGun()->GetBullets())
 		{
-			if ((p->Location().x - (mTileSize + p->Size().x) / 2 < (index.x + t.x) * mTileSize &&
-				p->Location().x + (mTileSize + p->Size().x) / 2 > (index.x + t.x) * mTileSize) &&
-				(p->Location().y - (mTileSize + p->Size().y) / 2 < (index.y + t.y) * mTileSize &&
-				p->Location().y + (mTileSize + p->Size().y) / 2 > (index.y + t.y) * mTileSize))
-				if (mTiles[index.y + t.y][index.x + t.x]->Type() == 2 || mTiles[index.y + t.y][index.x + t.x]->Type() == 1)
-					p->Collision(mTiles[index.y + t.y][index.x + t.x]->Rect());
+			bool hit = false;
+			sf::Vector2f halfTile = sf::Vector2f(mTileSize / 2.f, mTileSize / 2.f);
+			sf::Vector2f hitPos = *h + halfTile;
+			sf::Vector2f start = p->Location() + halfTile;
+			if (mTiles[start.y / mTileSize][start.x / mTileSize]->Type() == 2)
+			{
+				hit = true;
+				*h = start - halfTile;
+				p->GetGun()->SetDrawRange(0);
+				break;
+			}
+			sf::Vector2f dir = hitPos - start;
+			dir /= sqrt(dir.x*dir.x + dir.y*dir.y);
+			//every loop will find the next tile along the bullets path by finding the closest edge to the current position with the given direction
+			while (!hit)
+			{
+				sf::Vector2f next = sf::Vector2f((int)(start.x + mTileSize * (dir.x / fabs(dir.x))) / mTileSize, (int)(start.y + mTileSize * (dir.y / fabs(dir.y))) / mTileSize) * (float)mTileSize + sf::Vector2f((dir.x < 0 ? mTileSize - 0.001f : 0), (dir.y < 0 ? mTileSize - 0.001f : 0));
+				if (fabs((start.x - next.x) / dir.x) > fabs((start.y - next.y) / dir.y))
+				{
+					start.x += ((next.y - start.y) / dir.y) * dir.x;
+					start.y = next.y;
+				}
+				else
+				{
+					start.y += ((next.x - start.x) / dir.x) * dir.y;
+					start.x = next.x;
+				}
+				sf::Vector2i index = sf::Vector2i((start.x) / mTileSize, (start.y) / mTileSize);
+				//if a wall is hit the bullets hitpos is updated and the drawn bullet trail is scaled down
+				if (mTiles[index.y][index.x]->Type() == 2 || mTiles[index.y][index.x]->Type() == 1)
+				{
+					hit = true;
+					*h = start - halfTile;
+					sf::Vector2f diff = *h - p->Location();
+					p->GetGun()->SetDrawRange(sqrt(diff.x*diff.x + diff.y*diff.y));
+				}
+			}
 		}
-	}
-	sf::Vector2i index = sf::Vector2i((enemy->Location().x + mTileSize / 2) / mTileSize, (enemy->Location().y + mTileSize / 2) / mTileSize);
-	for each (sf::Vector2i t in mDirections)
+	vector<Entity*> hit;
+	for each (Entity* e in mEntities)
 	{
-		if ((enemy->Location().x - (mTileSize + enemy->Size().x) / 2 < (index.x + t.x) * mTileSize &&
-			enemy->Location().x + (mTileSize + enemy->Size().x) / 2 > (index.x + t.x) * mTileSize) &&
-			(enemy->Location().y - (mTileSize + enemy->Size().y) / 2 < (index.y + t.y) * mTileSize &&
-			enemy->Location().y + (mTileSize + enemy->Size().y) / 2 > (index.y + t.y) * mTileSize))
-			if (mTiles[index.y + t.y][index.x + t.x]->Type() == 2 || mTiles[index.y + t.y][index.x + t.x]->Type() == 1)
-				enemy->Collision(mTiles[index.y + t.y][index.x + t.x]->Rect());
+		//this first part detects for entity collisions with walls
+		sf::Vector2i index = sf::Vector2i((e->Location().x + mTileSize / 2) / mTileSize, (e->Location().y + mTileSize / 2) / mTileSize);
+		sf::Rect<float> r(e->Location().x - (mTileSize + e->Size().x) / 2, e->Location().y - (mTileSize + e->Size().y) / 2, (mTileSize + e->Size().x), (mTileSize + e->Size().y));
+		if (index.x > 0 && index.y > 0 && index.x < mTiles[0].size() && index.y < mTiles.size())
+		{
+			bool onWall = false;
+			//uses the same directions as pathfinding to check the 8 tiles around the entity
+			//checks collision against sides before diagonally to ensure correct response
+			for each (sf::Vector2i t in mDirections)
+			{
+				int type = mTiles[index.y + t.y][index.x + t.x]->Type();
+				if (type == 2 || type == 1)
+				{
+					if (r.contains(sf::Vector2f((index.x + t.x) * mTileSize, (index.y + t.y) * mTileSize)))
+					{
+						if (e->Height() >= mTileSize && type == 2)
+						{
+							onWall = true;
+						}
+						else
+						{
+							//calls collision response method belonging to the entity passing the rectangle collided with
+							e->Collision(mTiles[index.y + t.y][index.x + t.x]->Rect());
+							r = sf::Rect<float>(e->Location().x - (mTileSize + e->Size().x) / 2, e->Location().y - (mTileSize + e->Size().y) / 2, (mTileSize + e->Size().x), (mTileSize + e->Size().y));
+						}
+					}
+				}
+			}
+			e->SetOnWall(onWall);
+		}
 	}
 }
 

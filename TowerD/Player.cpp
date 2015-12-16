@@ -113,6 +113,11 @@ sf::Vector2f* Player::Pos()
 	return &mLocation;
 }
 
+Gun* Player::GetGun()
+{
+	return &mGun;
+}
+
 void Player::Draw(sf::Vector2f offset, float scale)
 {
 	mCrosshairs->setPosition(sf::Vector2f(mouseLast));

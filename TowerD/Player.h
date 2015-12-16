@@ -24,6 +24,7 @@ public:
 	sf::Vector2f* Pos();
 	std::pair<int, sf::Vector2i> GetPlace();
 	std::pair<int, sf::Vector2i> GetRemove();
+	Gun* GetGun();
 	~Player();
 };
 
