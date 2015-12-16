@@ -4,21 +4,18 @@
 Level::Level(int tileSize, sf::Vector2i screenSize, Renderer* ren)
 	:mTileSize(tileSize), mScreenSize(screenSize), mRen(ren)
 {
-	enemy = new Enemy(sf::Vector2f(600, 200), mTileSize, mRen);
-	LoadLevel(1);
-	mDirections = { sf::Vector2i(1, 0), sf::Vector2i(-1, 0), sf::Vector2i(0, 1), sf::Vector2i(0, -1), sf::Vector2i(1, 1), sf::Vector2i(-1, -1), sf::Vector2i(-1, 1), sf::Vector2i(1, -1) };
-	mCam = Camera(mPlayers[0]->AimPos(), mPlayers[0]->Pos());
+	mDirections = { sf::Vector2i(0, 0), sf::Vector2i(1, 0), sf::Vector2i(-1, 0), sf::Vector2i(0, 1), sf::Vector2i(0, -1), sf::Vector2i(1, 1), sf::Vector2i(-1, -1), sf::Vector2i(-1, 1), sf::Vector2i(1, -1) };
+	//LoadLevel(1);
+	Sprite::SetKeep("../Sprites/Arrow.png", true);
 }
 
+//Load map and wave info from file
 void Level::LoadLevel(int level)
 {
 	for each (std::vector<Tile*> row in mTiles)
-	{
-		for each (Tile* t in row)
-		{
-			delete(t);
-		}
-	}
+		ClearVector(&row);
+	ClearVector(&mPlayers);
+	ClearVector(&mCores);
 	mTiles.clear();
 	ifstream myReadFile;
 	string line;
@@ -38,42 +35,58 @@ void Level::LoadLevel(int level)
 				int type = atoi((s + line.at(x)).c_str());
 				if (type == 2)
 				{
-					mPlayerSpawn = sf::Vector2i(x * 32, y * 32);
-					mPlayers.push_back(new Player(sf::Vector2f(mPlayerSpawn), mTileSize, mRen));
-					mPlayers.back()->LoadAssets();
-					mCores.push_back(new Core(sf::Vector2f(mPlayerSpawn), mTileSize, mRen));
-					mCores.back()->LoadAssets();
+					mPlayerSpawn = sf::Vector2i(x * mTileSize, y * mTileSize);
+					AddEntity(new Core(sf::Vector2f(mPlayerSpawn), mTileSize, mRen));
 					type = 0;
 				}
 				else if (type == 3)
 				{
-					mEnemySpawns.push_back(sf::Vector2i(x * 32, y * 32));
+					mEnemySpawns.push_back(sf::Vector2i(x * mTileSize, y * mTileSize));
 					type = 0;
 				}
-				mTiles[y].push_back(new Tile(sf::Vector2i(x * 32, y * 32), mTileSize, type, mRen));
+				mTiles[y].push_back(new Tile(sf::Vector2i(x * mTileSize, y * mTileSize), mTileSize, type, mRen));
 				mTiles.at(y).at(x)->LoadAssets();
 			}
 			y++;
 		}
+		AddEntity(new Player(sf::Vector2f(mPlayerSpawn), mTileSize, mRen));
+		mPlayerLocs.push_back(mPlayers.back()->Pos());
 		mMapSize.y = y;
-		mWaves.push_back(std::map<int, std::pair<int, int>>());
+		//waves stored in as a vector containing vectors for each enemy spawn containing maps
+		//with the spawn time as the key and a pair containing enemy type and count as the value
+		mWaves.push_back(std::vector<std::map<int, std::pair<int, int>>>());
+		for (int i = 0; i < mEnemySpawns.size(); i++)
+			mWaves.back().push_back(std::map<int, std::pair<int, int>>());
 		while (getline(myReadFile, line))
 		{
 			if (line == "-")
-				mWaves.push_back(std::map<int, std::pair<int, int>>());
-			int wave[3];
-			for (int i = 0, start = 0, end = line.find(',', start + 1); i < 3; start = end, i++)
-				wave[i] = atoi((line.substr(start, end - start)).c_str());
-			mWaves.back()[wave[0]] = std::pair<int, int>(wave[1], wave[2]);
+			{
+				mWaves.push_back(std::vector<std::map<int, std::pair<int, int>>>());
+				for (int i = 0; i < mEnemySpawns.size(); i++)
+					mWaves.back().push_back(std::map<int, std::pair<int, int>>());
+				getline(myReadFile, line);
+			}
+			if (line.substr(0, 2) != "//")
+			{
+				int wave[4];
+				for (int i = 0, start = -1, end = line.find(',', start + 1); i < 4; start = end, end = line.find(',', start + 1), i++)
+					wave[i] = atoi((line.substr(start + 1, end - start - 1)).c_str());
+				int a = line.find(',', 2);
+				mWaves.back()[wave[1]][wave[0]] = std::pair<int, int>(wave[3], wave[2]);
+			}
 		}
 	}
 	myReadFile.close();
+	//nodes used in pathfinding
 	mNodes = new Node *[mMapSize.x * mMapSize.y];
 	int n = 0;
 	for (int i = 0; i < mTiles.size(); i++)
 		for (int i2 = 0; i2 < mTiles[0].size(); i2++, n++)
-			mNodes[n] = new Node(sf::Vector2i(i2,i));
-	enemy->LoadAssets();
+		{
+		mNodes[n] = new Node(sf::Vector2i(i2, i));
+		}
+	CalcArrowPath(sf::Vector2i());
+	mCam = Camera(mPlayers[0]->AimPos(), mPlayers[0]->Pos(), sf::Vector2f(mScreenSize));
 }
 
 void Level::Update(float t, sf::Vector2i mPos)
