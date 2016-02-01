@@ -22,4 +22,4 @@ void Core::Update(float t, sf::Vector2f offset, float scale)
 {
 	anmFrame += t * 10;
 	mAngle += t * 20;
-}
+}	

@@ -14,7 +14,7 @@ private:
 public:
 	Sprite(std::string);
 	Sprite(const Sprite &obj);
-	Sprite() : mVisible(true)
+	Sprite() : mVisible(true) 
 	{
 	};
 	void setTexture(std::string);

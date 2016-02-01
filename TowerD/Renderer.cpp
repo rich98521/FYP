@@ -61,7 +61,7 @@ void Renderer::Draw(sf::RenderWindow* window)
 {
 	std::set<std::pair<float, Sprite*>>::iterator it;
 	for (it = mDrawList.begin(); it != mDrawList.end(); it++)
-		if (it->second->Visible())
+		if(it->second->Visible())
 			window->draw(*it->second);
 
 	for each(std::pair<sf::RectangleShape, bool>* r in mRectDrawList)

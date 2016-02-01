@@ -35,7 +35,8 @@ Menu::Menu(Renderer* ren, sf::Window* win, Level* l)
 	mScenes.back().AddButton(new Button(sf::IntRect(604, 598, 192, 224), "Level 10", "../Sprites/Level4.png", ren));
 	mScenes.back().AddButton(new Button(sf::IntRect(804, 598, 192, 224), "Level 11", "../Sprites/Level4.png", ren));
 	mScenes.back().AddButton(new Button(sf::IntRect(1004, 598, 192, 224), "Level 12", "../Sprites/Level4.png", ren));
-	mScenes.push_back(Scene(ren, new Sprite("../Sprites/Hud.png")));
+	mScenes.push_back(Scene(ren));
+	mScenes.back().SetCanFocus(false);
 	mHudRects.push_back(new std::pair<sf::RectangleShape, bool>);
 	mHudRects.back()->first = sf::RectangleShape(sf::Vector2f(148, 24));
 	mHudRects.back()->first.setPosition(6, 842);
@@ -45,6 +46,13 @@ Menu::Menu(Renderer* ren, sf::Window* win, Level* l)
 	mHudRects.back()->first = sf::RectangleShape(sf::Vector2f(148, 24));
 	mHudRects.back()->first.setPosition(6, 870);
 	mHudRects.back()->first.setFillColor(sf::Color(21, 39, 125, 200));
+	mScenes.back().AddRect(mHudRects.back());
+	mHudRects.push_back(new std::pair<sf::RectangleShape, bool>);
+	mHudRects.back()->first = sf::RectangleShape(sf::Vector2f(46, 46));
+	mHudRects.back()->first.setPosition(477, 852);
+	mHudRects.back()->first.setOutlineColor(sf::Color(200, 0, 0, 200));
+	mHudRects.back()->first.setOutlineThickness(2);
+	mHudRects.back()->first.setFillColor(sf::Color(0, 0, 0, 0));
 	mScenes.back().AddRect(mHudRects.back());
 	mHudTexts.push_back(new Text("test", "detente.ttf"));
 	mHudTexts.back()->setPosition(1100, 864);
@@ -57,18 +65,102 @@ Menu::Menu(Renderer* ren, sf::Window* win, Level* l)
 	p->AddButton(new Button(sf::IntRect(10, 190, 220, 80), "Start Server", ren));
 	p->AddButton(new Button(sf::IntRect(10, 280, 220, 80), "Quit", ren));
 	mScenes.back().AddPanel(p);
+	Panel* p2 = new Panel(ren, sf::IntRect(sf::Vector2i(0, 320), sf::Vector2i(280, 370)));
+	p2->AddButton(new Button(sf::IntRect(10, 10, 260, 80), "Caliber Lv. 1\n   (200C)", 20, ren));
+	p2->AddButton(new Button(sf::IntRect(10, 100, 260, 80), "Rate Lv. 1\n (200C)", 20, ren));
+	p2->AddButton(new Button(sf::IntRect(10, 190, 260, 80), "Spread Lv. 1\n   (200C)", 20, ren));
+	p2->AddButton(new Button(sf::IntRect(10, 280, 260, 80), "Ammo Lv. 1\n   (200C)", 20, ren));
+	mScenes.back().AddPanel(p2);
+	Panel* p3 = new Panel(ren, sf::IntRect(sf::Vector2i(0, 320), sf::Vector2i(280, 280)));
+	p3->AddButton(new Button(sf::IntRect(10, 10, 260, 80), "Armour Lv. 1\n   (200C)", 20, ren));
+	p3->AddButton(new Button(sf::IntRect(10, 100, 260, 80), "Speed Lv. 1\n  (200C)", 20, ren));
+	p3->AddButton(new Button(sf::IntRect(10, 190, 260, 80), "Fuel Lv. 1\n (200C)", 20, ren));
+	mScenes.back().AddPanel(p3);
+	Panel* p4 = new Panel(ren, sf::IntRect(sf::Vector2i(0, 220), sf::Vector2i(280, 100)));
+	p4->AddButton(new Button(sf::IntRect(10, 10, 125, 80), "Weapon", 30, ren));
+	p4->AddButton(new Button(sf::IntRect(135, 10, 125, 80), "Suit", 30, ren));
+	mScenes.back().AddPanel(p4);
+	Sprite* s = new Sprite("../Sprites/WaveUI.png");
+	s->setPosition(sf::Vector2f(564, 0));
+	Panel* p5 = new Panel(ren, s);
+	mScenes.back().AddPanel(p5);
+	Sprite* s2 = new Sprite("../Sprites/HealthFuelUI.png");
+	s2->setPosition(sf::Vector2f(1, 837));
+	Panel* p6 = new Panel(ren, s2);
+	mScenes.back().AddPanel(p6);
+	Sprite* s3 = new Sprite("../Sprites/AmmoUI.png");
+	s3->setPosition(sf::Vector2f(1083, 837));
+	Panel* p7 = new Panel(ren, s3);
+	mScenes.back().AddPanel(p7);
+	Sprite* s4 = new Sprite("../Sprites/GunUI.png");
+	s4->setPosition(sf::Vector2f(476, 851));
+	Panel* p8 = new Panel(ren, s4);
+	mScenes.back().AddPanel(p8);
+	Sprite* s5 = new Sprite("../Sprites/WallUI.png");
+	s5->setPosition(sf::Vector2f(526, 851));
+	Panel* p9 = new Panel(ren, s5);
+	mScenes.back().AddPanel(p9);
+	Sprite* s6 = new Sprite("../Sprites/Turret1UI.png");
+	s6->setPosition(sf::Vector2f(576, 851));
+	Panel* p10 = new Panel(ren, s6);
+	mScenes.back().AddPanel(p10);
+	Sprite* s7 = new Sprite("../Sprites/Turret2UI.png");
+	s7->setPosition(sf::Vector2f(626, 851));
+	Panel* p11 = new Panel(ren, s7);
+	mScenes.back().AddPanel(p11);
+	Sprite* s8 = new Sprite("../Sprites/Turret3UI.png");
+	s8->setPosition(sf::Vector2f(676, 851));
+	Panel* p12 = new Panel(ren, s8);
+	mScenes.back().AddPanel(p12);
 
+	mScene = 2;
 	SetScene(0);
 }
 
-void Menu::ProcessInput(sf::Event e)
+bool Menu::ProcessInput(sf::Event e)
 {
+	mFocus = false;
 	if (e.type == sf::Event::MouseMoved)
 	{
 		mPos = sf::Vector2i(e.mouseMove.x, e.mouseMove.y);
 	}
 	if (mScene == 2)
 	{
+		if (e.type == sf::Event::KeyPressed)
+		{
+			if (e.key.code == sf::Keyboard::Num1 || e.key.code == sf::Keyboard::Num2 || e.key.code == sf::Keyboard::Num3 || e.key.code == sf::Keyboard::Num4 || e.key.code == sf::Keyboard::Num5)
+			{
+				for (int i = 7; i < 12; i++)
+				{
+					mScenes[mScene].Panels()[i]->SetEnabled(false);
+				}
+			}
+			if (e.key.code == sf::Keyboard::Num1)
+			{
+				mScenes[mScene].Panels()[7]->SetEnabled(true);
+				mHudRects[2]->first.setPosition(sf::Vector2f(477, 852));
+			}
+			else if (e.key.code == sf::Keyboard::Num2)
+			{
+				mScenes[mScene].Panels()[8]->SetEnabled(true);
+				mHudRects[2]->first.setPosition(sf::Vector2f(527, 852));
+			}
+			else if (e.key.code == sf::Keyboard::Num3)
+			{
+				mScenes[mScene].Panels()[9]->SetEnabled(true);
+				mHudRects[2]->first.setPosition(sf::Vector2f(577, 852));
+			}
+			else if (e.key.code == sf::Keyboard::Num4)
+			{
+				mScenes[mScene].Panels()[10]->SetEnabled(true);
+				mHudRects[2]->first.setPosition(sf::Vector2f(627, 852));
+			}
+			else if (e.key.code == sf::Keyboard::Num5)
+			{
+				mScenes[mScene].Panels()[11]->SetEnabled(true);
+				mHudRects[2]->first.setPosition(sf::Vector2f(677, 852));
+			}
+		}
 		if (e.type == sf::Event::KeyReleased)
 		{
 			if (e.key.code == sf::Keyboard::Escape)
@@ -76,10 +168,26 @@ void Menu::ProcessInput(sf::Event e)
 				//toggles pause menu panel
 				mScenes[mScene].Panels()[0]->SetVisible(!mScenes[mScene].Panels()[0]->GetVisible());
 				SetPaused(mScenes[mScene].Panels()[0]->GetVisible());
+				mScenes[mScene].SetCanFocus(mScenes[mScene].Panels()[0]->GetVisible());
+			}
+			else if (e.key.code == sf::Keyboard::Tab)
+			{
+				//toggles Upgrades panel
+				bool upgradeVisible = mScenes[mScene].Panels()[3]->GetVisible();
+				mScenes[mScene].Panels()[3]->SetVisible(!upgradeVisible);
+				if (!upgradeVisible)
+					mScenes[mScene].Panels()[1]->SetVisible(true);
+				else
+				{
+					mScenes[mScene].Panels()[1]->SetVisible(false);
+					mScenes[mScene].Panels()[2]->SetVisible(false);
+				}
 			}
 		}
 	}
-	mScenes[mScene].ProcessInput(e);
+	mFocus = mScenes[mScene].ProcessInput(e);
+	mWin->setMouseCursorVisible(mFocus);
+	return mFocus;
 }
 
 void Menu::Update()
@@ -126,6 +234,7 @@ void Menu::Update()
 			{
 				mScenes[mScene].Panels()[0]->SetVisible(!mScenes[mScene].Panels()[0]->GetVisible());
 				SetPaused(mScenes[mScene].Panels()[0]->GetVisible());
+				mScenes[mScene].SetCanFocus(mScenes[mScene].Panels()[0]->GetVisible());
 			}
 			else if (text == "Options")
 			{
@@ -135,7 +244,47 @@ void Menu::Update()
 			}
 			else if (text == "Quit")
 			{
-				mWin->close();
+				//mWin->close();
+				mScenes[mScene].SetCanFocus(false);
+				SetScene(0);
+			}
+			else if (text == "Weapon")
+			{
+				mScenes[mScene].Panels()[1]->SetVisible(true);
+				mScenes[mScene].Panels()[2]->SetVisible(false);
+			}
+			else if (text == "Suit")
+			{
+				mScenes[mScene].Panels()[2]->SetVisible(true);
+				mScenes[mScene].Panels()[1]->SetVisible(false);
+			}
+			else if (text.substr(0,7) == "Caliber")
+			{
+
+			}
+			else if (text.substr(0, 4) == "Rate")
+			{
+
+			}
+			else if (text.substr(0, 5) == "Spread")
+			{
+
+			}
+			else if (text.substr(0, 4) == "Ammo")
+			{
+
+			}
+			else if (text.substr(0, 5) == "Armour")
+			{
+
+			}
+			else if (text.substr(0, 5) == "Speed")
+			{
+
+			}
+			else if (text.substr(0, 4) == "Fuel")
+			{
+
 			}
 		}
 		//window.setMouseCursorVisible(false);
@@ -152,9 +301,20 @@ void Menu::Update()
 
 void Menu::SetScene(int i)
 {
+	if (mScene == 2 && i == 0)
+	{
+		SoundManager::PlayMusic("Menu");
+	}
 	mScenes[mScene].SetVisible(false);
 	mScene = i;
 	mScenes[mScene].SetVisible(true);
+	if (i == 2)
+	{
+		for (int i = 4; i < mScenes[mScene].Panels().size(); i++)
+		{
+			mScenes[mScene].Panels()[i]->SetVisible(true);
+		}
+	}
 	SetPaused(i != 2);
 }
 

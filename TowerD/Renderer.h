@@ -6,7 +6,7 @@
 #include <map>
 
 struct compare {
-	bool operator() (const std::pair<float, Sprite*>& first, const std::pair<float, Sprite*>& second) const
+	bool operator() (const std::pair<float, Sprite*>& first, const std::pair<float,Sprite*>& second) const
 	{
 		return (first.first < second.first);
 	}

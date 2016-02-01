@@ -11,9 +11,10 @@ private:
 	std::vector<Enemy*>* mEnemies;
 	bool mShooting = false;
 	float mRange = 64;
+	int mType = 0;
 
 public:
-	Turret(sf::Vector2f, int, Renderer*, std::vector<Enemy*>*);
+	Turret(sf::Vector2f, int, int, Renderer*, std::vector<Enemy*>*);
 	void Draw(sf::Vector2f, float);
 	void Update(float, sf::Vector2f, float);
 	void LoadAssets();

@@ -12,13 +12,14 @@ using namespace std;
 #include "Turret.h"
 #include <queue>
 #include <list>
+#include "SoundManager.h"
 
 struct Node
 {
 	Node(sf::Vector2i pos)
 		:Position(pos), Marked(false)
 	{
-	};
+	}; 
 	Node(){};
 	Node* Previous;
 	int Distance;
@@ -39,8 +40,7 @@ private:
 	Renderer* mRen;
 	Camera mCam;
 	int mTileSize;
-	sf::Vector2i mScreenSize;
-	sf::Vector2i mPlayerSpawn;
+	sf::Vector2i mScreenSize, mPlayerSpawn, mMousePos;
 	std::vector<sf::Vector2i> mDirections;
 	std::vector<sf::Vector2i> mEnemySpawns;
 	std::vector<Player*> mPlayers;
@@ -48,7 +48,7 @@ private:
 	std::vector<Core*> mCores;
 	std::vector<Entity*> mEntities;
 	std::vector<std::vector<Tile*>> mTiles;
-	std::vector<std::vector<std::map<int, std::pair<int, int>>>> mWaves;
+	std::vector<std::vector<std::vector<std::pair<int, std::pair<int, int>>>>> mWaves;
 	std::vector<std::vector<std::pair<sf::Vector2i, float>>> mArrowPaths;
 	std::vector<std::vector<Sprite*>> mArrows;
 	std::vector<sf::Vector2f*> mPlayerLocs;
@@ -61,20 +61,18 @@ private:
 	void AddEntity(Entity*);
 	void RemoveEntity(Entity*);
 	bool mDefensePhase = true;
+	bool mWin = false;
 	sf::Clock mGameClock;
 	sf::Clock mRespawnTimer;
 	bool mPlayerSpawning = false;
-	int mSecond = -1;
-	int mWave = -1;
+	int mWave = 0;
 	int mEnemiesLeft = 0;
-	int mSpawningEnemy;
-	int mSpawnCount;
-	int mSpawn;
+	int mNextSpawnTime = 0;
 
 public:
 	Level(int, sf::Vector2i, Renderer*);
 	void LoadLevel(int);
-	void Update(float, sf::Vector2i);
+	void Update(float);
 	void Draw(sf::RenderWindow*);
 	void CheckCollision();
 	void ProcessInput(sf::Event);

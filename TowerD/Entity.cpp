@@ -71,20 +71,23 @@ void Entity::SetOnWall(bool b)
 //also handles animation timing
 void Entity::Update(float t, sf::Vector2f offset, float scale)
 {
-	mLastLocation = mLocation;
-	if (abs(mVelocity.x) + abs(mVelocity.y) > 0.00001f)
-		mVelocity *= 0.995f - (abs(mAccel.x) + abs(mAccel.y) < 0.00001f ? 0.009f : 0);
-	float speed = sqrtf(mVelocity.x * mVelocity.x + mVelocity.y * mVelocity.y);
-	distance += speed * t;
-	if (distance > fmax(5, speed*t))
+	if (canMove)
 	{
-		anmFrame++;
-		distance -= fmax(5, speed*t);
+		mLastLocation = mLocation;
+		if (abs(mVelocity.x) + abs(mVelocity.y) > 0.00001f)
+			mVelocity *= 0.995f - (abs(mAccel.x) + abs(mAccel.y) < 0.00001f ? 0.009f : 0);
+		float speed = sqrtf(mVelocity.x * mVelocity.x + mVelocity.y * mVelocity.y);
+		distance += speed * t;
+		if (distance > fmax(5, speed*t))
+		{
+			anmFrame++;
+			distance -= fmax(5, speed*t);
+		}
+		mVelocity += mAccel * t;
+		mLocation += mVelocity * t * mSpeed;
+		mBaseAngle = atan2(mVelocity.y, mVelocity.x) / 3.14159f * 180;
+		mHScale = 1 + (mHeight / mTileSize) * .15f;
 	}
-	mVelocity += mAccel * t;
-	mLocation += mVelocity * t * mSpeed;
-	mBaseAngle = atan2(mVelocity.y, mVelocity.x) / 3.14159f * 180;
-	mHScale = 1 + (mHeight / mTileSize) * .15f;
 }
 
 //collision with tile response used by all entities
@@ -105,6 +108,29 @@ void Entity::Collision(sf::IntRect e)
 		//moves entity to closest tile edge along x
 		mLocation.x = (int)(mLocation.x + e.width / 2) / e.height * e.height + ((e.width - Size().x) / 2 - 0.001f)* (mVelocity.x / fabs(mVelocity.x));
 		mVelocity.x = 0;
+	}
+}
+
+//collision with entity response used by all entities
+void Entity::Collision(sf::Vector2f pos, float size)
+{
+	if (canMove)
+	{
+		sf::Vector2f diff = pos - mLocation;
+		if (abs(diff.x + diff.y) <= (size * 2) + (Size().x / 3.f))
+		{
+			float dist = sqrt(diff.x * diff.x + diff.y * diff.y);
+			float intersect = (size + (Size().x / 3.f)) - dist;
+			if (intersect > 0)
+			{
+				if (dist == 0)
+					diff = sf::Vector2f(0, -1);
+				else
+					diff /= dist;
+				mLocation -= diff * (intersect / 2.f);
+				mVelocity -= diff * (intersect / 20.f);
+			}
+		}
 	}
 }
 

@@ -13,7 +13,7 @@ void Tile::LoadAssets()
 	else if (mType == 1)
 		mSprite.setTexture("../Sprites/Boundary.png");
 	else if (mType == 2)
-		mSprite.setTexture("../Sprites/Wall.png");
+		mSprite.setTexture("../Sprites/Wall2.png");
 	mSprite.setPosition(mLocation.x, mLocation.y);
 	mSprite.setOrigin(mSprite.getTextureRect().width / 2, mSprite.getTextureRect().height / 2);
 	ren->Add(&mSprite, mLayer);

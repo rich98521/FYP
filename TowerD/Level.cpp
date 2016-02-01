@@ -9,6 +9,7 @@ Level::Level(int tileSize, sf::Vector2i screenSize, Renderer* ren)
 	Sprite::SetKeep("../Sprites/Arrow.png", true);
 }
 
+//function for deleting vector contents and clearing it
 template<typename T>
 void Level::ClearVector(std::vector<T>* v)
 {
@@ -19,20 +20,28 @@ void Level::ClearVector(std::vector<T>* v)
 	v->clear();
 }
 
-//Load map and wave info from file
+//Load level and wave data from file
 void Level::LoadLevel(int level)
 {
+	//clean up previous level data
 	for each (std::vector<Tile*> row in mTiles)
 		ClearVector(&row);
+	ClearVector(&mTurrets);
 	ClearVector(&mPlayers);
 	ClearVector(&mCores);
+	ClearVector(&mEnemies);
+	mEntities.clear();
+	mWaves.clear();
+	mPlayerLocs.clear();
+	mEnemySpawns.clear();
 	mTiles.clear();
+
 	ifstream myReadFile;
 	string line;
 	myReadFile.open("../Levels/Level" + std::to_string(level) + ".txt");
 	if (myReadFile.is_open())
 	{
-		int y = 0;
+		mMapSize.y = 0;
 		while (getline(myReadFile, line))
 		{
 			if (line == "-")
@@ -45,35 +54,34 @@ void Level::LoadLevel(int level)
 				int type = atoi((s + line.at(x)).c_str());
 				if (type == 2)
 				{
-					mPlayerSpawn = sf::Vector2i(x * mTileSize, y * mTileSize);
+					mPlayerSpawn = sf::Vector2i(x * mTileSize, mMapSize.y * mTileSize);
 					AddEntity(new Core(sf::Vector2f(mPlayerSpawn), mTileSize, mRen));
 					type = 0;
 				}
 				else if (type == 3)
 				{
-					mEnemySpawns.push_back(sf::Vector2i(x * mTileSize, y * mTileSize));
+					mEnemySpawns.push_back(sf::Vector2i(x * mTileSize, mMapSize.y * mTileSize));
 					type = 0;
 				}
-				mTiles[y].push_back(new Tile(sf::Vector2i(x * mTileSize, y * mTileSize), mTileSize, type, mRen));
-				mTiles.at(y).at(x)->LoadAssets();
+				mTiles[mMapSize.y].push_back(new Tile(sf::Vector2i(x * mTileSize, mMapSize.y * mTileSize), mTileSize, type, mRen));
+				mTiles.at(mMapSize.y).at(x)->LoadAssets();
 			}
-			y++;
+			mMapSize.y++;
 		}
-		AddEntity(new Player(sf::Vector2f(mPlayerSpawn), mTileSize, mRen));
+		AddEntity(new Player(sf::Vector2f(mPlayerSpawn) + sf::Vector2f(0,mTileSize), mTileSize, mRen));
 		mPlayerLocs.push_back(mPlayers.back()->Pos());
-		mMapSize.y = y;
-		//waves stored in as a vector containing vectors for each enemy spawn containing maps
-		//with the spawn time as the key and a pair containing enemy type and count as the value
-		mWaves.push_back(std::vector<std::map<int, std::pair<int, int>>>());
+		//waves stored as a vector for each wave of vectors for each enemy spawn of vectors
+		//for each spawn group of pairs of the spawn time and a pair containing enemy type and count
+		mWaves.push_back(std::vector<std::vector<std::pair<int, std::pair<int, int>>>>());
 		for (int i = 0; i < mEnemySpawns.size(); i++)
-			mWaves.back().push_back(std::map<int, std::pair<int, int>>());
+			mWaves.back().push_back(std::vector<std::pair<int, std::pair<int, int>>>());
 		while (getline(myReadFile, line))
 		{
 			if (line == "-")
 			{
-				mWaves.push_back(std::vector<std::map<int, std::pair<int, int>>>());
+				mWaves.push_back(std::vector<std::vector<std::pair<int, std::pair<int, int>>>>());
 				for (int i = 0; i < mEnemySpawns.size(); i++)
-					mWaves.back().push_back(std::map<int, std::pair<int, int>>());
+					mWaves.back().push_back(std::vector<std::pair<int, std::pair<int, int>>>());
 				getline(myReadFile, line);
 			}
 			if (line.substr(0, 2) != "//")
@@ -82,7 +90,7 @@ void Level::LoadLevel(int level)
 				for (int i = 0, start = -1, end = line.find(',', start + 1); i < 4; start = end, end = line.find(',', start + 1), i++)
 					wave[i] = atoi((line.substr(start + 1, end - start - 1)).c_str());
 				int a = line.find(',', 2);
-				mWaves.back()[wave[1]][wave[0]] = std::pair<int, int>(wave[3], wave[2]);
+				mWaves.back()[wave[1]].push_back(std::pair<int, std::pair<int, int>>(wave[0],std::pair<int, int>(wave[3], wave[2])));
 			}
 		}
 	}
@@ -93,10 +101,12 @@ void Level::LoadLevel(int level)
 	for (int i = 0; i < mTiles.size(); i++)
 		for (int i2 = 0; i2 < mTiles[0].size(); i2++, n++)
 		{
-		mNodes[n] = new Node(sf::Vector2i(i2, i));
+			mNodes[n] = new Node(sf::Vector2i(i2, i));
 		}
+	mDefensePhase = true;
 	CalcArrowPath(sf::Vector2i());
 	mCam = Camera(mPlayers[0]->AimPos(), mPlayers[0]->Pos(), sf::Vector2f(mScreenSize));
+	SoundManager::PlayMusic("Building");
 }
 
 //makes sure new entities are stored in both the entity vector as well as their own
@@ -151,68 +161,73 @@ void Level::RemoveEntity(Entity* e)
 	mEntities.erase(std::find(mEntities.begin(), mEntities.end(), e));
 }
 
-void Level::Update(float t, sf::Vector2i mPos)
+void Level::Update(float t)
 {
 	t = 0.002f;
-	//enemy spawning
+	//staggered enemy spawning 
 	if (!mDefensePhase)
 	{
-		int sec = (int)mGameClock.getElapsedTime().asSeconds();
-		if (sec != mSecond)
+		//checks if theres an enemy to spawn every 200 milliseconds
+		int millisecondsNow = (int)mGameClock.getElapsedTime().asMilliseconds();
+		if ((int)mGameClock.getElapsedTime().asMilliseconds() > mNextSpawnTime)
 		{
-			mSecond = sec;
-			for (int i2 = 0; i2 < mEnemySpawns.size(); i2++)
+			mNextSpawnTime = millisecondsNow + 200;
+			for (int i = 0; i < mEnemySpawns.size(); i++)
 			{
-				//if map contains the current second enemies are queued to be spawned
-				if (mWaves[mWave][i2].count(sec))
+				for (int i2 = 0; i2 < mWaves[mWave][i].size(); i2++)
 				{
-					mSpawningEnemy = mWaves[mWave][i2][sec].second;
-					mSpawnCount = mWaves[mWave][i2][sec].first;
-					mSpawn = i2;
+					if (mWaves[mWave][i][i2].first < (int)mGameClock.getElapsedTime().asSeconds())
+					{
+						if (mWaves[mWave][i][i2].second.first > 0)
+						{
+							AddEntity(new Enemy(sf::Vector2f(mEnemySpawns[i]) + sf::Vector2f(8 - rand() % 16, 8 - rand() % 16), mTileSize, 0, mRen, mPlayerLocs));
+							mEnemies.back()->SetPath(mArrowPaths[i]);
+							mWaves[mWave][i][i2].second.first--;
+						}
+					}
 				}
 			}
 		}
-		//no enemies left means wave is over
 		if (mEnemiesLeft == 0)
-			mDefensePhase = true;
-	}
-	//staggered enemy spawning 
-	if (mSpawnCount > 0)
-	{
-		if ((int)mGameClock.getElapsedTime().asMilliseconds() % 200 == 0)
 		{
-			AddEntity(new Enemy(sf::Vector2f(mEnemySpawns[mSpawn]) + sf::Vector2f(8 - rand() % 16, 8 - rand() % 16), mTileSize, mRen, mPlayerLocs));
-			mEnemies.back()->SetPath(mArrowPaths[mSpawn]);
-			mSpawnCount--;
+			mDefensePhase = true;
+			SoundManager::PlayMusic("Building");
+			mWave++;
+			mNextSpawnTime = 0;
+			if (mWave >= mWaves.size())
+			{
+				mWin = true;
+				SoundManager::PlayMusic("Win");
+			}
 		}
 	}
 
-	for each (Player* p in mPlayers)
+	for each (Player* p in mPlayers)	
 	{
-		//checks if player wants to place a wall/turret and then does so
+		//checks if player wants to place a wall/turret and then places it
 		if (mDefensePhase)
 		{
 			std::pair<int, sf::Vector2i> toPlace = p->GetPlace();
+			sf::Vector2i placeIndex = toPlace.second / mTileSize;
 			if (toPlace.first == 1)
 			{
-				Tile* t = mTiles[toPlace.second.y / mTileSize][toPlace.second.x / mTileSize];
+				Tile* t = mTiles[placeIndex.y][placeIndex.x];
 				if (t->Type() == 0)
 				{
 					if (CalcArrowPath(toPlace.second / mTileSize))
 					{
 						delete(t);
-						mTiles[toPlace.second.y / mTileSize][toPlace.second.x / mTileSize] = new Tile(toPlace.second, mTileSize, 2, mRen);
-						mTiles[toPlace.second.y / mTileSize][toPlace.second.x / mTileSize]->LoadAssets();
+						mTiles[placeIndex.y][placeIndex.x] = new Tile(toPlace.second, mTileSize, 2, mRen);
+						mTiles[placeIndex.y][placeIndex.x]->LoadAssets();
 					}
 				}
 			}
-			else if (toPlace.first == 2)
+			else if (toPlace.first >= 2)
 			{
-				Tile* t = mTiles[toPlace.second.y / mTileSize][toPlace.second.x / mTileSize];
+				Tile* t = mTiles[placeIndex.y][placeIndex.x];
 				if (t->Type() == 2 && !t->Occupied())
 				{
-					AddEntity(new Turret(sf::Vector2f(toPlace.second), mTileSize, mRen, &mEnemies));
-					mTurrets.back()->LoadAssets();
+					AddEntity(new Turret(sf::Vector2f(toPlace.second), mTileSize, toPlace.first - 2, mRen, &mEnemies));
 					t->SetOccupied(true);
 				}
 			}
@@ -256,37 +271,40 @@ void Level::Update(float t, sf::Vector2i mPos)
 			}
 			sf::Vector2f diff = p->Location() - e->Location();
 			float dist = sqrt(diff.y * diff.y + diff.x * diff.x);
-			bool line = true;
-			//iterates along the x tiles from player to enemy
-			for (int x = startPos.x / mTileSize; x <= endPos.x / mTileSize; x++)
+			if(dist < 96)
 			{
-				//finds what y position the line from enemy to player will be at either side of tiles at x
-				int yStart = max((int)((diff.y / diff.x) * (max(x * mTileSize, startPos.x) - startPos.x) + startPos.y), startPos.y) / mTileSize;
-				int yEnd = max((int)((diff.y / diff.x) * (min((x + 1) * mTileSize, endPos.x) - endPos.x) + endPos.y), endPos.y) / mTileSize;
-				int yTemp = yStart;
-				if (yStart > yEnd)
+				bool line = true;
+				//iterates along the x tiles from player to enemy
+				for (int x = startPos.x / mTileSize; x <= endPos.x / mTileSize; x++)
 				{
-					yStart = yEnd;
-					yEnd = yTemp;
-				}
-				//iterates down row of tiles the line crosses and checks for wall
-				for (int y = yStart; y <= yEnd; y++)
-				{
-					int type = mTiles.at(y).at(x)->Type();
-					if (type == 1 || type == 2)
+					//finds what y position the line from enemy to player will be at either side of tiles at x
+					int yStart = max((int)((diff.y / diff.x) * (max(x * mTileSize, startPos.x) - startPos.x) + startPos.y), startPos.y) / mTileSize;
+					int yEnd = max((int)((diff.y / diff.x) * (min((x + 1) * mTileSize, endPos.x) - endPos.x) + endPos.y), endPos.y) / mTileSize;
+					int yTemp = yStart;
+					if (yStart > yEnd)
 					{
-						line = false;
-						break;
+						yStart = yEnd;
+						yEnd = yTemp;
 					}
+					//iterates down row of tiles the line crosses and checks for wall
+					for (int y = yStart; y <= yEnd; y++)
+					{
+						int type = mTiles.at(y).at(x)->Type();
+						if (type == 1 || type == 2)
+						{
+							line = false;
+							break;
+						}
+					}
+					if (!line)
+						break;
 				}
-				if (!line)
-					break;
-			}
-			//makes sure theres a line and its the closest player
-			if (dist < minDist && line)
-			{
-				minDist = dist;
-				player = p->Location();
+				//makes sure theres a line and its the closest player
+				if (dist < minDist && line)
+				{
+					minDist = dist;
+					player = p->Location();
+				}
 			}
 		}
 		e->Shoot(player, minDist);
@@ -294,7 +312,7 @@ void Level::Update(float t, sf::Vector2i mPos)
 	//update all entities and camera
 	for each (Entity* e in mEntities)
 		e->Update(t, mCam.Offset(), mCam.Scale());
-	mCam.Update(mPos);
+	mCam.Update(mMousePos);
 }
 
 //calculates the paths from each enemy spawn to the core
@@ -304,10 +322,12 @@ bool Level::CalcArrowPath(sf::Vector2i newPos)
 {
 	std::vector<std::vector<Sprite*>> tempArrows;
 	std::vector<std::vector<std::pair<sf::Vector2i, float>>> tempArrowPaths;
+	int spawn = -1;
 	for each (sf::Vector2i start in mEnemySpawns)
 	{
+		spawn++;
 		start /= 32;
-		sf::Vector2i goal = sf::Vector2i(mCores[0]->Location() / 32.f);
+		sf::Vector2i goal = sf::Vector2i(mCores[min(spawn, (int)mCores.size()-1)]->Location() / 32.f);
 		std::vector<std::vector<Tile*>> mTempTiles = mTiles;
 		mTempTiles[newPos.y][newPos.x] = new Tile(newPos * mTileSize, mTileSize, 2, mRen);
 		Node* goalNode = mNodes[goal.y*mMapSize.x + goal.x];
@@ -320,6 +340,8 @@ bool Level::CalcArrowPath(sf::Vector2i newPos)
 			mNodes[i]->Visited = false;
 		}
 		Node* startNode = mNodes[start.y*mMapSize.x + start.x];
+		if (startNode->Position == newPos)
+			return false;
 		startNode->Distance = 0;
 		startNode->Marked = true;
 		pq.push(startNode);
@@ -334,7 +356,7 @@ bool Level::CalcArrowPath(sf::Vector2i newPos)
 			{
 				sf::Vector2i dir = mDirections[i];
 				//makes sure potential tiles are within maps bounds and are of type floor
-				if (top->Position.x + dir.x > 0 && top->Position.x + dir.x < mMapSize.x && top->Position.y + dir.y > 0 && top->Position.y + dir.y < mMapSize.y
+				if (top->Position.x + dir.x > 0 && top->Position.x + dir.x < mMapSize.x && top->Position.y + dir.y > 0 && top->Position.y + dir.y < mMapSize.y 
 					&& mTempTiles[top->Position.y + dir.y][top->Position.x + dir.x]->Type() == 0)
 				{
 					//makes sure path doesnt go in between diagonal walls and doesnt cut corners
@@ -408,12 +430,12 @@ bool Level::CalcArrowPath(sf::Vector2i newPos)
 //update scale and offset of arrows, tiles and entities and then draws
 void Level::Draw(sf::RenderWindow* win)
 {
-	for (int i = 0; i < mArrows.size(); i++)
+	for (int i = 0; i < mArrows.size();i++)
 	{
 		for (int i2 = 0; i2 < mArrows[i].size(); i2++)
 		{
-			mArrows[i][i2]->setPosition((sf::Vector2f(mArrowPaths[i][i2].first * 32) - mCam.Offset())*mCam.Scale());
-			mArrows[i][i2]->setScale(mCam.Scale()*.5f, mCam.Scale()*.5f);
+			mArrows[i][i2]->setPosition((sf::Vector2f(mArrowPaths[i][i2].first * 32) - mCam.Offset()) * mCam.Scale());
+			mArrows[i][i2]->setScale(mCam.Scale() * .5f, mCam.Scale() * .5f);
 		}
 	}
 	for (int x = 0; x < mTiles.size(); x++)
@@ -428,9 +450,10 @@ void Level::Draw(sf::RenderWindow* win)
 std::pair<bool, float> BulletHit(sf::Vector2f startPos, sf::IntRect target, sf::Vector2f hitPos)
 {
 	sf::Vector2f diff = startPos - sf::Vector2f(target.left, target.top);
+	sf::Vector2f diff2 = startPos - hitPos;
 	sf::Vector2f dir = hitPos - startPos;
-	dir /= sqrt(dir.x*dir.x + dir.y*dir.y);
-	float dist = sqrt(diff.x*diff.x + diff.y*diff.y);
+	dir /= sqrt(dir.x * dir.x + dir.y * dir.y);
+	float dist = min(sqrt(diff.x * diff.x + diff.y * diff.y), sqrt(diff2.x * diff2.x + diff2.y * diff2.y));
 	target.top -= target.width / 2;
 	target.left -= target.height / 2;
 	return std::pair<bool, float>(target.contains(sf::Vector2i(startPos + dir * dist)), dist);
@@ -485,7 +508,17 @@ void Level::CheckCollision()
 	vector<Entity*> hit;
 	for each (Entity* e in mEntities)
 	{
-		//this first part detects for entity collisions with walls
+		for each (Entity* e2 in mEntities)
+		{
+			if (e != e2)
+			{
+				sf::Vector2f ePos = e->Location();
+				e->Collision(e2->Location(), e2->Size().x / 3.f);
+				e2->Collision(ePos, e->Size().x / 3.f);
+			}
+		}
+
+		//this part detects for entity collisions with walls
 		sf::Vector2i index = sf::Vector2i((e->Location().x + mTileSize / 2) / mTileSize, (e->Location().y + mTileSize / 2) / mTileSize);
 		sf::Rect<float> r(e->Location().x - (mTileSize + e->Size().x) / 2, e->Location().y - (mTileSize + e->Size().y) / 2, (mTileSize + e->Size().x), (mTileSize + e->Size().y));
 		if (index.x > 0 && index.y > 0 && index.x < mTiles[0].size() && index.y < mTiles.size())
@@ -620,19 +653,21 @@ void Level::ProcessInput(sf::Event e)
 	{
 		mDefensePhase = false;
 		mGameClock.restart();
-		mWave++;
 		mEnemiesLeft = 0;
-		for (int i = 0; i < mWaves[mWave].size(); i++){
-			std::map<int, std::pair<int, int>>::iterator it = mWaves[mWave][i].begin();
+		for (int i = 0; i < mWaves[mWave].size(); i++)
+		{
+			std::vector<std::pair<int, std::pair<int, int>>>::iterator it = mWaves[mWave][i].begin();
 			for (int i2 = 0; i2 < mWaves[mWave][i].size(); i2++, it++)
 				mEnemiesLeft += it->second.first;
 		}
-
+		SoundManager::PlayMusic("Fighting");
 	}
 	for each (Player* p in mPlayers)
 	{
 		p->ProcessInput(e, mCam.Offset(), mCam.Scale());
 	}
+	if (e.type == sf::Event::MouseMoved)
+		mMousePos = sf::Vector2i(e.mouseMove.x, e.mouseMove.y);
 }
 
 

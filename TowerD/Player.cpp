@@ -2,23 +2,28 @@
 #include "Player.h"
 
 Player::Player(sf::Vector2f loc, int tSize, Renderer* r)
-	: Entity(loc, tSize, r), mGun(r, 20), mEquipped(0)
+	: Entity(loc, tSize, r), mGun(r, 20, 0), mEquipped(0)
 {
 	mBaseSpriteLayer = CHARACTERBASE;
 	mSpriteLayer = CHARACTERTOP;
 	mSpawnPos = loc;
 	mAimLoc = sf::Vector2i();
+	canMove = true;
 }
 
 void Player::LoadAssets()
 {
+	mGun.LoadAssets();
 	mCrosshairs = new Sprite("../Sprites/Crosshairs.png");
 	mSprite = new Sprite("../Sprites/Player.png");
 	mSprite2 = new Sprite("../Sprites/Player.png");
+	mSprite3 = new Sprite("../Sprites/Player2.png");
 	mBaseSprite = new Sprite("../Sprites/PlayerBase.png");
 	mBaseSprite2 = new Sprite("../Sprites/PlayerBase2.png");
 	mGhosts.push_back(new Sprite("../Sprites/WallGhost.png"));
 	mGhosts.push_back(new Sprite("../Sprites/Turret1Ghost.png"));
+	mGhosts.push_back(new Sprite("../Sprites/Turret2Ghost.png"));
+	mGhosts.push_back(new Sprite("../Sprites/Turret3Ghost.png"));
 	for each (Sprite* s in mGhosts)
 	{
 		ren->Add(s, GHOST);
@@ -30,12 +35,14 @@ void Player::LoadAssets()
 	mSpriteSize = sf::Vector2f(mSprite->getTextureRect().height, mSprite->getTextureRect().height);
 	mSprite->setOrigin(mSize.x / 2, mSize.y / 2);
 	mSprite2->setOrigin(mSize.x / 2, mSize.y / 2);
+	mSprite3->setOrigin(mSize.x / 2, mSize.y / 2);
 	mBaseSprite->setOrigin(mSize.x / 2, mSize.y / 2);
 	mBaseSprite2->setOrigin(mSize.x / 2, mSize.y / 2);
 	mCrosshairs->setOrigin(mCrosshairs->getTextureRect().height / 2, mCrosshairs->getTextureRect().width / 2);
 	ren->Add(mSprite2, ENTITYHIGH);
+	ren->Add(mSprite3, mSpriteLayer);
 	ren->Add(mBaseSprite2, mBaseSpriteLayer);
-	ren->Add(mCrosshairs, mSpriteLayer);
+	ren->Add(mCrosshairs, CROSSHAIRS);
 	Entity::LoadAssets();
 }
 
@@ -55,7 +62,9 @@ void Player::ProcessInput(sf::Event e, sf::Vector2f offset, float scale)
 			else if (e.key.code == sf::Keyboard::Space)
 				mJetpack = true;
 			else if (e.key.code == sf::Keyboard::R)
+			{
 				mGun.Reload();
+			}
 			//equips selected item and shows/hides placeable ghosts
 			else if (e.key.code == sf::Keyboard::Num1)
 			{
@@ -75,6 +84,20 @@ void Player::ProcessInput(sf::Event e, sf::Vector2f offset, float scale)
 				if (mEquipped > 0)
 					mGhosts[mEquipped - 1]->SetVisible(false);
 				mEquipped = 2;
+				mGhosts[mEquipped - 1]->SetVisible(true);
+			}
+			else if (e.key.code == sf::Keyboard::Num4)
+			{
+				if (mEquipped > 0)
+					mGhosts[mEquipped - 1]->SetVisible(false);
+				mEquipped = 3;
+				mGhosts[mEquipped - 1]->SetVisible(true);
+			}
+			else if (e.key.code == sf::Keyboard::Num5)
+			{
+				if (mEquipped > 0)
+					mGhosts[mEquipped - 1]->SetVisible(false);
+				mEquipped = 4;
 				mGhosts[mEquipped - 1]->SetVisible(true);
 			}
 		}
@@ -118,6 +141,7 @@ void Player::Update(float t, sf::Vector2f offset, float scale)
 	if (mAlive)
 	{
 		Entity::Update(t, offset, scale);
+		jetAnmFrame += 0.1;
 
 		//jetpack will only work while player has fuel
 		//if jetpack is completely depleted it is disabled till it has been refilled halfway
@@ -173,8 +197,10 @@ void Player::Update(float t, sf::Vector2f offset, float scale)
 
 void Player::Shoot()
 {
-	if (mEquipped == 0 && mDown)
-		mGun.Shoot(mLocation, mAngle / 180.f * 3.14159f);
+	if (mEquipped == 0 && mDown){
+		if (mGun.Shoot(mLocation, mAngle / 180.f * 3.14159f).size() > 0)
+			SoundManager::PlaySoundEffect("PlayerShoot");
+	}
 }
 
 float Player::JetFuel()
@@ -201,6 +227,7 @@ bool Player::Hit(float damage)
 		{
 			SetVisible(false);
 			mLocation = mSpawnPos;
+			mDown = false;
 			mAimLoc = sf::Vector2i(mLocation);
 		}
 	}
@@ -267,10 +294,14 @@ void Player::Draw(sf::Vector2f offset, float scale)
 	mSprite2->setPosition(mSprite->getPosition());
 	mSprite2->setRotation(mSprite->getRotation());
 	mSprite2->setScale(mSprite->getScale());
+	mSprite3->SetVisible(mHeight > 0 && mJetpack);
+	mSprite3->setPosition(mSprite->getPosition());
+	mSprite3->setRotation(mSprite->getRotation());
+	mSprite3->setScale(mSprite->getScale());
 	int baseMax = (int)(mBaseSprite->getTexture()->getSize().x) / (int)mSize.y;
 	float frmBase1 = anmFrame;
 	float frmBase2 = anmFrame;
-	if (baseMax > 1)
+	if (baseMax > 1 && mHeight == 0)
 	{
 		//works out correct leg animation frames
 		//to ensure legs always face forward legs are retracted as player turns
@@ -296,6 +327,14 @@ void Player::Draw(sf::Vector2f offset, float scale)
 		//diff += (diff > quat) ? -half : (diff < -quat) ? half : 0;
 		//mBaseAngle += fabs(diff) > 90 ? 180 : 0;
 	}
+	else
+	{
+		frmBase1 = 0;
+		frmBase2 = 0;
+	}
+
+	mSprite3->setTextureRect(sf::IntRect(mSize.y * ((int)jetAnmFrame % 4), 0, mSize.y, mSize.y));
+
 
 	mBaseSprite->setTextureRect(sf::IntRect(mSize.y * ((int)frmBase1 % baseMax), 0, mSize.y, mSize.y));
 
@@ -323,6 +362,17 @@ bool Player::Alive()
 
 Player::~Player()
 {
-	ren->Remove(mCrosshairs, mBaseSpriteLayer);
+	ren->Remove(mCrosshairs, CROSSHAIRS);
+	ren->Remove(mBaseSprite2, mBaseSpriteLayer);
+	ren->Remove(mSprite2, ENTITYHIGH);
+	ren->Remove(mSprite3, mSpriteLayer);
+	for each (Sprite* s in mGhosts)
+	{
+		ren->Remove(s, GHOST);
+		delete(s);
+	}
 	delete(mCrosshairs);
+	delete(mBaseSprite2);
+	delete(mSprite2);
+	delete(mSprite3);
 }

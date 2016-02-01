@@ -20,6 +20,7 @@
 #include "Level.h"
 #include "Renderer.h"
 #include "Menu.h"
+#include "SoundManager.h"
 #include <list>
 
 int main()
@@ -29,10 +30,12 @@ int main()
 	srand(time(NULL));
 	const int tileSize = 32;
 	Renderer r = Renderer();
+	SoundManager snd;
+	snd.Init();
 	Level level(tileSize, sf::Vector2i(Config::ScreenWidth(), Config::ScreenHeight()), &r);
 	Menu menu(&r, &window, &level);
 	sf::Clock clock;
-	sf::Vector2i mPos;
+	
 	while (window.isOpen())
 	{
 		sf::Event Event;
@@ -40,26 +43,34 @@ int main()
 		{
 			if (Event.type == sf::Event::Closed)
 				window.close();
-			if (Event.type == sf::Event::KeyPressed || Event.type == sf::Event::KeyReleased || Event.type == sf::Event::MouseButtonPressed || Event.type == sf::Event::MouseButtonReleased || Event.type == sf::Event::MouseMoved)
+			else if (Event.type == sf::Event::KeyPressed)
 			{
 				menu.ProcessInput(Event);
 				if (!menu.GamePaused())
 					level.ProcessInput(Event);
 			}
-			if (Event.type == sf::Event::MouseMoved)
-				mPos = sf::Vector2i(Event.mouseMove.x, Event.mouseMove.y);
+			else if (Event.type == sf::Event::MouseButtonPressed|| Event.type == sf::Event::MouseMoved)
+			{
+				if (!menu.ProcessInput(Event))
+					level.ProcessInput(Event);
+			}
+			else if (Event.type == sf::Event::KeyReleased || Event.type == sf::Event::MouseButtonReleased)
+			{
+				menu.ProcessInput(Event);
+				level.ProcessInput(Event);
+			}
 		}
-
-		window.clear();
 		float time = clock.getElapsedTime().asSeconds();
 		clock.restart();
-
 		menu.Update();
-		if (!menu.GamePaused()){
-			level.Update(time, mPos);
+		if (!menu.GamePaused())
+		{
+			level.Update(time);
 			level.CheckCollision();
-			level.Draw(&window);
 		}
+		window.clear();
+
+		level.Draw(&window);
 		r.Draw(&window);
 
 		window.display();

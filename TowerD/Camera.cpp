@@ -12,7 +12,7 @@ Camera::Camera(sf::Vector2i* aim, sf::Vector2f* pos, sf::Vector2f screensize)
 void Camera::Update(sf::Vector2i mouseSPos)
 {
 	//uses mouses distance from centre of the screen to zoom out when the mouse is near the edge
-	float dist = sqrt(pow(((mouseSPos.y - mScreenSize.y / 2) / (mScreenSize.y / 2)) * (mScreenSize.x / 2), 2) + pow(mouseSPos.x - (mScreenSize.x / 2), 2));
+	float dist = sqrt(pow(((mouseSPos.y - mScreenSize.y / 2) / (mScreenSize.y/2)) * (mScreenSize.x/2), 2) + pow(mouseSPos.x - (mScreenSize.x/2), 2));
 	mScale = 3 - fmin(fmax(dist / (mScreenSize.x / 3), 1.f), 1.4f);
 	float length = sqrt(pow(mAimPos->y - mPlayerPos->y, 2) + pow(mAimPos->x - mPlayerPos->x, 2));
 	float ang = atan2(mAimPos->y - mPlayerPos->y, mAimPos->x - mPlayerPos->x);
@@ -24,7 +24,7 @@ void Camera::Update(sf::Vector2i mouseSPos)
 	if (fabs(offset.y) > 0.0000015)
 		offset.y = (fmax(fabs(sin(ang)) * (mScreenSize.y / 50), fabs(offset.y)) - fabs(sin(ang)) * (mScreenSize.y / 50)) * (offset.y / fabs(offset.y));
 	//centres camera on player
-	mOffset = (*mPlayerPos + offset - (mScreenSize / 2.f) / mScale);
+	mOffset = (*mPlayerPos + offset - (mScreenSize/2.f) / mScale);
 	//gradually increases actual offset towards desired offset to make camera smooth
 	mCurrentOffset += (mOffset - mCurrentOffset) / 20.f;
 }

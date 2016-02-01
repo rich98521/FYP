@@ -34,7 +34,7 @@ protected:
 	bool mAlive = true;
 	float mHScale = 1;
 	float mHeight = 0;
-	bool mOnWall = false;
+	bool mOnWall = false, canMove = false;
 
 public:
 	Entity(sf::Vector2f, int, Renderer*);
@@ -42,6 +42,7 @@ public:
 	virtual void Update(float, sf::Vector2f, float);
 	virtual void LoadAssets();
 	void Collision(sf::IntRect);
+	void Collision(sf::Vector2f, float);
 	sf::Vector2f Location() const;
 	sf::Vector2f Size() const;
 	virtual void Draw(sf::Vector2f, float);

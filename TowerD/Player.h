@@ -2,6 +2,7 @@
 #define PLAYER_H
 #include "Entity.h"	
 #include "Gun.h"	
+#include "SoundManager.h"
 
 class Player : public Entity
 {
@@ -11,6 +12,7 @@ private:
 	Sprite* mCrosshairs;
 	Sprite* mBaseSprite2;
 	Sprite* mSprite2;
+	Sprite* mSprite3;
 	float mBaseAngle2;
 	std::vector<Sprite*> mGhosts;
 	int mEquipped;
@@ -23,6 +25,7 @@ private:
 	bool mJetpack = false, mJetPackEmptied = false;
 	float mJetFuel;
 	float mJetFuelMax = 300;
+	float jetAnmFrame = 0;
 
 public:
 	Player(sf::Vector2f, int, Renderer*);

@@ -25,6 +25,7 @@ private:
 public:
 	Button();
 	Button(sf::IntRect, string, Renderer*);
+	Button(sf::IntRect, string, float, Renderer*);
 	Button(sf::IntRect, string, string, Renderer*);
 	sf::IntRect Rect();
 	bool IsClicked();

@@ -2,6 +2,7 @@
 #define ENEMY_H
 #include "Entity.h"	
 #include "Gun.h"	
+#include "SoundManager.h"
 
 class Enemy : public Entity
 {
@@ -11,9 +12,10 @@ private:
 	std::vector<sf::Vector2f*> mPlayers;
 	int currentNode;
 	bool mGoalReached = false;
+	int mType = 0;
 
 public:
-	Enemy(sf::Vector2f, int, Renderer*, std::vector<sf::Vector2f*>);
+	Enemy(sf::Vector2f, int, int, Renderer*, std::vector<sf::Vector2f*>);
 	void Update(float, sf::Vector2f, float);
 	void Draw(sf::Vector2f, float);
 	void LoadAssets();

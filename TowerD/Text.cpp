@@ -24,11 +24,11 @@ void Text::AddFont(std::string filepath)
 	if (!mFonts.count(filepath))
 	{
 		sf::Font f;
-		f.loadFromFile("D:\\Projects\\TowerD\\Fonts\\" + filepath);
+		f.loadFromFile("../Fonts/" + filepath);
 		mFonts.insert(std::pair<std::string, std::pair<sf::Font, int>>(filepath, std::pair<sf::Font, int>(f, 0)));
 	}
 	mFonts[filepath].second++;
-	sf::Text::setFont(mFonts[filepath].first);
+	sf::Text::setFont( mFonts[filepath].first);
 }
 
 bool Text::Visible() const
