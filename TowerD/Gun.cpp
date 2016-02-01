@@ -105,6 +105,16 @@ void Gun::Draw(sf::Vector2f pos, sf::Vector2f offset, float scale)
 	}
 }
 
+float Gun::GetDamage()
+{
+	return mDamage;
+}
+
+void Gun::SetDamage(float d)
+{
+	mDamage = d;
+}
+
 std::pair<int, int> Gun::GetAmmo()
 {
 	return std::pair<int, int>(mMag, mMagTotal);

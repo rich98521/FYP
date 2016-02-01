@@ -211,24 +211,51 @@ void Level::Update(float t)
 			sf::Vector2i placeIndex = toPlace.second / mTileSize;
 			if (toPlace.first == 1)
 			{
-				Tile* t = mTiles[placeIndex.y][placeIndex.x];
-				if (t->Type() == 0)
+				if (p->GetCredits() > 5)
 				{
-					if (CalcArrowPath(toPlace.second / mTileSize))
+					p->AddCredits(-5);
+					Tile* t = mTiles[placeIndex.y][placeIndex.x];
+					if (t->Type() == 0)
 					{
-						delete(t);
-						mTiles[placeIndex.y][placeIndex.x] = new Tile(toPlace.second, mTileSize, 2, mRen);
-						mTiles[placeIndex.y][placeIndex.x]->LoadAssets();
+						if (CalcArrowPath(toPlace.second / mTileSize))
+						{
+							delete(t);
+							mTiles[placeIndex.y][placeIndex.x] = new Tile(toPlace.second, mTileSize, 2, mRen);
+							mTiles[placeIndex.y][placeIndex.x]->LoadAssets();
+						}
+					}
+				}
+			}
+			else if (toPlace.first == 5)
+			{
+				Tile* t = mTiles[placeIndex.y][placeIndex.x];
+				if (t->Type() == 2)
+				{
+					p->AddCredits(5);
+					delete(t);
+					mTiles[placeIndex.y][placeIndex.x] = new Tile(toPlace.second, mTileSize, 0, mRen);
+					mTiles[placeIndex.y][placeIndex.x]->LoadAssets();
+					for (int i = 0; i < mTurrets.size(); i++)
+					{
+						if (mTurrets[i]->Location() == sf::Vector2f(toPlace.second)){
+							p->AddCredits(mTurrets[i]->GetCost());
+							RemoveEntity(mTurrets[i]);
+							break;
+						}
 					}
 				}
 			}
 			else if (toPlace.first >= 2)
 			{
-				Tile* t = mTiles[placeIndex.y][placeIndex.x];
-				if (t->Type() == 2 && !t->Occupied())
+				if (p->GetCredits() > 15)
 				{
-					AddEntity(new Turret(sf::Vector2f(toPlace.second), mTileSize, toPlace.first - 2, mRen, &mEnemies));
-					t->SetOccupied(true);
+					p->AddCredits(-15);
+					Tile* t = mTiles[placeIndex.y][placeIndex.x];
+					if (t->Type() == 2 && !t->Occupied())
+					{
+						AddEntity(new Turret(sf::Vector2f(toPlace.second), mTileSize, toPlace.first - 2, mRen, &mEnemies));
+						t->SetOccupied(true);
+					}
 				}
 			}
 		}
@@ -505,7 +532,7 @@ void Level::CheckCollision()
 		}
 		}
 	//entities that have been hit by bullets
-	vector<Entity*> hit;
+	vector<std::pair<Entity*, float>> hit;
 	for each (Entity* e in mEntities)
 	{
 		for each (Entity* e2 in mEntities)
@@ -554,7 +581,8 @@ void Level::CheckCollision()
 		{
 			float minDist = 10000000;
 			Entity* tempHit = 0;
-			for each (Player* p in mPlayers){
+			for each (Player* p in mPlayers)
+			{
 				for each (sf::Vector2f* h in p->GetGun()->GetBullets())
 				{
 					std::pair<bool, float> hit = BulletHit(p->Location(), e->Rect(), *h);
@@ -569,12 +597,12 @@ void Level::CheckCollision()
 						}
 					}
 				}
+				//hit entities are added to the hit vector
+				if (tempHit != 0)
+					hit.push_back(std::pair<Entity*, float>(tempHit, p->GetGun()->GetDamage()));
+				minDist = 10000000;
+				tempHit = 0;
 			}
-			//hit entities are added to the hit vector
-			if (tempHit != 0)
-				hit.push_back(tempHit);
-			minDist = 10000000;
-			tempHit = 0;
 			//checks for enemy bullets hitting players using same method as before
 			//enemies only shoot directly at the player and only if they have line of sight
 			//so no additional wall collision check is needed
@@ -592,14 +620,14 @@ void Level::CheckCollision()
 								tempHit = p;
 								minDist = hit.second;
 								en->GetGun()->SetDrawRange(hit.second - e->Size().x / 2);
-								*h = sf::Vector2f();
+								*h = en->Location();
 							}
 						}
 					}
 				}
 			}
 			if (tempHit != 0)
-				hit.push_back(tempHit);
+				hit.push_back(std::pair<Entity*, float>(tempHit, en->GetGun()->GetDamage()));
 			minDist = 10000000;
 			tempHit = 0;
 			//checks for turret bullets hitting enemies using the same method
@@ -614,20 +642,27 @@ void Level::CheckCollision()
 							tempHit = e;
 							minDist = hit.second;
 							t->GetGun()->SetDrawRange(hit.second - e->Size().x / 2);
-							*h = sf::Vector2f();
+							*h = t->Location();
 						}
 					}
 				}
+				if (tempHit != 0)
+					hit.push_back(std::pair<Entity*, float>(tempHit, t->GetGun()->GetDamage()));
 			}
-			if (tempHit != 0)
-				hit.push_back(tempHit);
 		}
 	}
+	std::vector<Entity*> dead;
 	//deals damage to each hit enemy
-	for each (Entity* e in hit)
+	for each (std::pair<Entity*, float> e in hit)
 	{
-		if (!e->Hit(0.4f))
-			RemoveEntity(e);
+		if (e.first != 0)
+			if (!e.first->Hit(e.second) && std::find(dead.begin(), dead.end(), e.first) == dead.end())
+				dead.push_back(e.first);
+	}
+	for each (Entity* e in dead)
+	{
+		RemoveEntity(e);
+		mPlayers[0]->AddCredits(10);
 	}
 	//checks if enemies have collided with the core
 	for (int i = 0; i < mEnemies.size(); i++)

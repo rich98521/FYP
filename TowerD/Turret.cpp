@@ -9,7 +9,11 @@ Turret::Turret(sf::Vector2f loc, int tSize, int t, Renderer* r, std::vector<Enem
 	{
 		mGun.SetRate(.1f);
 		mGun.SetColor(sf::Color(200, 200, 0, 200));
+		mGun.SetDamage(0.3f);
 	}
+	else if (mType == 2)
+		mGun.SetDamage(0.02f);
+	mCost = 15;
 }
 
 void Turret::LoadAssets()

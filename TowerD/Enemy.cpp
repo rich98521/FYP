@@ -10,6 +10,7 @@ Enemy::Enemy(sf::Vector2f loc, int tSize, int t, Renderer* r, std::vector<sf::Ve
 	mGun.SetRate(1);
 	mGun.SetColor(sf::Color(200, 0, 0, 200));
 	canMove = true;
+	mGun.SetDamage(0.4f);
 }
 
 void Enemy::LoadAssets()

@@ -59,6 +59,11 @@ Menu::Menu(Renderer* ren, sf::Window* win, Level* l)
 	mHudTexts.back()->setColor(sf::Color(64, 64, 64, 240));
 	mHudTexts.back()->setCharacterSize(15);
 	mScenes.back().AddText(mHudTexts.back());
+	mHudTexts.push_back(new Text("test", "detente.ttf"));
+	mHudTexts.back()->setPosition(1100, 20);
+	mHudTexts.back()->setColor(sf::Color(64, 64, 64, 240));
+	mHudTexts.back()->setCharacterSize(15);
+	mScenes.back().AddText(mHudTexts.back());
 	Panel* p = new Panel(ren, sf::IntRect(sf::Vector2i(480, 320), sf::Vector2i(240, 370)));
 	p->AddButton(new Button(sf::IntRect(10, 10, 220, 80), "Resume", ren));
 	p->AddButton(new Button(sf::IntRect(10, 100, 220, 80), "Options", ren));
@@ -112,6 +117,7 @@ Menu::Menu(Renderer* ren, sf::Window* win, Level* l)
 	s8->setPosition(sf::Vector2f(676, 851));
 	Panel* p12 = new Panel(ren, s8);
 	mScenes.back().AddPanel(p12);
+	
 
 	mScene = 2;
 	SetScene(0);
@@ -294,6 +300,7 @@ void Menu::Update()
 		//updates the HUD
 		std::pair<int, int> ammo = mLevel->GetPlayer()->GetGun()->GetAmmo();
 		mHudTexts[0]->setString(std::to_string(ammo.first) + " / " + std::to_string(ammo.second));
+		mHudTexts[1]->setString("Credits: " + std::to_string(mLevel->GetPlayer()->GetCredits()));
 		mHudRects[0]->first.setScale(mLevel->GetPlayer()->Health() / 10.f, 1);
 		mHudRects[1]->first.setScale(mLevel->GetPlayer()->JetFuel() / 300.f, 1);
 	}

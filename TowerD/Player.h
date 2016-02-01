@@ -16,7 +16,7 @@ private:
 	float mBaseAngle2;
 	std::vector<Sprite*> mGhosts;
 	int mEquipped;
-	bool mDown;
+	bool mLDown, mRDown;
 	Gun mGun;
 	bool invuln = false;
 	bool mVisible = true;
@@ -26,6 +26,7 @@ private:
 	float mJetFuel;
 	float mJetFuelMax = 300;
 	float jetAnmFrame = 0;
+	int mCredits = 200;
 
 public:
 	Player(sf::Vector2f, int, Renderer*);
@@ -44,6 +45,8 @@ public:
 	void Respawn();
 	void Shoot();
 	float JetFuel();
+	void AddCredits(int);
+	int GetCredits();
 	~Player();
 };
 

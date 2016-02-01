@@ -12,6 +12,7 @@ private:
 	bool mShooting = false;
 	float mRange = 64;
 	int mType = 0;
+	int mCost = 15;
 
 public:
 	Turret(sf::Vector2f, int, int, Renderer*, std::vector<Enemy*>*);
@@ -19,6 +20,7 @@ public:
 	void Update(float, sf::Vector2f, float);
 	void LoadAssets();
 	void Shoot();
+	int GetCost(){ return mCost; }
 	Gun* GetGun();
 };
 

@@ -1,19 +1,6 @@
-﻿Build started 30/01/2016 20:35:57.
+﻿Build started 01/02/2016 23:00:33.
      1>Project "D:\Projects\TowerD\TowerD\TowerD.vcxproj" on node 2 (Build target(s)).
-     1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I"C:\SFML-2.1\include" /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _LIB /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"temp\TowerD.pch" /Fo"temp\\" /Fd"temp\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt Menu.cpp
-         Menu.cpp
-     1>d:\projects\towerd\towerd\menu.h(30): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
-     1>d:\projects\towerd\towerd\menu.h(31): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
-     1>d:\projects\towerd\towerd\menu.h(35): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
-     1>d:\projects\towerd\towerd\menu.h(36): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
-     1>d:\projects\towerd\towerd\menu.h(45): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
-     1>d:\projects\towerd\towerd\menu.h(46): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
-     1>d:\projects\towerd\towerd\menu.h(57): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
-     1>d:\projects\towerd\towerd\menu.h(62): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
-     1>d:\projects\towerd\towerd\menu.h(69): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
-     1>d:\projects\towerd\towerd\menu.cpp(313): warning C4018: '<' : signed/unsigned mismatch
-       Link:
+     1>Link:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"D:\Projects\TowerD\temp\TowerD.exe" /INCREMENTAL /NOLOGO /LIBPATH:"C:\SFML-2.1\lib" kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"D:\Projects\TowerD\temp\TowerD.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:\Projects\TowerD\temp\TowerD.lib" /MACHINE:X86 temp\Button.obj
          temp\Camera.obj
          temp\Config.obj
@@ -32,9 +19,10 @@
          temp\Tile.obj
          temp\TowerD.obj
          temp\Turret.obj
+         LINK : D:\Projects\TowerD\temp\TowerD.exe not found or not built by the last incremental link; performing full link
          TowerD.vcxproj -> D:\Projects\TowerD\temp\TowerD.exe
      1>Done Building Project "D:\Projects\TowerD\TowerD\TowerD.vcxproj" (Build target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:00.76
+Time Elapsed 00:00:00.45

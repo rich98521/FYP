@@ -9,6 +9,8 @@ Player::Player(sf::Vector2f loc, int tSize, Renderer* r)
 	mSpawnPos = loc;
 	mAimLoc = sf::Vector2i();
 	canMove = true;
+	mGun.SetDamage(0.4f);
+	mCredits=120;
 }
 
 void Player::LoadAssets()
@@ -118,13 +120,21 @@ void Player::ProcessInput(sf::Event e, sf::Vector2f offset, float scale)
 		{
 			mouseLast = sf::Vector2i(e.mouseMove.x, e.mouseMove.y);
 		}
-		else if (e.type == sf::Event::MouseButtonPressed)
+		else if (e.type == sf::Event::MouseButtonPressed && e.mouseButton.button == sf::Mouse::Button::Left)
 		{
-			mDown = true;
+			mLDown = true;
 		}
-		else if (e.type == sf::Event::MouseButtonReleased)
+		else if (e.type == sf::Event::MouseButtonReleased && e.mouseButton.button == sf::Mouse::Button::Left)
 		{
-			mDown = false;
+			mLDown = false;
+		}
+		else if (e.type == sf::Event::MouseButtonPressed && e.mouseButton.button == sf::Mouse::Button::Right)
+		{
+			mRDown = true;
+		}
+		else if (e.type == sf::Event::MouseButtonReleased && e.mouseButton.button == sf::Mouse::Button::Right)
+		{
+			mRDown = false;
 		}
 		mAccel = sf::Vector2f(0, 0);
 		//sets top sprites angle to direction of acceleration
@@ -197,7 +207,7 @@ void Player::Update(float t, sf::Vector2f offset, float scale)
 
 void Player::Shoot()
 {
-	if (mEquipped == 0 && mDown){
+	if (mEquipped == 0 && mLDown){
 		if (mGun.Shoot(mLocation, mAngle / 180.f * 3.14159f).size() > 0)
 			SoundManager::PlaySoundEffect("PlayerShoot");
 	}
@@ -217,6 +227,16 @@ void Player::Aim(sf::Vector2f offset, float scale)
 	}
 }
 
+void Player::AddCredits(int c)
+{
+	mCredits += c;
+}
+
+int Player::GetCredits()
+{
+	return mCredits;
+}
+
 //player has custom hit function to handle respawning
 bool Player::Hit(float damage)
 {
@@ -227,7 +247,7 @@ bool Player::Hit(float damage)
 		{
 			SetVisible(false);
 			mLocation = mSpawnPos;
-			mDown = false;
+			mLDown = false;
 			mAimLoc = sf::Vector2i(mLocation);
 		}
 	}
@@ -349,8 +369,9 @@ void Player::Draw(sf::Vector2f offset, float scale)
 std::pair<int, sf::Vector2i> Player::GetPlace()
 {
 	if (mEquipped != 0){
-		int t = mDown ? mEquipped : -1;
-		mDown = false;
+		int t = mLDown ? mEquipped : mRDown ? 5 : -1;
+		mLDown = false;
+		mRDown = false;
 		return std::pair<int, sf::Vector2i>(t, mPlacePos);
 	}
 }
