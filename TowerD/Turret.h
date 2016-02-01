@@ -21,6 +21,7 @@ public:
 	void LoadAssets();
 	void Shoot();
 	int GetCost(){ return mCost; }
+	int GetType(){ return mType; }
 	Gun* GetGun();
 };
 

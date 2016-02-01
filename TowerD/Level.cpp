@@ -193,7 +193,6 @@ void Level::Update(float t)
 			mDefensePhase = true;
 			SoundManager::PlayMusic("Building");
 			mWave++;
-			mNextSpawnTime = 0;
 			if (mWave >= mWaves.size())
 			{
 				mWin = true;
@@ -634,15 +633,22 @@ void Level::CheckCollision()
 			for each (Turret* t in mTurrets){
 				for each (sf::Vector2f* h in t->GetGun()->GetBullets())
 				{
-					std::pair<bool, float> hit = BulletHit(t->Location(), e->Rect(), *h);
-					if (hit.first)
+					std::pair<bool, float> bullethit = BulletHit(t->Location(), e->Rect(), *h);
+					if (bullethit.first)
 					{
-						if (minDist > hit.second)
+						if (minDist > bullethit.second)
 						{
 							tempHit = e;
-							minDist = hit.second;
-							t->GetGun()->SetDrawRange(hit.second - e->Size().x / 2);
-							*h = t->Location();
+							if (t->GetType() == 0)
+							{
+								minDist = bullethit.second;
+								t->GetGun()->SetDrawRange(bullethit.second - e->Size().x / 2);
+								*h = t->Location();
+							}
+							else if (t->GetType() == 2)
+							{
+								hit.push_back(std::pair<Entity*, float>(tempHit, t->GetGun()->GetDamage()));
+							}
 						}
 					}
 				}
@@ -696,6 +702,7 @@ void Level::ProcessInput(sf::Event e)
 				mEnemiesLeft += it->second.first;
 		}
 		SoundManager::PlayMusic("Fighting");
+		mNextSpawnTime = 0;
 	}
 	for each (Player* p in mPlayers)
 	{

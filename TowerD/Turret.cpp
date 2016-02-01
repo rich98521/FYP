@@ -12,7 +12,7 @@ Turret::Turret(sf::Vector2f loc, int tSize, int t, Renderer* r, std::vector<Enem
 		mGun.SetDamage(0.3f);
 	}
 	else if (mType == 2)
-		mGun.SetDamage(0.02f);
+		mGun.SetDamage(0.05f);
 	mCost = 15;
 }
 
