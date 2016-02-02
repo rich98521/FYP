@@ -29,7 +29,7 @@ public:
 	{
 		mBackground.first.setPosition(r.left, r.top);
 		mBackground.first.setSize(sf::Vector2f(r.width, r.height));
-		mBackground.first.setFillColor(sf::Color(160, 160, 160, 255));
+		mBackground.first.setFillColor(sf::Color(50, 50, 50, 255));
 		mBackground.second = false;
 		mRen->Add(&mBackground);
 		mRects.push_back(new std::pair<sf::RectangleShape, bool>(sf::RectangleShape(sf::Vector2f(mRect.width, mRect.height)), false));

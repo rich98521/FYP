@@ -35,6 +35,7 @@ public:
 	std::vector<sf::Vector2f*> Shoot(sf::Vector2f, float);
 	std::vector<sf::Vector2f*> GetBullets();
 	float GetDamage();
+	float GetRange();
 	void SetDamage(float);
 	void Collision(int, float);
 	void Draw(sf::Vector2f, sf::Vector2f, float);
@@ -45,6 +46,7 @@ public:
 	void SetAccuracy(float);
 	void SetMaxAmmo(int);
 	void SetColor(sf::Color);
+	void SetBulletCount(int);
 	std::pair<int, int> GetAmmo();
 	~Gun();
 };

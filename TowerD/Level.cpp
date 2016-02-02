@@ -180,7 +180,7 @@ void Level::Update(float t)
 					{
 						if (mWaves[mWave][i][i2].second.first > 0)
 						{
-							AddEntity(new Enemy(sf::Vector2f(mEnemySpawns[i]) + sf::Vector2f(8 - rand() % 16, 8 - rand() % 16), mTileSize, 0, mRen, mPlayerLocs));
+							AddEntity(new Enemy(sf::Vector2f(mEnemySpawns[i]) + sf::Vector2f(8 - rand() % 16, 8 - rand() % 16), mTileSize, mWaves[mWave][i][i2].second.second, mRen, mPlayerLocs));
 							mEnemies.back()->SetPath(mArrowPaths[i]);
 							mWaves[mWave][i][i2].second.first--;
 						}
@@ -297,7 +297,7 @@ void Level::Update(float t)
 			}
 			sf::Vector2f diff = p->Location() - e->Location();
 			float dist = sqrt(diff.y * diff.y + diff.x * diff.x);
-			if(dist < 96)
+			if(dist < e->GetGun()->GetRange())
 			{
 				bool line = true;
 				//iterates along the x tiles from player to enemy
@@ -536,7 +536,7 @@ void Level::CheckCollision()
 	{
 		for each (Entity* e2 in mEntities)
 		{
-			if (e != e2)
+			if (e != e2 && e->CanCollide() && e2->CanCollide())
 			{
 				sf::Vector2f ePos = e->Location();
 				e->Collision(e2->Location(), e2->Size().x / 3.f);
@@ -611,22 +611,17 @@ void Level::CheckCollision()
 				{
 					for each (sf::Vector2f* h in en->GetGun()->GetBullets())
 					{
-						std::pair<bool, float> hit = BulletHit(en->Location(), p->Rect(), *h);
-						if (hit.first)
+						std::pair<bool, float> bullethit = BulletHit(en->Location(), p->Rect(), *h);
+						if (bullethit.first)
 						{
-							if (minDist > hit.second)
-							{
-								tempHit = p;
-								minDist = hit.second;
-								en->GetGun()->SetDrawRange(hit.second - e->Size().x / 2);
-								*h = en->Location();
-							}
+							tempHit = p;
+							hit.push_back(std::pair<Entity*, float>(tempHit, en->GetGun()->GetDamage()));
+							en->GetGun()->SetDrawRange(bullethit.second - e->Size().x / 2);
+							*h = en->Location();
 						}
 					}
 				}
 			}
-			if (tempHit != 0)
-				hit.push_back(std::pair<Entity*, float>(tempHit, en->GetGun()->GetDamage()));
 			minDist = 10000000;
 			tempHit = 0;
 			//checks for turret bullets hitting enemies using the same method

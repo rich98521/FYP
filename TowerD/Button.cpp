@@ -5,15 +5,15 @@
 Button::Button(sf::IntRect r, string text, Renderer* ren) : mRect(r), mText(text, "detente.ttf"), mRen(ren)
 {
 	mString = text;
-	mText.setColor(sf::Color(0, 0, 0, 255));
+	mText.setColor(sf::Color(255, 255, 255, 255));
 	mText.setCharacterSize(r.height / 2.f);
 	mText.setPosition(r.left + (r.width - mText.getLocalBounds().width) / 2.f, r.top + (r.height - mText.getLocalBounds().height) / 2.f - mText.getLocalBounds().top);
 	mOverlay.first.setPosition(r.left, r.top);
 	mOverlay.first.setSize(sf::Vector2f(r.width, r.height));
-	mBackground.first.setFillColor(sf::Color(192, 192, 192, 255));
+	mBackground.first.setFillColor(sf::Color(210, 100, 0, 255));
 	mBackground.first.setPosition(mRect.left, mRect.top);
 	mBackground.first.setSize(sf::Vector2f(mRect.width, mRect.height));
-	mOverlay.first.setFillColor(sf::Color(160, 160, 160, 128));
+	mOverlay.first.setFillColor(sf::Color(160, 160, 160, 72));
 	ren->Add(&mBackground);
 	ren->Add(&mOverlay);
 	ren->Add(&mText);
@@ -24,15 +24,15 @@ Button::Button(sf::IntRect r, string text, Renderer* ren) : mRect(r), mText(text
 Button::Button(sf::IntRect r, string text, float fontSize, Renderer* ren) : mRect(r), mText(text, "detente.ttf"), mRen(ren)
 {
 	mString = text;
-	mText.setColor(sf::Color(0, 0, 0, 255));
+	mText.setColor(sf::Color(255, 255, 255, 255));
 	mText.setCharacterSize(fontSize);
 	mText.setPosition(r.left + (r.width - mText.getLocalBounds().width) / 2.f, r.top + (r.height - mText.getLocalBounds().height) / 2.f - mText.getLocalBounds().top);
 	mOverlay.first.setPosition(r.left, r.top);
 	mOverlay.first.setSize(sf::Vector2f(r.width, r.height));
-	mBackground.first.setFillColor(sf::Color(192, 192, 192, 255));
+	mBackground.first.setFillColor(sf::Color(210, 100, 0, 255));
 	mBackground.first.setPosition(mRect.left, mRect.top);
 	mBackground.first.setSize(sf::Vector2f(mRect.width, mRect.height));
-	mOverlay.first.setFillColor(sf::Color(160, 160, 160, 128));
+	mOverlay.first.setFillColor(sf::Color(160, 160, 160, 72));
 	ren->Add(&mBackground);
 	ren->Add(&mOverlay);
 	ren->Add(&mText);
@@ -46,17 +46,17 @@ Button::Button(sf::IntRect r, string text, string imPath, Renderer* ren) : mRect
 	mString = text;
 	mPictureText.loadFromFile(imPath);
 	mPicture.first.setSize(sf::Vector2f(mPictureText.getSize()));
-	mText.setColor(sf::Color(0, 0, 0, 255));
+	mText.setColor(sf::Color(255, 255, 255, 255));
 	mText.setCharacterSize((r.height - mPicture.first.getLocalBounds().height) / 4.f);
 	mText.setPosition(r.left + (r.width - mText.getLocalBounds().width) / 2.f, r.top + r.height - (mText.getLocalBounds().height * 1.4));
 	mOverlay.first.setPosition(r.left, r.top);
 	mOverlay.first.setSize(sf::Vector2f(r.width, r.height));
 	mPicture.first.setTexture(&mPictureText);
 	mPicture.first.setPosition(r.left + (r.width - mPicture.first.getLocalBounds().width) / 2.f, r.top + (r.height - mText.getLocalBounds().height - mPicture.first.getLocalBounds().height) / 2.f);
-	mBackground.first.setFillColor(sf::Color(192, 192, 192, 255));
+	mBackground.first.setFillColor(sf::Color(210, 100, 0, 255));
 	mBackground.first.setPosition(mRect.left, mRect.top);
 	mBackground.first.setSize(sf::Vector2f(mRect.width, mRect.height));
-	mOverlay.first.setFillColor(sf::Color(160, 160, 160, 64));
+	mOverlay.first.setFillColor(sf::Color(160, 160, 160, 40));
 	ren->Add(&mBackground);
 	ren->Add(&mPicture);
 	ren->Add(&mOverlay);

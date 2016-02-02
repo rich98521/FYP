@@ -37,11 +37,12 @@ std::vector<sf::Vector2f*> Gun::Shoot(sf::Vector2f pos, float ang)
 		mShot = true;
 		for (int i = 0; i < mBulletCount; i++)
 		{
+			float newAng = 0;
 			if (mType == 0)
-				ang += (((rand() % 200) - 100) / (100.f)) * (3.14159f  * (1 - mAccuracy));
-			mBulletHitPos.push_back(new sf::Vector2f(pos + sf::Vector2f(cos(ang), sin(ang)) * mRange));
+				newAng = ang + (((rand() % 200) - 100) / (100.f)) * (3.14159f  * (1 - mAccuracy));
+			mBulletHitPos.push_back(new sf::Vector2f(pos + sf::Vector2f(cos(newAng), sin(newAng)) * mRange));
 			mBulletSprites[i]->setColor(mBulletColor);
-			mBulletSprites[i]->setRotation(ang / 3.14159f * 180);
+			mBulletSprites[i]->setRotation(newAng / 3.14159f * 180);
 			mBulletSprites[i]->SetVisible(true);
 		}
 		mDrawRange = mRange;
@@ -128,6 +129,16 @@ void Gun::SetDamage(float d)
 void Gun::SetMaxAmmo(int a)
 {
 	mMagTotal = a;
+}
+
+float Gun::GetRange()
+{
+	return mRange;
+}
+
+void Gun::SetBulletCount(int c)
+{
+	mBulletCount = c;
 }
 
 std::pair<int, int> Gun::GetAmmo()

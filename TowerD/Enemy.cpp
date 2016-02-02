@@ -2,22 +2,44 @@
 #include "Enemy.h"
 
 Enemy::Enemy(sf::Vector2f loc, int tSize, int t, Renderer* r, std::vector<sf::Vector2f*> players)
-	: Entity(loc, tSize, r), mType(t), mGun(r, -1, mType)
+	: Entity(loc, tSize, r), mType(t), mGun(r, -1, 0)
 {
 	mBaseSpriteLayer = CHARACTERBASE;
 	mSpriteLayer = CHARACTERTOP;
 	mPlayers = players;
-	mGun.SetRate(1);
-	mGun.SetColor(sf::Color(200, 0, 0, 200));
 	canMove = true;
 	mGun.SetDamage(0.4f);
+	///////////////////////////////
+	mType = min(mType, 2);
+	///////////////////////////////
+	if (mType == 0)
+	{
+		mGun.SetRange(96);
+		mMaxHealth = 6;
+		mHealth = mMaxHealth;
+		mGun.SetRate(1);
+		mGun.SetColor(sf::Color(200, 0, 0, 200));
+	}
+	else if (mType == 1)
+	{
+		mGun.SetRange(48);
+		mGun.SetBulletCount(5);
+		mGun.SetAccuracy(.9f);
+		mMaxHealth = 18;
+		mHealth = mMaxHealth;
+		mGun.SetRate(1.5);
+		mGun.SetColor(sf::Color(200, 200, 0, 200));
+	}
+	else if (mType == 2)
+	{
+	}
 }
 
 void Enemy::LoadAssets()
 {
 	mGun.LoadAssets();
-	mSprite = new Sprite("../Sprites/Enemy2.png");
-	mBaseSprite = new Sprite("../Sprites/Enemy1Base.png");
+	mSprite = new Sprite("../Sprites/Enemy" + std::to_string(mType + 1) + ".png");
+	mBaseSprite = new Sprite("../Sprites/Enemy" + std::to_string(mType + 1) + "Base.png");
 	mSize = sf::Vector2f(22, 22);
 	mScale = 0.6;
 	mSpriteSize = sf::Vector2f(mSprite->getTextureRect().height, mSprite->getTextureRect().height);
@@ -58,8 +80,12 @@ void Enemy::Update(float t, sf::Vector2f offset, float scale)
 		if (fabs(diff) >= (pi / 4))
 			turnSpeed = .8f;
 		mSpeed = max(min((ManhDist(mLocation.x, mLocation.y, target.x, target.y)) / 600, 1.f), turnSpeed);
-
+		if (mType == 0)
+			mSpeed += 0.3f;
+		else if (mType == 1)
+			mSpeed -= 0.3;
 		//mVelocity = sf::Vector2f();
+		anmFrame += 0.1f;
 
 		Entity::Update(t, offset, scale);
 	}
@@ -68,12 +94,15 @@ void Enemy::Update(float t, sf::Vector2f offset, float scale)
 void Enemy::Shoot(sf::Vector2f player, float dist)
 {
 	mAngle = mBaseAngle;
-	if (dist < 96)
+	if (mType != 2)
 	{
-		float ang = atan2(player.y - mLocation.y, player.x - mLocation.x);
-		mAngle = ang / 3.14159f * 180;
-		if(mGun.Shoot(mLocation, ang).size() > 0)
-			SoundManager::PlaySoundEffect("EnemyShoot");
+		if (dist < mGun.GetRange())
+		{
+			float ang = atan2(player.y - mLocation.y, player.x - mLocation.x);
+			mAngle = ang / 3.14159f * 180;
+			if (mGun.Shoot(mLocation, ang).size() > 0)
+				SoundManager::PlaySoundEffect("Enemy" + std::to_string(mType + 1) + "Shoot");
+		}
 	}
 }
 

@@ -35,6 +35,7 @@ protected:
 	float mHScale = 1;
 	float mHeight = 0;
 	bool mOnWall = false, canMove = false;
+	bool mCollision = true;
 
 public:
 	Entity(sf::Vector2f, int, Renderer*);
@@ -51,6 +52,7 @@ public:
 	float Health();
 	float Height();
 	void SetOnWall(bool);
+	bool CanCollide(){ return mCollision; }
 	~Entity();
 };
 

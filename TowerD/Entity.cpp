@@ -5,7 +5,7 @@
 //anything you can interact with in game that isnt a tile
 //contains functions common to most if not all entities
 Entity::Entity(sf::Vector2f loc, int tSize, Renderer* r)
-	:mLocation(loc), mTileSize(tSize), mAngle(0), mBaseAngle(0), mHealth(10), mMaxHealth(10), ren(r), mSpriteLayer(ENTITYTOP), mBaseSpriteLayer(ENTITYBASE)
+	:mLocation(loc), mTileSize(tSize), mAngle(0), mBaseAngle(0), mHealth(10), mMaxHealth(10), ren(r), mSpriteLayer(ENTITYTOP), mBaseSpriteLayer(ENTITYBASE), mCollision(true)
 {
 }
 
@@ -148,13 +148,13 @@ void Entity::Draw(sf::Vector2f offset, float scale)
 	mSprite->setScale(scale * mScale * mHScale, scale * mScale * mHScale);
 	mSprite->setPosition((sf::Vector2f(mLocation) + sf::Vector2f(-offset))* scale);
 	mSprite->setRotation(mAngle);
-	if (mHealth < 10 && mDrawHealth)
+	if (mHealth < mMaxHealth && mDrawHealth)
 	{
 		mHealthSprite->SetVisible(true);
 		mHealthBarSprite->SetVisible(true);
 		mHealthBarSprite->setScale(scale, scale);
 		mHealthBarSprite->setPosition((sf::Vector2f(mLocation) + sf::Vector2f(-offset) + sf::Vector2f(-15, -16))* scale);
-		mHealthSprite->setScale(scale*mHealth*2.8f, scale);
+		mHealthSprite->setScale(scale * (mHealth / mMaxHealth) * 28.f, scale);
 		mHealthSprite->setPosition((sf::Vector2f(mLocation) + sf::Vector2f(-offset) + sf::Vector2f(-14, -15))* scale);
 	}
 	else
