@@ -63,12 +63,6 @@ std::vector<sf::Vector2f*> Gun::GetBullets()
 	return mBulletHitPos;
 }
 
-void Gun::SetRate(float r)
-{
-	if (mType != 2)
-		mRate = r;
-}
-
 void Gun::Collision(int i, float dist)
 {
 
@@ -105,6 +99,22 @@ void Gun::Draw(sf::Vector2f pos, sf::Vector2f offset, float scale)
 	}
 }
 
+void Gun::SetRate(float r)
+{
+	if (mType != 2)
+		mRate = r;
+}
+
+void Gun::SetRange(float r)
+{
+	mRange = r;
+}
+
+void Gun::SetAccuracy(float a)
+{
+	mAccuracy = a;
+}
+
 float Gun::GetDamage()
 {
 	return mDamage;
@@ -113,6 +123,11 @@ float Gun::GetDamage()
 void Gun::SetDamage(float d)
 {
 	mDamage = d;
+}
+
+void Gun::SetMaxAmmo(int a)
+{
+	mMagTotal = a;
 }
 
 std::pair<int, int> Gun::GetAmmo()

@@ -2,7 +2,12 @@
 #include "Player.h"
 
 Player::Player(sf::Vector2f loc, int tSize, Renderer* r)
-	: Entity(loc, tSize, r), mGun(r, 20, 0), mEquipped(0)
+	: Entity(loc, tSize, r), mGun(r, 20, 0), mEquipped(0), mSpeed(800),
+	mAccTable{ { 0.97f, 0.975f, 0.98f, 0.985f, 0.99f } }, 
+	mDamTable{ { 0.4f, 0.47f, 0.54f, 0.61f, 0.68f } }, 
+	mRateTable{ { 0.15f, 0.14f, 0.13f, 0.12f, 0.11f } },
+	mAmmoTable{ { 22, 25, 28, 32, 36 } },
+	mUpgradeCosts{ { 15, 30, 45, 75, 100 } }
 {
 	mBaseSpriteLayer = CHARACTERBASE;
 	mSpriteLayer = CHARACTERTOP;
@@ -10,7 +15,7 @@ Player::Player(sf::Vector2f loc, int tSize, Renderer* r)
 	mAimLoc = sf::Vector2i();
 	canMove = true;
 	mGun.SetDamage(0.4f);
-	mCredits=120;
+	mCredits = 200;
 }
 
 void Player::LoadAssets()
@@ -141,7 +146,7 @@ void Player::ProcessInput(sf::Event e, sf::Vector2f offset, float scale)
 		if (!(dir.x == 0 && dir.y == 0))
 		{
 			float ang = atan2(dir.y, dir.x);
-			mAccel = sf::Vector2f(cos(ang), sin(ang)) * 800.f;
+			mAccel = sf::Vector2f(cos(ang), sin(ang)) * mSpeed;
 		}
 	}
 }
@@ -232,11 +237,6 @@ void Player::AddCredits(int c)
 	mCredits += c;
 }
 
-int Player::GetCredits()
-{
-	return mCredits;
-}
-
 //player has custom hit function to handle respawning
 bool Player::Hit(float damage)
 {
@@ -321,7 +321,7 @@ void Player::Draw(sf::Vector2f offset, float scale)
 	int baseMax = (int)(mBaseSprite->getTexture()->getSize().x) / (int)mSize.y;
 	float frmBase1 = anmFrame;
 	float frmBase2 = anmFrame;
-	if (baseMax > 1 && mHeight == 0)
+	if (baseMax > 1 && (mHeight == 0 || mHeight == mTileSize))
 	{
 		//works out correct leg animation frames
 		//to ensure legs always face forward legs are retracted as player turns

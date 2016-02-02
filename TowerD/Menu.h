@@ -47,6 +47,31 @@ public:
 		mRects[0]->first.setFillColor(sf::Color(160, 160, 160, 128));
 		mRen->Add(mRects[0]);
 	}
+	~Panel()
+	{
+		for each(Button* b in mButtons)
+			delete(b);
+		mButtons.clear();
+		for each(Text* t in mTexts)
+		{
+			mRen->Remove(t);
+			delete(t);
+		}
+		mTexts.clear();
+		for each(std::pair<sf::RectangleShape, bool>* r in mRects)
+		{
+			mRen->Remove(r);
+			delete(r);
+		}
+		mRects.clear();
+		mRen->Remove(mBackgroundImage, UI);
+		mRen->Remove(&mBackground);
+		delete(mBackgroundImage);
+	}
+	std::vector<Button*> Buttons()
+	{
+		return mButtons;
+	}
 	void SetEnabled(bool b)
 	{
 		mEnabled = b;
@@ -206,6 +231,33 @@ public:
 		mCanFocus = f;
 	}
 
+	void ClearPanels()
+	{
+		for each (Panel* p in mPanels)
+			delete(p);
+		mPanels.clear();
+	}
+
+	void ClearRects()
+	{
+		for each (std::pair<sf::RectangleShape, bool>* r in mRects)
+		{
+			mRen->Remove(r);
+			delete(r);
+		}
+		mRects.clear();
+	}
+
+	void ClearTexts()
+	{
+		for each (Text* t in mTexts)
+		{
+			mRen->Remove(t);
+			delete(t);
+		}
+		mTexts.clear();
+	}
+
 	Button* DownButton()
 	{
 		Button* button = 0;
@@ -221,9 +273,19 @@ public:
 		return button;
 	}
 
-	std::vector<Panel*> Panels()
+	std::vector<Panel*>* Panels()
 	{
-		return mPanels;
+		return &mPanels;
+	}
+
+	std::vector<std::pair<sf::RectangleShape, bool>*>* Rects()
+	{
+		return &mRects;
+	}
+
+	std::vector<Text*>* Texts()
+	{
+		return &mTexts;
 	}
 
 	void SetVisible(bool v)
@@ -256,6 +318,9 @@ private:
 	bool mPaused = true;
 	void SetPaused(bool);
 	bool mFocus = false;
+	void InitHud();
+	Renderer* mRen;
+
 public:
 	Menu(Renderer*, sf::Window*, Level*);
 	void Update();

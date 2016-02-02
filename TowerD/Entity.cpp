@@ -5,7 +5,7 @@
 //anything you can interact with in game that isnt a tile
 //contains functions common to most if not all entities
 Entity::Entity(sf::Vector2f loc, int tSize, Renderer* r)
-	:mLocation(loc), mTileSize(tSize), mAngle(0), mBaseAngle(0), mHealth(10), ren(r), mSpriteLayer(ENTITYTOP), mBaseSpriteLayer(ENTITYBASE)
+	:mLocation(loc), mTileSize(tSize), mAngle(0), mBaseAngle(0), mHealth(10), mMaxHealth(10), ren(r), mSpriteLayer(ENTITYTOP), mBaseSpriteLayer(ENTITYBASE)
 {
 }
 

@@ -43,12 +43,16 @@ void Renderer::Remove(Sprite* s, int l)
 
 void Renderer::Remove(Text* t)
 {
-	mTextDrawList.erase(std::find(mTextDrawList.begin(), mTextDrawList.end(), t));
+	std::vector<Text*>::iterator i = std::find(mTextDrawList.begin(), mTextDrawList.end(), t);
+	if (i != mTextDrawList.end())
+		mTextDrawList.erase(i);
 }
 
 void Renderer::Remove(std::pair<sf::RectangleShape, bool>* r)
 {
-	mRectDrawList.erase(std::find(mRectDrawList.begin(), mRectDrawList.end(), r));
+	std::vector<std::pair<sf::RectangleShape, bool>*>::iterator i = std::find(mRectDrawList.begin(), mRectDrawList.end(), r);
+	if (i != mRectDrawList.end())
+		mRectDrawList.erase(i);
 }
 
 void Renderer::Clear()

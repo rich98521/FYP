@@ -2,7 +2,7 @@
 #include "Button.h"
 
 //button just containing text
-Button::Button(sf::IntRect r, string text, Renderer* ren) : mRect(r), mText(text, "detente.ttf")
+Button::Button(sf::IntRect r, string text, Renderer* ren) : mRect(r), mText(text, "detente.ttf"), mRen(ren)
 {
 	mString = text;
 	mText.setColor(sf::Color(0, 0, 0, 255));
@@ -21,7 +21,7 @@ Button::Button(sf::IntRect r, string text, Renderer* ren) : mRect(r), mText(text
 	SetVisible(false);
 }
 
-Button::Button(sf::IntRect r, string text, float fontSize, Renderer* ren) : mRect(r), mText(text, "detente.ttf")
+Button::Button(sf::IntRect r, string text, float fontSize, Renderer* ren) : mRect(r), mText(text, "detente.ttf"), mRen(ren)
 {
 	mString = text;
 	mText.setColor(sf::Color(0, 0, 0, 255));
@@ -41,7 +41,7 @@ Button::Button(sf::IntRect r, string text, float fontSize, Renderer* ren) : mRec
 }
 
 //button with an image
-Button::Button(sf::IntRect r, string text, string imPath, Renderer* ren) : mRect(r), mText(text, "detente.ttf")
+Button::Button(sf::IntRect r, string text, string imPath, Renderer* ren) : mRect(r), mText(text, "detente.ttf"), mRen(ren)
 {
 	mString = text;
 	mPictureText.loadFromFile(imPath);
@@ -68,6 +68,12 @@ Button::Button(sf::IntRect r, string text, string imPath, Renderer* ren) : mRect
 string Button::GetText()
 {
 	return mString;
+}
+
+void Button::SetText(string s)
+{
+	mString = s;
+	mText.setString(s);
 }
 
 sf::IntRect Button::Rect()
@@ -143,6 +149,19 @@ void Button::SetVisible(bool v)
 	mOverlay.second = v;
 	mText.SetVisible(v);
 	mBackground.second = v;
+}
+
+Button::~Button()
+{
+	for each(std::pair<sf::RectangleShape, bool >* b in mBoundary)
+	{
+		mRen->Remove(b);
+		delete(b);
+	}
+	mRen->Remove(&mBackground);
+	mRen->Remove(&mPicture);
+	mRen->Remove(&mOverlay);
+	mRen->Remove(&mText);
 }
 
 

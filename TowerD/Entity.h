@@ -27,7 +27,7 @@ protected:
 	bool mDrawHealth = true;
 	float anmFrame = 0;
 	const int mTileSize;
-	float mHealth;
+	float mHealth, mMaxHealth;
 	int mSpriteLayer, mBaseSpriteLayer;
 	float mSpeed = 1;
 	float mScale = 1;

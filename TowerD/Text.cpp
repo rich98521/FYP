@@ -15,7 +15,8 @@ void Text::RemoveFont(std::string filepath)
 	if (mFonts.count(filepath))
 	{
 		mFonts[mPath].second--;
-		mFonts.erase(mPath);
+		if (mFonts[mPath].second <= 0)
+			mFonts.erase(mPath);
 	}
 }
 

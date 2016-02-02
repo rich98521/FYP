@@ -210,7 +210,7 @@ void Level::Update(float t)
 			sf::Vector2i placeIndex = toPlace.second / mTileSize;
 			if (toPlace.first == 1)
 			{
-				if (p->GetCredits() > 5)
+				if (p->GetCredits() >= 5)
 				{
 					p->AddCredits(-5);
 					Tile* t = mTiles[placeIndex.y][placeIndex.x];
@@ -246,7 +246,7 @@ void Level::Update(float t)
 			}
 			else if (toPlace.first >= 2)
 			{
-				if (p->GetCredits() > 15)
+				if (p->GetCredits() >= 15)
 				{
 					p->AddCredits(-15);
 					Tile* t = mTiles[placeIndex.y][placeIndex.x];

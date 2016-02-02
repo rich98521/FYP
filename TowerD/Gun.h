@@ -41,6 +41,9 @@ public:
 	void Reload();
 	void SetDrawRange(float);
 	void SetRate(float);
+	void SetRange(float);
+	void SetAccuracy(float);
+	void SetMaxAmmo(int);
 	void SetColor(sf::Color);
 	std::pair<int, int> GetAmmo();
 	~Gun();

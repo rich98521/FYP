@@ -20,13 +20,14 @@ private:
 	bool mClicked = false;
 	bool mDown = false, mOut = false;
 	string mString;
-
+	Renderer* mRen;
 
 public:
 	Button();
 	Button(sf::IntRect, string, Renderer*);
 	Button(sf::IntRect, string, float, Renderer*);
 	Button(sf::IntRect, string, string, Renderer*);
+	~Button();
 	sf::IntRect Rect();
 	bool IsClicked();
 	void InitBoundary(Renderer*);
@@ -34,6 +35,7 @@ public:
 	void Update(sf::Vector2i, bool);
 	void SetVisible(bool);
 	string GetText();
+	void SetText(string);
 };
 
 
