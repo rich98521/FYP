@@ -84,6 +84,8 @@ public:
 	void CheckCollision();
 	void ProcessInput(sf::Event);
 	Player* GetPlayer();
+	std::vector<Turret*>* GetTurrets() { return &mTurrets; };
+	Camera* GetCam(){ return &mCam; };
 
 };
 

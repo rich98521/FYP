@@ -5,11 +5,12 @@
 #include "Text.h"
 #include <functional>
 
+class Panel;
 
 class Button
 {
 private:
-	sf::IntRect mRect;
+	sf::FloatRect mRect;
 	sf::Texture mPictureText;
 	std::pair<sf::RectangleShape, bool> mPicture;
 	std::pair<sf::RectangleShape, bool> mOverlay;
@@ -21,21 +22,27 @@ private:
 	bool mDown = false, mOut = false;
 	string mString;
 	Renderer* mRen;
+	int mType = 0;
+	Panel* mPanel = 0;
 
 public:
 	Button();
-	Button(sf::IntRect, string, Renderer*);
-	Button(sf::IntRect, string, float, Renderer*);
-	Button(sf::IntRect, string, string, Renderer*);
+	Button(sf::FloatRect, string, Renderer*);
+	Button(sf::FloatRect, string, float, Renderer*);
+	Button(sf::FloatRect, string, string, Renderer*);
 	~Button();
-	sf::IntRect Rect();
+	sf::FloatRect Rect();
 	bool IsClicked();
 	void InitBoundary(Renderer*);
 	void Offset(sf::Vector2f);
 	void Update(sf::Vector2i, bool);
 	void SetVisible(bool);
 	string GetText();
+	void Offset(float, float);
 	void SetText(string);
+	void SetFontSize(float);
+	void SetPanel(Panel* p){ mPanel = p; }
+	Panel* GetPanel(){ return mPanel; }
 };
 
 

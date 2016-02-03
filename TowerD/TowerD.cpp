@@ -33,7 +33,7 @@ int main()
 	SoundManager snd;
 	snd.Init();
 	Level level(tileSize, sf::Vector2i(Config::ScreenWidth(), Config::ScreenHeight()), &r);
-	Menu menu(&r, &window, &level);
+	Menu menu(&r, &window, &level, level.GetCam());
 	sf::Clock clock;
 	float drawInterval = 0.0166f, updateInterval = 0.0033f;
 	float drawTime = 0, updateTime = 0;

@@ -2,18 +2,44 @@
 #include "Turret.h"
 
 Turret::Turret(sf::Vector2f loc, int tSize, int t, Renderer* r, std::vector<Enemy*>* enemies)
-	: Entity(loc, tSize, r), mType(t), mEnemies(enemies)
+	: Entity(loc, tSize, r), mType(t), mEnemies(enemies),
+	mUpgradeCosts{ { 15, 30, 45, 75, 100 } }
 {
+	mUpgradeTable[0] = { { .05f, .005f, 5 } };
+	mUpgradeTable[1] = { { .1f, .01f, 10 } };
+	mUpgradeTable[2] = { { .2f, .015f, 15 } };
+	mUpgradeTable[3] = { { .3f, .025, 23 } };
+	mUpgradeTable[4] = { { .5f, .04, 33 } };
 	mGun = Gun(r, -1, mType);
+	mBaseRange = 64;
 	if (mType == 0)
 	{
+		mBaseRate = .1f;
+		mBaseDamage = 0.3f;
 		mGun.SetRate(.1f);
 		mGun.SetColor(sf::Color(200, 200, 0, 200));
 		mGun.SetDamage(0.3f);
 	}
 	else if (mType == 2)
+	{
+		mBaseRate = 0.06f;
+		mBaseDamage = 0.05f;
 		mGun.SetDamage(0.05f);
+	}
 	mCost = 15;
+}
+
+void Turret::SetLevel(int l)
+{
+	mLevel = l;
+	mGun.SetDamage(mBaseDamage + mUpgradeTable[l][0]);
+	mGun.SetRate(mBaseRate + mUpgradeTable[l][1]);
+	mGun.SetRange(mBaseRange + mUpgradeTable[l][2]);
+}
+
+int Turret::GetLevel()
+{
+	return mLevel;
 }
 
 void Turret::LoadAssets()

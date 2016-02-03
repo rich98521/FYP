@@ -7,8 +7,8 @@ void Menu::StartButtonClick()
 	SetScene(1);
 }
 
-Menu::Menu(Renderer* ren, sf::Window* win, Level* l)
-	:mLevel(l), mWin(win), mRen(ren)
+Menu::Menu(Renderer* ren, sf::Window* win, Level* l, Camera* c)
+	:mLevel(l), mWin(win), mRen(ren), mCam(c)
 {
 	//sets up menu items (buttons, texts, scenes, rectangleshapes, panels)
 	mScenes.push_back(Scene(ren, new Sprite("../Sprites/MainMenu.png")));
@@ -17,24 +17,24 @@ Menu::Menu(Renderer* ren, sf::Window* win, Level* l)
 	t->setPosition(200, 80);
 	t->setColor(sf::Color(255, 0, 0, 255));
 	mScenes.back().AddText(t);
-	mScenes.back().AddButton(new Button(sf::IntRect(520, 400, 160, 80), "Start", ren));
-	mScenes.back().AddButton(new Button(sf::IntRect(520, 490, 160, 80), "Options", ren));
-	mScenes.back().AddButton(new Button(sf::IntRect(520, 580, 160, 80), "Quit", ren));
+	mScenes.back().AddButton(new Button(sf::FloatRect(520, 400, 160, 80), "Start", ren));
+	mScenes.back().AddButton(new Button(sf::FloatRect(520, 490, 160, 80), "Options", ren));
+	mScenes.back().AddButton(new Button(sf::FloatRect(520, 580, 160, 80), "Quit", ren));
 	mScenes.push_back(Scene(ren, new Sprite("../Sprites/LevelSelect.png")));
-	mScenes.back().AddButton(new Button(sf::IntRect(800, 20, 120, 40), "Join Game", ren));
-	mScenes.back().AddButton(new Button(sf::IntRect(20, 20, 80, 40), "Back", ren));
-	mScenes.back().AddButton(new Button(sf::IntRect(4, 368, 192, 224), "Level 1", "../Sprites/Level1.png", ren));
-	mScenes.back().AddButton(new Button(sf::IntRect(204, 368, 192, 224), "Level 2", "../Sprites/Level2.png", ren));
-	mScenes.back().AddButton(new Button(sf::IntRect(404, 368, 192, 224), "Level 3", "../Sprites/Level3.png", ren));
-	mScenes.back().AddButton(new Button(sf::IntRect(604, 368, 192, 224), "Level 4", "../Sprites/Level4.png", ren));
-	mScenes.back().AddButton(new Button(sf::IntRect(804, 368, 192, 224), "Level 5", "../Sprites/Level4.png", ren));
-	mScenes.back().AddButton(new Button(sf::IntRect(1004, 368, 192, 224), "Level 6", "../Sprites/Level4.png", ren));
-	mScenes.back().AddButton(new Button(sf::IntRect(4, 598, 192, 224), "Level 7", "../Sprites/Level4.png", ren));
-	mScenes.back().AddButton(new Button(sf::IntRect(204, 598, 192, 224), "Level 8", "../Sprites/Level4.png", ren));
-	mScenes.back().AddButton(new Button(sf::IntRect(404, 598, 192, 224), "Level 9", "../Sprites/Level4.png", ren));
-	mScenes.back().AddButton(new Button(sf::IntRect(604, 598, 192, 224), "Level 10", "../Sprites/Level4.png", ren));
-	mScenes.back().AddButton(new Button(sf::IntRect(804, 598, 192, 224), "Level 11", "../Sprites/Level4.png", ren));
-	mScenes.back().AddButton(new Button(sf::IntRect(1004, 598, 192, 224), "Level 12", "../Sprites/Level4.png", ren));
+	mScenes.back().AddButton(new Button(sf::FloatRect(800, 20, 120, 40), "Join Game", ren));
+	mScenes.back().AddButton(new Button(sf::FloatRect(20, 20, 80, 40), "Back", ren));
+	mScenes.back().AddButton(new Button(sf::FloatRect(4, 368, 192, 224), "Level 1", "../Sprites/Level1.png", ren));
+	mScenes.back().AddButton(new Button(sf::FloatRect(204, 368, 192, 224), "Level 2", "../Sprites/Level2.png", ren));
+	mScenes.back().AddButton(new Button(sf::FloatRect(404, 368, 192, 224), "Level 3", "../Sprites/Level3.png", ren));
+	mScenes.back().AddButton(new Button(sf::FloatRect(604, 368, 192, 224), "Level 4", "../Sprites/Level4.png", ren));
+	mScenes.back().AddButton(new Button(sf::FloatRect(804, 368, 192, 224), "Level 5", "../Sprites/Level4.png", ren));
+	mScenes.back().AddButton(new Button(sf::FloatRect(1004, 368, 192, 224), "Level 6", "../Sprites/Level4.png", ren));
+	mScenes.back().AddButton(new Button(sf::FloatRect(4, 598, 192, 224), "Level 7", "../Sprites/Level4.png", ren));
+	mScenes.back().AddButton(new Button(sf::FloatRect(204, 598, 192, 224), "Level 8", "../Sprites/Level4.png", ren));
+	mScenes.back().AddButton(new Button(sf::FloatRect(404, 598, 192, 224), "Level 9", "../Sprites/Level4.png", ren));
+	mScenes.back().AddButton(new Button(sf::FloatRect(604, 598, 192, 224), "Level 10", "../Sprites/Level4.png", ren));
+	mScenes.back().AddButton(new Button(sf::FloatRect(804, 598, 192, 224), "Level 11", "../Sprites/Level4.png", ren));
+	mScenes.back().AddButton(new Button(sf::FloatRect(1004, 598, 192, 224), "Level 12", "../Sprites/Level4.png", ren));
 	mScenes.push_back(Scene(ren));
 	mScenes.back().SetCanFocus(false);
 
@@ -76,26 +76,26 @@ void Menu::InitHud()
 	mHudTexts.back()->setColor(sf::Color(200, 150, 64, 240));
 	mHudTexts.back()->setCharacterSize(30);
 	mScenes[2].AddText(mHudTexts.back());
-	Panel* p = new Panel(mRen, sf::IntRect(sf::Vector2i(480, 320), sf::Vector2i(240, 370)));
-	p->AddButton(new Button(sf::IntRect(10, 10, 220, 80), "Resume", mRen));
-	p->AddButton(new Button(sf::IntRect(10, 100, 220, 80), "Options", mRen));
-	p->AddButton(new Button(sf::IntRect(10, 190, 220, 80), "Start Server", mRen));
-	p->AddButton(new Button(sf::IntRect(10, 280, 220, 80), "Quit", mRen));
+	Panel* p = new Panel(mRen, sf::FloatRect(sf::Vector2f(480, 320), sf::Vector2f(240, 370)));
+	p->AddButton(new Button(sf::FloatRect(10, 10, 220, 80), "Resume", mRen));
+	p->AddButton(new Button(sf::FloatRect(10, 100, 220, 80), "Options", mRen));
+	p->AddButton(new Button(sf::FloatRect(10, 190, 220, 80), "Start Server", mRen));
+	p->AddButton(new Button(sf::FloatRect(10, 280, 220, 80), "Quit", mRen));
 	mScenes[2].AddPanel(p);
-	Panel* p2 = new Panel(mRen, sf::IntRect(sf::Vector2i(0, 320), sf::Vector2i(280, 370)));
-	p2->AddButton(new Button(sf::IntRect(10, 10, 260, 80), "Damage Lv. " + std::to_string(mLevel->GetPlayer()->GetDamageLevel() + 1) + "\n(" + std::to_string(mLevel->GetPlayer()->GetUpgradeCost(0)) + "C)", 20, mRen));
-	p2->AddButton(new Button(sf::IntRect(10, 100, 260, 80), "Rate Lv. " + std::to_string(mLevel->GetPlayer()->GetRateLevel() + 1) + "\n(" + std::to_string(mLevel->GetPlayer()->GetUpgradeCost(0)) + "C)", 20, mRen));
-	p2->AddButton(new Button(sf::IntRect(10, 190, 260, 80), "Accuracy Lv. " + std::to_string(mLevel->GetPlayer()->GetAccuracyLevel() + 1) + "\n(" + std::to_string(mLevel->GetPlayer()->GetUpgradeCost(0)) + "C)", 20, mRen));
-	p2->AddButton(new Button(sf::IntRect(10, 280, 260, 80), "Ammo Lv. " + std::to_string(mLevel->GetPlayer()->GetAmmoLevel() + 1) + "\n(" + std::to_string(mLevel->GetPlayer()->GetUpgradeCost(0)) + "C)", 20, mRen));
+	Panel* p2 = new Panel(mRen, sf::FloatRect(sf::Vector2f(0, 320), sf::Vector2f(280, 370)));
+	p2->AddButton(new Button(sf::FloatRect(10, 10, 260, 80), "Damage Lv. " + std::to_string(mLevel->GetPlayer()->GetDamageLevel() + 1) + "\n(" + std::to_string(mLevel->GetPlayer()->GetUpgradeCost(0)) + "C)", 20, mRen));
+	p2->AddButton(new Button(sf::FloatRect(10, 100, 260, 80), "Rate Lv. " + std::to_string(mLevel->GetPlayer()->GetRateLevel() + 1) + "\n(" + std::to_string(mLevel->GetPlayer()->GetUpgradeCost(0)) + "C)", 20, mRen));
+	p2->AddButton(new Button(sf::FloatRect(10, 190, 260, 80), "Accuracy Lv. " + std::to_string(mLevel->GetPlayer()->GetAccuracyLevel() + 1) + "\n(" + std::to_string(mLevel->GetPlayer()->GetUpgradeCost(0)) + "C)", 20, mRen));
+	p2->AddButton(new Button(sf::FloatRect(10, 280, 260, 80), "Ammo Lv. " + std::to_string(mLevel->GetPlayer()->GetAmmoLevel() + 1) + "\n(" + std::to_string(mLevel->GetPlayer()->GetUpgradeCost(0)) + "C)", 20, mRen));
 	mScenes[2].AddPanel(p2);
-	Panel* p3 = new Panel(mRen, sf::IntRect(sf::Vector2i(0, 320), sf::Vector2i(280, 280)));
-	p3->AddButton(new Button(sf::IntRect(10, 10, 260, 80), "Health Lv. " + std::to_string(mLevel->GetPlayer()->GetHealthLevel() + 1) + "\n(" + std::to_string(mLevel->GetPlayer()->GetUpgradeCost(0)) + "C)", 20, mRen));
-	p3->AddButton(new Button(sf::IntRect(10, 100, 260, 80), "Speed Lv. " + std::to_string(mLevel->GetPlayer()->GetSpeedLevel() + 1) + "\n(" + std::to_string(mLevel->GetPlayer()->GetUpgradeCost(0)) + "C)", 20, mRen));
-	p3->AddButton(new Button(sf::IntRect(10, 190, 260, 80), "Fuel Lv. " + std::to_string(mLevel->GetPlayer()->GetFuelLevel() + 1) + "\n(" + std::to_string(mLevel->GetPlayer()->GetUpgradeCost(0)) + "C)", 20, mRen));
+	Panel* p3 = new Panel(mRen, sf::FloatRect(sf::Vector2f(0, 320), sf::Vector2f(280, 280)));
+	p3->AddButton(new Button(sf::FloatRect(10, 10, 260, 80), "Health Lv. " + std::to_string(mLevel->GetPlayer()->GetHealthLevel() + 1) + "\n(" + std::to_string(mLevel->GetPlayer()->GetUpgradeCost(0)) + "C)", 20, mRen));
+	p3->AddButton(new Button(sf::FloatRect(10, 100, 260, 80), "Speed Lv. " + std::to_string(mLevel->GetPlayer()->GetSpeedLevel() + 1) + "\n(" + std::to_string(mLevel->GetPlayer()->GetUpgradeCost(0)) + "C)", 20, mRen));
+	p3->AddButton(new Button(sf::FloatRect(10, 190, 260, 80), "Fuel Lv. " + std::to_string(mLevel->GetPlayer()->GetFuelLevel() + 1) + "\n(" + std::to_string(mLevel->GetPlayer()->GetUpgradeCost(0)) + "C)", 20, mRen));
 	mScenes[2].AddPanel(p3);
-	Panel* p4 = new Panel(mRen, sf::IntRect(sf::Vector2i(0, 220), sf::Vector2i(280, 100)));
-	p4->AddButton(new Button(sf::IntRect(10, 10, 125, 80), "Weapon", 30, mRen));
-	p4->AddButton(new Button(sf::IntRect(135, 10, 125, 80), "Suit", 30, mRen));
+	Panel* p4 = new Panel(mRen, sf::FloatRect(sf::Vector2f(0, 220), sf::Vector2f(280, 100)));
+	p4->AddButton(new Button(sf::FloatRect(10, 10, 125, 80), "Weapon", 30, mRen));
+	p4->AddButton(new Button(sf::FloatRect(135, 10, 125, 80), "Suit", 30, mRen));
 	mScenes[2].AddPanel(p4);
 	Sprite* s = new Sprite("../Sprites/WaveUI.png");
 	s->setPosition(sf::Vector2f(564, 0));
@@ -130,6 +130,50 @@ void Menu::InitHud()
 	Panel* p12 = new Panel(mRen, s8);
 	mScenes[2].AddPanel(p12);
 }
+
+void Menu::UpdateTurretMenus()
+{
+	for (auto it = mTurretPanels.cbegin(); it != mTurretPanels.cend();)
+	{
+		if (std::find(mLevel->GetTurrets()->begin(), mLevel->GetTurrets()->end(), it->second) == mLevel->GetTurrets()->end())
+		{
+			auto i = std::find(mScenes[2].Panels()->begin(), mScenes[2].Panels()->end(), it->first);
+			if (i != mScenes[2].Panels()->end())
+			{
+				mScenes[2].Panels()->erase(i);
+				delete(it->first);
+			}
+			mTurretPanels.erase(it++);
+		}
+		else
+			++it;
+	}
+	for each (Turret* t in *mLevel->GetTurrets())
+	{
+		Panel* p = 0;
+		for each (std::pair<Panel*, Turret*> tp in mTurretPanels)
+		{
+			if (t == tp.second)
+			{
+				p = tp.first;
+				break;
+			}
+		}
+
+		if (p == 0)
+		{
+			p = new Panel(mRen, sf::FloatRect(sf::Vector2f(0, 0), sf::Vector2f(70, 40)));
+			mTurretPanels[p] = t;
+			p->AddButton(new Button(sf::FloatRect(5, 5, 60, 30), "Lv. " + std::to_string(t->GetLevel() + 1) + " (" + std::to_string(t->GetUpgradeCost(t->GetLevel())) + "C)", mRen));
+			p->SetVisible(mTurretPanelsVis);
+			p->SetCanFocus(true);
+			p->Buttons().back()->SetFontSize(12);
+			mScenes[2].AddPanel(p);
+		}
+		p->SetPosition(sf::Vector2f((t->Location() - sf::Vector2f(18, 0) - mCam->Offset())*mCam->Scale()));
+	}
+}
+
 
 bool Menu::ProcessInput(sf::Event e)
 {
@@ -196,6 +240,13 @@ bool Menu::ProcessInput(sf::Event e)
 					(*mScenes[mScene].Panels())[1]->SetVisible(false);
 					(*mScenes[mScene].Panels())[2]->SetVisible(false);
 				}
+			}
+			else if (e.key.code == sf::Keyboard::Q)
+			{
+				//toggles Turret Upgrade Panels
+				mTurretPanelsVis = !mTurretPanelsVis;
+				for (auto it = mTurretPanels.cbegin(); it != mTurretPanels.cend(); it++)
+					it->first->SetVisible(mTurretPanelsVis);
 			}
 		}
 	}
@@ -281,7 +332,7 @@ void Menu::Update()
 						mLevel->GetPlayer()->AddCredits(-upgradeCost);
 						mLevel->GetPlayer()->SetDamageLevel(level + 1);
 						upgradeCost = mLevel->GetPlayer()->GetUpgradeCost(level + 1);
-						(*mScenes[2].Panels())[1]->Buttons()[0]->SetText("Damage Lv. " + std::to_string(level + 2) + (level + 1 < 4 ? "\n(" + std::to_string(upgradeCost) + "C)" : "\nMAX"));
+						b->SetText("Damage Lv. " + std::to_string(level + 2) + (level + 1 < 4 ? "\n(" + std::to_string(upgradeCost) + "C)" : "\nMAX"));
 					}
 				}
 			}
@@ -294,7 +345,7 @@ void Menu::Update()
 						mLevel->GetPlayer()->AddCredits(-upgradeCost);
 						mLevel->GetPlayer()->SetRateLevel(level + 1);
 						upgradeCost = mLevel->GetPlayer()->GetUpgradeCost(level + 1);
-						(*mScenes[2].Panels())[1]->Buttons()[1]->SetText("Rate Lv. " + std::to_string(level + 2) + (level + 1 < 4 ? "\n(" + std::to_string(upgradeCost) + "C)" : "\nMAX"));
+						b->SetText("Rate Lv. " + std::to_string(level + 2) + (level + 1 < 4 ? "\n(" + std::to_string(upgradeCost) + "C)" : "\nMAX"));
 					}
 				}
 			}
@@ -307,7 +358,7 @@ void Menu::Update()
 						mLevel->GetPlayer()->AddCredits(-upgradeCost);
 						mLevel->GetPlayer()->SetAccuracyLevel(level + 1);
 						upgradeCost = mLevel->GetPlayer()->GetUpgradeCost(level + 1);
-						(*mScenes[2].Panels())[1]->Buttons()[2]->SetText("Accuracy Lv. " + std::to_string(level + 2) + (level + 1 < 4 ? "\n(" + std::to_string(upgradeCost) + "C)" : "\nMAX"));
+						b->SetText("Accuracy Lv. " + std::to_string(level + 2) + (level + 1 < 4 ? "\n(" + std::to_string(upgradeCost) + "C)" : "\nMAX"));
 					}
 				}
 			}
@@ -320,7 +371,7 @@ void Menu::Update()
 						mLevel->GetPlayer()->AddCredits(-upgradeCost);
 						mLevel->GetPlayer()->SetAmmoLevel(level + 1);
 						upgradeCost = mLevel->GetPlayer()->GetUpgradeCost(level + 1);
-						(*mScenes[2].Panels())[1]->Buttons()[3]->SetText("Ammo Lv. " + std::to_string(level + 2) + (level + 1 < 4 ? "\n(" + std::to_string(upgradeCost) + "C)" : "\nMAX"));
+						b->SetText("Ammo Lv. " + std::to_string(level + 2) + (level + 1 < 4 ? "\n(" + std::to_string(upgradeCost) + "C)" : "\nMAX"));
 					}
 				}
 			}
@@ -333,7 +384,7 @@ void Menu::Update()
 						mLevel->GetPlayer()->AddCredits(-upgradeCost);
 						mLevel->GetPlayer()->SetHealthLevel(level + 1);
 						upgradeCost = mLevel->GetPlayer()->GetUpgradeCost(level + 1);
-						(*mScenes[2].Panels())[2]->Buttons()[0]->SetText("Health Lv. " + std::to_string(level + 2) + (level + 1 < 4 ? "\n(" + std::to_string(upgradeCost) + "C)" : "\nMAX"));
+						b->SetText("Health Lv. " + std::to_string(level + 2) + (level + 1 < 4 ? "\n(" + std::to_string(upgradeCost) + "C)" : "\nMAX"));
 					}
 				}
 			}
@@ -346,7 +397,7 @@ void Menu::Update()
 						mLevel->GetPlayer()->AddCredits(-upgradeCost);
 						mLevel->GetPlayer()->SetSpeedLevel(level + 1);
 						upgradeCost = mLevel->GetPlayer()->GetUpgradeCost(level + 1);
-						(*mScenes[2].Panels())[2]->Buttons()[1]->SetText("Speed Lv. " + std::to_string(level + 2) + (level + 1 < 4 ? "\n(" + std::to_string(upgradeCost) + "C)" : "\nMAX"));
+						b->SetText("Speed Lv. " + std::to_string(level + 2) + (level + 1 < 4 ? "\n(" + std::to_string(upgradeCost) + "C)" : "\nMAX"));
 					}
 				}
 			}
@@ -359,7 +410,21 @@ void Menu::Update()
 						mLevel->GetPlayer()->AddCredits(-upgradeCost);
 						mLevel->GetPlayer()->SetFuelLevel(level + 1);
 						upgradeCost = mLevel->GetPlayer()->GetUpgradeCost(level + 1);
-						(*mScenes[2].Panels())[2]->Buttons()[2]->SetText("Fuel Lv. " + std::to_string(level + 2) + (level + 1 < 4 ? "\n(" + std::to_string(upgradeCost) + "C)" : "\nMAX"));
+						b->SetText("Fuel Lv. " + std::to_string(level + 2) + (level + 1 < 4 ? "\n(" + std::to_string(upgradeCost) + "C)" : "\nMAX"));
+					}
+				}
+			}
+			else if (text.substr(0, 3) == "Lv.")
+			{
+				Turret* t = mTurretPanels[b->GetPanel()];
+				int level = t->GetLevel();
+				if (level < 4){
+					int upgradeCost = t->GetUpgradeCost(level);
+					if (mLevel->GetPlayer()->GetCredits() >= upgradeCost){
+						mLevel->GetPlayer()->AddCredits(-upgradeCost);
+						t->SetLevel(level + 1);
+						upgradeCost = t->GetUpgradeCost(level + 1);
+						b->SetText("Lv. " + std::to_string(level + 2) + (level + 1 < 4 ? " (" + std::to_string(upgradeCost) + "C)" : " MAX"));
 					}
 				}
 			}
@@ -374,6 +439,7 @@ void Menu::Update()
 		mHudTexts[1]->setString("Credits: " + std::to_string(mLevel->GetPlayer()->GetCredits()));
 		mHudRects[0]->first.setScale(mLevel->GetPlayer()->Health() / mLevel->GetPlayer()->GetMaxHealth(), 1);
 		mHudRects[1]->first.setScale(mLevel->GetPlayer()->JetFuel() / mLevel->GetPlayer()->GetMaxFuel(), 1);
+		UpdateTurretMenus();
 	}
 
 }
@@ -393,6 +459,7 @@ void Menu::SetScene(int i)
 		{
 			(*mScenes[mScene].Panels())[i]->SetVisible(true);
 		}
+		mTurretPanelsVis = false;
 	}
 	mScenes[mScene].SetVisible(true);
 	SetPaused(i != 2);

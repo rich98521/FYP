@@ -2,7 +2,7 @@
 #include "Button.h"
 
 //button just containing text
-Button::Button(sf::IntRect r, string text, Renderer* ren) : mRect(r), mText(text, "detente.ttf"), mRen(ren)
+Button::Button(sf::FloatRect r, string text, Renderer* ren) : mRect(r), mText(text, "detente.ttf"), mRen(ren)
 {
 	mString = text;
 	mText.setColor(sf::Color(255, 255, 255, 255));
@@ -19,9 +19,27 @@ Button::Button(sf::IntRect r, string text, Renderer* ren) : mRect(r), mText(text
 	ren->Add(&mText);
 	InitBoundary(ren);
 	SetVisible(false);
+	mType = 0;
 }
 
-Button::Button(sf::IntRect r, string text, float fontSize, Renderer* ren) : mRect(r), mText(text, "detente.ttf"), mRen(ren)
+void Button::Offset(float x, float y)
+{
+	mRect.left += x;
+	mRect.top += y;
+	mText.setPosition(mText.getPosition() + sf::Vector2f(x, y));
+	mOverlay.first.setPosition(mOverlay.first.getPosition() + sf::Vector2f(x, y));
+	mBackground.first.setPosition(mBackground.first.getPosition() + sf::Vector2f(x, y));
+	for (int i = 0; i < 4; i++)
+	{
+		(*mBoundary[i]).first.setPosition((*mBoundary[i]).first.getPosition() + sf::Vector2f(x, y));
+	}
+	if (mType == 2)
+	{
+		mPicture.first.setPosition(mPicture.first.getPosition() + sf::Vector2f(x, y));
+	}
+}
+
+Button::Button(sf::FloatRect r, string text, float fontSize, Renderer* ren) : mRect(r), mText(text, "detente.ttf"), mRen(ren)
 {
 	mString = text;
 	mText.setColor(sf::Color(255, 255, 255, 255));
@@ -38,10 +56,11 @@ Button::Button(sf::IntRect r, string text, float fontSize, Renderer* ren) : mRec
 	ren->Add(&mText);
 	InitBoundary(ren);
 	SetVisible(false);
+	mType = 1;
 }
 
 //button with an image
-Button::Button(sf::IntRect r, string text, string imPath, Renderer* ren) : mRect(r), mText(text, "detente.ttf"), mRen(ren)
+Button::Button(sf::FloatRect r, string text, string imPath, Renderer* ren) : mRect(r), mText(text, "detente.ttf"), mRen(ren)
 {
 	mString = text;
 	mPictureText.loadFromFile(imPath);
@@ -63,6 +82,7 @@ Button::Button(sf::IntRect r, string text, string imPath, Renderer* ren) : mRect
 	ren->Add(&mText);
 	InitBoundary(ren);
 	SetVisible(false);
+	mType = 2;
 }
 
 string Button::GetText()
@@ -74,9 +94,16 @@ void Button::SetText(string s)
 {
 	mString = s;
 	mText.setString(s);
+	mText.setPosition(mRect.left + (mRect.width - mText.getLocalBounds().width) / 2.f, mRect.top + (mRect.height - mText.getLocalBounds().height) / 2.f);
 }
 
-sf::IntRect Button::Rect()
+void Button::SetFontSize(float s)
+{
+	mText.setCharacterSize(s);
+	mText.setPosition(mRect.left + (mRect.width - mText.getLocalBounds().width) / 2.f, mRect.top + (mRect.height - mText.getLocalBounds().height) / 2.f);
+}
+
+sf::FloatRect Button::Rect()
 {
 	return mRect;
 }
@@ -124,7 +151,7 @@ void Button::Update(sf::Vector2i m, bool down)
 {
 	if (mVisible)
 	{
-		bool contained = mRect.contains(m);
+		bool contained = mRect.contains(sf::Vector2f(m));
 		if (!down)
 			mOut = false;
 		if (down && !contained)

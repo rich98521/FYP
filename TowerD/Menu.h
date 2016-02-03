@@ -21,12 +21,14 @@ private:
 	sf::Vector2i mPos;
 	bool mDown = false, mVisible = false, mFocus = false, mCanFocus = true, mEnabled = true;
 	Renderer* mRen;
-	sf::IntRect mRect;
+	sf::FloatRect mRect;
+	int mType = 0;
 public:
 	Panel() { }
-	Panel(Renderer* ren, sf::IntRect r)
+	Panel(Renderer* ren, sf::FloatRect r)
 		:mRen(ren), mRect(r)
 	{
+		mType = 0;
 		mBackground.first.setPosition(r.left, r.top);
 		mBackground.first.setSize(sf::Vector2f(r.width, r.height));
 		mBackground.first.setFillColor(sf::Color(50, 50, 50, 255));
@@ -40,13 +42,39 @@ public:
 	Panel(Renderer* ren, Sprite* b)
 		:mRen(ren), mBackgroundImage(b)
 	{
-		mRect = (sf::IntRect)mBackgroundImage->getGlobalBounds();
+		mType = 1;
+		mRect = mBackgroundImage->getGlobalBounds();
 		mRen->Add(mBackgroundImage, UI);
 		mRects.push_back(new std::pair<sf::RectangleShape, bool>(sf::RectangleShape(sf::Vector2f(mRect.width, mRect.height)), false));
 		mRects[0]->first.setPosition(mRect.left, mRect.top);
 		mRects[0]->first.setFillColor(sf::Color(160, 160, 160, 128));
 		mRen->Add(mRects[0]);
 	}
+
+	void SetPosition(sf::Vector2f p)
+	{
+		float xChange = p.x - mRect.left;
+		float yChange = p.y - mRect.top;
+		mRect.left = p.x;
+		mRect.top = p.y;
+		if (mType == 0)
+		{
+			mBackground.first.setPosition(mRect.left, mRect.top);
+		}
+		for each (std::pair<sf::RectangleShape, bool>* r in mRects)
+		{
+			r->first.setPosition(r->first.getPosition() + sf::Vector2f(xChange, yChange));
+		}
+		for each (Button* b in mButtons)
+		{
+			b->Offset(xChange, yChange);
+		}
+		for each (Text* t in mTexts)
+		{
+			t->setPosition(t->getPosition() + sf::Vector2f(xChange, yChange));
+		}
+	}
+
 	~Panel()
 	{
 		for each(Button* b in mButtons)
@@ -80,6 +108,7 @@ public:
 	void AddButton(Button* b)
 	{
 		b->Offset(sf::Vector2f(mRect.left, mRect.top));
+		b->SetPanel(this);
 		mButtons.push_back(b);
 	}
 	void AddText(Text* t)
@@ -115,7 +144,7 @@ public:
 		for each (Button* b in mButtons)
 			b->Update(m, mDown);
 		mFocus = false;
-		if (mRect.contains(mPos) && mVisible)
+		if (mRect.contains(sf::Vector2f(mPos)) && mVisible)
 			mFocus = true;
 	}
 	//checks if a button has been pressed and returns pressed button pointer else null
@@ -311,6 +340,7 @@ private:
 	Level* mLevel;
 	sf::Window* mWin;
 	std::vector<Text*> mHudTexts;
+	std::map<Panel*, Turret*> mTurretPanels;
 	std::vector<std::pair<sf::RectangleShape, bool>*> mHudRects;
 	sf::Vector2i mPos;
 	std::vector<Scene> mScenes;
@@ -320,9 +350,12 @@ private:
 	bool mFocus = false;
 	void InitHud();
 	Renderer* mRen;
+	void UpdateTurretMenus();
+	Camera* mCam;
+	bool mTurretPanelsVis;
 
 public:
-	Menu(Renderer*, sf::Window*, Level*);
+	Menu(Renderer*, sf::Window*, Level*, Camera*);
 	void Update();
 	bool ProcessInput(sf::Event);
 	void SetScene(int);

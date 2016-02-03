@@ -204,7 +204,7 @@ void Level::Update(float t)
 						if (mWaves[mWave][i][i2].second.first > 0)
 						{
 							AddEntity(new Enemy(sf::Vector2f(mEnemySpawns[i]) + sf::Vector2f(8 - rand() % 16, 8 - rand() % 16), mTileSize, mWaves[mWave][i][i2].second.second, mRen, mPlayerLocs, i));
-							if (mWaves[mWave][i][i2].second.second == 2)
+							if (mWaves[mWave][i][i2].second.second == 2 && mWeakPath[0].size() > 0)
 								mEnemies.back()->SetPath(mWeakPath[0]);
 							else
 								mEnemies.back()->SetPath(mArrowPaths[i]);
@@ -756,6 +756,7 @@ void Level::CheckCollision()
 					{
 						AddEntity(new Explosion(mEnemies[i]->Location(), mTileSize, mRen, 1.f));
 						SetTile(new Tile(mEnemies[i]->GetGoal() * mTileSize, mTileSize, 0, mRen), mEnemies[i]->GetGoal().x, mEnemies[i]->GetGoal().y);
+						CalcArrowPath(sf::Vector2i());
 					}
 					else
 						AddEntity(new Explosion(mEnemies[i]->Location(), mTileSize, mRen, 0.4f));
