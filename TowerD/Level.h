@@ -75,6 +75,8 @@ private:
 	std::vector<std::pair<sf::Vector2i, float>> CalcPath(sf::Vector2i, sf::Vector2i, std::vector<std::vector<Tile*>>*);
 	void SetTile(Tile*, int, int);
 	std::vector<std::pair<sf::Vector2i, float>> CalcWeakPoint(int);
+	bool mGameOver;
+	int mCurrentLevel;
 
 public:
 	Level(int, sf::Vector2i, Renderer*);
@@ -86,6 +88,10 @@ public:
 	Player* GetPlayer();
 	std::vector<Turret*>* GetTurrets() { return &mTurrets; };
 	Camera* GetCam(){ return &mCam; };
+	void RestartCurrentWave();
+	bool GameOver(){ return mGameOver; };
+	bool Won(){ return mWin; };
+	void LoadNextLevel(){ LoadLevel(mCurrentLevel + 1); };
 
 };
 

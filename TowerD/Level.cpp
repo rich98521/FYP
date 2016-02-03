@@ -31,6 +31,7 @@ void Level::LoadLevel(int level)
 	ClearVector(&mPlayers);
 	ClearVector(&mCores);
 	ClearVector(&mEnemies);
+	ClearVector(&mExplosions);
 	mEntities.clear();
 	mWaves.clear();
 	mPlayerLocs.clear();
@@ -38,6 +39,7 @@ void Level::LoadLevel(int level)
 	mTiles.clear();
 	mWalls.clear();
 	mWave = 0;
+	mCurrentLevel = level;
 
 	ifstream myReadFile;
 	string line;
@@ -110,6 +112,8 @@ void Level::LoadLevel(int level)
 	CalcArrowPath(sf::Vector2i());
 	mCam = Camera(mPlayers[0]->AimPos(), mPlayers[0]->Pos(), sf::Vector2f(mScreenSize));
 	SoundManager::PlayMusic("Building");
+	mGameOver = false;
+	mWin = false;
 }
 
 //makes sure new entities are stored in both the entity vector as well as their own
@@ -748,8 +752,10 @@ void Level::CheckCollision()
 			if (mCores.size() > 0)
 			{
 				//damages core and kills enemy
-				if (!mCores[mEnemies[i]->GetCore()]->Hit(2))
-					RemoveEntity(mCores[mEnemies[i]->GetCore()]);
+				if (!mCores[mEnemies[i]->GetCore()]->Hit(2)){
+					//RemoveEntity(mCores[mEnemies[i]->GetCore()]); 
+					mGameOver = true;
+				}
 				if (!mEnemies[i]->Hit(10))
 				{
 					if (mEnemies[i]->Type() == 2)
@@ -774,6 +780,25 @@ void Level::CheckCollision()
 			i--;
 		}
 	}
+}
+
+void Level::RestartCurrentWave()
+{
+	mPlayers[0]->Respawn();
+	mDefensePhase = true;
+	CalcArrowPath(sf::Vector2i());
+	SoundManager::PlayMusic("Building");
+	int c = mEnemies.size();
+	for (int i = 0; i < c; i++)
+	{
+		RemoveEntity(mEnemies[0]);
+	}
+	for each (Core* c in mCores)
+	{
+		c->ResetHealth();
+	}
+	mEnemiesLeft = 0;
+	mGameOver = false;
 }
 
 void Level::ProcessInput(sf::Event e)

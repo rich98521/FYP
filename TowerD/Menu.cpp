@@ -129,6 +129,25 @@ void Menu::InitHud()
 	s8->setPosition(sf::Vector2f(676, 851));
 	Panel* p12 = new Panel(mRen, s8);
 	mScenes[2].AddPanel(p12);
+	Panel* p13 = new Panel(mRen, sf::FloatRect(sf::Vector2f(480, 320), sf::Vector2f(240, 190)));
+	p13->SetCanFocus(true);
+	Text* t = new Text("Core Destroyed", "");
+	t->setPosition(sf::Vector2f(10, 10));
+	t->setCharacterSize(20);
+	p13->AddText(t);
+	p13->AddButton(new Button(sf::FloatRect(10, 10, 220, 80), "Retry", mRen));
+	p13->AddButton(new Button(sf::FloatRect(10, 100, 220, 80), "Quit", mRen));
+	mScenes[2].AddPanel(p13);
+	Panel* p14 = new Panel(mRen, sf::FloatRect(sf::Vector2f(480, 320), sf::Vector2f(240, 190)));
+	p14->SetCanFocus(true);
+	Text* t2 = new Text("You Win", "");
+	t2->setPosition(sf::Vector2f(10, 10));
+	t2->setCharacterSize(20);
+	p14->AddText(t2);
+	p14->AddButton(new Button(sf::FloatRect(10, 10, 220, 80), "Next Level", mRen));
+	p14->AddButton(new Button(sf::FloatRect(10, 100, 220, 80), "Quit", mRen));
+	mScenes[2].AddPanel(p14);
+
 }
 
 void Menu::UpdateTurretMenus()
@@ -307,11 +326,19 @@ void Menu::Update()
 			else if (text == "Start Server")
 			{
 			}
+			else if (text == "Retry")
+			{
+				mLevel->RestartCurrentWave();
+			}
 			else if (text == "Quit")
 			{
 				//mWin->close();
 				mScenes[mScene].SetCanFocus(false);
 				SetScene(0);
+			}
+			else if (text == "Next Level")
+			{
+				mLevel->LoadNextLevel();
 			}
 			else if (text == "Weapon")
 			{
@@ -440,6 +467,9 @@ void Menu::Update()
 		mHudRects[0]->first.setScale(mLevel->GetPlayer()->Health() / mLevel->GetPlayer()->GetMaxHealth(), 1);
 		mHudRects[1]->first.setScale(mLevel->GetPlayer()->JetFuel() / mLevel->GetPlayer()->GetMaxFuel(), 1);
 		UpdateTurretMenus();
+		(*mScenes[2].Panels())[12]->SetVisible(mLevel->GameOver());
+		(*mScenes[2].Panels())[13]->SetVisible(mLevel->Won());
+		SetPaused(mLevel->GameOver() || mLevel->Won());
 	}
 
 }
