@@ -1,6 +1,7 @@
 #ifndef EXPLOSION_H
 #define EXPLOSION_H
 #include "Entity.h"	
+#include "SoundManager.h"
 
 class Explosion : public Entity
 {

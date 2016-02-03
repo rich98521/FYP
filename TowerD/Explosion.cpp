@@ -15,6 +15,7 @@ void Explosion::LoadAssets()
 	mSpriteSize = sf::Vector2f(56, mSprite->getTextureRect().height);
 	mSprite->setOrigin(mSize.x / 2, mSize.y / 2 + 25);
 	ren->Add(mSprite, mSpriteLayer);
+	SoundManager::PlaySoundEffect("Explosion");
 }
 
 //animates the core

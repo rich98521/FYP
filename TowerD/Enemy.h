@@ -12,7 +12,7 @@ private:
 	std::vector<sf::Vector2f*> mPlayers;
 	int currentNode;
 	bool mGoalReached = false;
-	int mType = 0, mCore;
+	int mType = 0, mCore = 0;
 	int mGoalDist;
 
 public:
@@ -25,7 +25,10 @@ public:
 	Gun* GetGun();
 	bool GoalReached();
 	sf::Vector2i GetGoal(){ return mPath.back().first; }
-	int GetCore(){ return mCore; };
+	int GetCore()
+	{ 
+		return mCore; 
+	};
 	int Type(){ return mType; }
 	~Enemy();
 };

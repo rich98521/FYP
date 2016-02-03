@@ -207,7 +207,7 @@ void Level::Update(float t)
 					{
 						if (mWaves[mWave][i][i2].second.first > 0)
 						{
-							AddEntity(new Enemy(sf::Vector2f(mEnemySpawns[i]) + sf::Vector2f(8 - rand() % 16, 8 - rand() % 16), mTileSize, mWaves[mWave][i][i2].second.second, mRen, mPlayerLocs, i));
+							AddEntity(new Enemy(sf::Vector2f(mEnemySpawns[i]) + sf::Vector2f(8 - rand() % 16, 8 - rand() % 16), mTileSize, mWaves[mWave][i][i2].second.second, mRen, mPlayerLocs, min(i, (int)mCores.size()-1)));
 							if (mWaves[mWave][i][i2].second.second == 2 && mWeakPath[0].size() > 0)
 								mEnemies.back()->SetPath(mWeakPath[0]);
 							else
