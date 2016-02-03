@@ -13,6 +13,7 @@ using namespace std;
 #include <queue>
 #include <list>
 #include "SoundManager.h"
+#include "Explosion.h"
 
 struct Node
 {
@@ -50,9 +51,12 @@ private:
 	std::vector<std::vector<Tile*>> mTiles;
 	std::vector<std::vector<std::vector<std::pair<int, std::pair<int, int>>>>> mWaves;
 	std::vector<std::vector<std::pair<sf::Vector2i, float>>> mArrowPaths;
+	std::vector<std::vector<std::pair<sf::Vector2i, float>>> mWeakPath;
 	std::vector<std::vector<Sprite*>> mArrows;
 	std::vector<sf::Vector2f*> mPlayerLocs;
 	std::vector<Turret*> mTurrets;
+	std::vector<Explosion*> mExplosions;
+	std::vector<Tile*> mWalls;
 	sf::Vector2i mMapSize;
 	Node** mNodes;
 	bool CalcArrowPath(sf::Vector2i);
@@ -68,6 +72,9 @@ private:
 	int mWave = 0;
 	int mEnemiesLeft = 0;
 	int mNextSpawnTime = 0;
+	std::vector<std::pair<sf::Vector2i, float>> CalcPath(sf::Vector2i, sf::Vector2i, std::vector<std::vector<Tile*>>*);
+	void SetTile(Tile*, int, int);
+	std::vector<std::pair<sf::Vector2i, float>> CalcWeakPoint(int);
 
 public:
 	Level(int, sf::Vector2i, Renderer*);

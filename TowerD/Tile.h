@@ -11,6 +11,10 @@ protected:
 	Renderer* ren;
 	int mType, mSize, mLayer;
 	bool mOccupied = false;
+	bool mEdges[4];
+	Sprite mCornerSprites[4];
+	void UpdateCorners();
+
 public:
 	Tile(sf::Vector2i, int, int, Renderer* r);
 	Tile(){};
@@ -21,6 +25,7 @@ public:
 	virtual void Draw(sf::Vector2f, float);
 	void SetOccupied(bool);
 	bool Occupied();
+	void SetEdge(int, bool);
 	~Tile();
 };
 

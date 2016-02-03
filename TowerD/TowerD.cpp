@@ -35,6 +35,8 @@ int main()
 	Level level(tileSize, sf::Vector2i(Config::ScreenWidth(), Config::ScreenHeight()), &r);
 	Menu menu(&r, &window, &level);
 	sf::Clock clock;
+	float drawInterval = 0.0166f, updateInterval = 0.0033f;
+	float drawTime = 0, updateTime = 0;
 	
 	while (window.isOpen())
 	{
@@ -62,18 +64,30 @@ int main()
 		}
 		float time = clock.getElapsedTime().asSeconds();
 		clock.restart();
+		drawTime += time;
+		updateTime += time;
+
 		menu.Update();
 		if (!menu.GamePaused())
 		{
-			level.Update(time);
-			level.CheckCollision();
+			if (updateTime > updateInterval)
+			{
+				level.Update(time);
+				level.CheckCollision();
+				updateTime = 0;
+			}
 		}
-		window.clear();
 
-		level.Draw(&window);
-		r.Draw(&window);
+		if (drawTime > drawInterval)
+		{
+			window.clear();
 
-		window.display();
+			level.Draw(&window);
+			r.Draw(&window);
+
+			window.display();
+			drawTime -= drawInterval;
+		}
 	}
 
 	return EXIT_SUCCESS;

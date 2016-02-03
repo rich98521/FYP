@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "Enemy.h"
 
-Enemy::Enemy(sf::Vector2f loc, int tSize, int t, Renderer* r, std::vector<sf::Vector2f*> players)
-	: Entity(loc, tSize, r), mType(t), mGun(r, -1, 0)
+Enemy::Enemy(sf::Vector2f loc, int tSize, int t, Renderer* r, std::vector<sf::Vector2f*> players, int c)
+	: Entity(loc, tSize, r), mType(t), mGun(r, -1, 0), mCore(c)
 {
 	mBaseSpriteLayer = CHARACTERBASE;
 	mSpriteLayer = CHARACTERTOP;
@@ -19,6 +19,7 @@ Enemy::Enemy(sf::Vector2f loc, int tSize, int t, Renderer* r, std::vector<sf::Ve
 		mHealth = mMaxHealth;
 		mGun.SetRate(1);
 		mGun.SetColor(sf::Color(200, 0, 0, 200));
+		mGoalDist = 90;
 	}
 	else if (mType == 1)
 	{
@@ -29,9 +30,11 @@ Enemy::Enemy(sf::Vector2f loc, int tSize, int t, Renderer* r, std::vector<sf::Ve
 		mHealth = mMaxHealth;
 		mGun.SetRate(1.5);
 		mGun.SetColor(sf::Color(200, 200, 0, 200));
+		mGoalDist = 80;
 	}
 	else if (mType == 2)
 	{
+		mGoalDist = 600;
 	}
 }
 
@@ -58,7 +61,8 @@ void Enemy::Update(float t, sf::Vector2f offset, float scale)
 	if (!mGoalReached)
 	{
 		sf::Vector2f target(mPath[currentNode].first.x * mTileSize, mPath[currentNode].first.y * mTileSize);
-		if (ManhDist(mLocation.x, mLocation.y, target.x, target.y) < 80)
+		float d = ManhDist(mLocation.x, mLocation.y, target.x, target.y);
+		if (d < mGoalDist)
 		{
 			currentNode++;
 			if (currentNode < mPath.size())

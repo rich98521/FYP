@@ -12,10 +12,11 @@ private:
 	std::vector<sf::Vector2f*> mPlayers;
 	int currentNode;
 	bool mGoalReached = false;
-	int mType = 0;
+	int mType = 0, mCore;
+	int mGoalDist;
 
 public:
-	Enemy(sf::Vector2f, int, int, Renderer*, std::vector<sf::Vector2f*>);
+	Enemy(sf::Vector2f, int, int, Renderer*, std::vector<sf::Vector2f*>, int);
 	void Update(float, sf::Vector2f, float);
 	void Draw(sf::Vector2f, float);
 	void LoadAssets();
@@ -23,6 +24,9 @@ public:
 	void Shoot(sf::Vector2f, float);
 	Gun* GetGun();
 	bool GoalReached();
+	sf::Vector2i GetGoal(){ return mPath.back().first; }
+	int GetCore(){ return mCore; };
+	int Type(){ return mType; }
 	~Enemy();
 };
 

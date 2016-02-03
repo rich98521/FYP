@@ -53,6 +53,7 @@ public:
 	float Height();
 	void SetOnWall(bool);
 	bool CanCollide(){ return mCollision; }
+	bool Alive(){ return mAlive; };
 	~Entity();
 };
 

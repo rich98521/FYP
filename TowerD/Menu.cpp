@@ -375,6 +375,7 @@ void Menu::Update()
 		mHudRects[0]->first.setScale(mLevel->GetPlayer()->Health() / mLevel->GetPlayer()->GetMaxHealth(), 1);
 		mHudRects[1]->first.setScale(mLevel->GetPlayer()->JetFuel() / mLevel->GetPlayer()->GetMaxFuel(), 1);
 	}
+
 }
 
 void Menu::SetScene(int i)

@@ -73,7 +73,16 @@ void Sprite::SetKeep(std::string filepath, bool k)
 	}
 	else
 		if (k)
-			mKeep.push_back(filepath);
+		{
+			mKeep.push_back(filepath); 
+			if (!mTextures.count(filepath))
+			{
+				sf::Texture t;
+				t.loadFromFile(filepath);
+				mTextures.insert(std::pair<std::string, std::pair<sf::Texture, int>>(filepath, std::pair<sf::Texture, int>(t, 0)));
+			}
+			mTextures[filepath].second++;
+		}
 }
 
 Sprite::~Sprite()
