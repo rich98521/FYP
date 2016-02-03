@@ -352,7 +352,7 @@ private:
 	Renderer* mRen;
 	void UpdateTurretMenus();
 	Camera* mCam;
-	bool mTurretPanelsVis;
+	bool mTurretPanelsVis, mPauseMenu;
 
 public:
 	Menu(Renderer*, sf::Window*, Level*, Camera*);

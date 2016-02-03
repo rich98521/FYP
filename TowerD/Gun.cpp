@@ -37,7 +37,7 @@ std::vector<sf::Vector2f*> Gun::Shoot(sf::Vector2f pos, float ang)
 		mShot = true;
 		for (int i = 0; i < mBulletCount; i++)
 		{
-			float newAng = 0;
+			float newAng = ang;
 			if (mType == 0)
 				newAng = ang + (((rand() % 200) - 100) / (100.f)) * (3.14159f  * (1 - mAccuracy));
 			mBulletHitPos.push_back(new sf::Vector2f(pos + sf::Vector2f(cos(newAng), sin(newAng)) * mRange));

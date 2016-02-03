@@ -24,7 +24,7 @@ public:
 	void Draw(sf::Vector2f, float);
 	void Update(float, sf::Vector2f, float);
 	void LoadAssets();
-	void Shoot();
+	sf::Vector2f Shoot();
 	int GetCost(){ return mCost; }
 	int GetType(){ return mType; }
 	Gun* GetGun();

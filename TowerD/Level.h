@@ -14,6 +14,7 @@ using namespace std;
 #include <list>
 #include "SoundManager.h"
 #include "Explosion.h"
+#include "Missile.h"
 
 struct Node
 {
@@ -56,6 +57,7 @@ private:
 	std::vector<sf::Vector2f*> mPlayerLocs;
 	std::vector<Turret*> mTurrets;
 	std::vector<Explosion*> mExplosions;
+	std::vector<Missile*> mMissiles;
 	std::vector<Tile*> mWalls;
 	sf::Vector2i mMapSize;
 	Node** mNodes;

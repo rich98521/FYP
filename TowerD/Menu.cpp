@@ -147,7 +147,6 @@ void Menu::InitHud()
 	p14->AddButton(new Button(sf::FloatRect(10, 10, 220, 80), "Next Level", mRen));
 	p14->AddButton(new Button(sf::FloatRect(10, 100, 220, 80), "Quit", mRen));
 	mScenes[2].AddPanel(p14);
-
 }
 
 void Menu::UpdateTurretMenus()
@@ -244,7 +243,7 @@ bool Menu::ProcessInput(sf::Event e)
 			{
 				//toggles pause menu panel
 				(*mScenes[mScene].Panels())[0]->SetVisible(!(*mScenes[mScene].Panels())[0]->GetVisible());
-				SetPaused((*mScenes[mScene].Panels())[0]->GetVisible());
+				mPauseMenu = (*mScenes[mScene].Panels())[0]->GetVisible();
 				mScenes[mScene].SetCanFocus((*mScenes[mScene].Panels())[0]->GetVisible());
 			}
 			else if (e.key.code == sf::Keyboard::Tab)
@@ -469,7 +468,7 @@ void Menu::Update()
 		UpdateTurretMenus();
 		(*mScenes[2].Panels())[12]->SetVisible(mLevel->GameOver());
 		(*mScenes[2].Panels())[13]->SetVisible(mLevel->Won());
-		SetPaused(mLevel->GameOver() || mLevel->Won());
+		SetPaused(mLevel->GameOver() || mLevel->Won() || mPauseMenu);
 	}
 
 }
@@ -490,6 +489,7 @@ void Menu::SetScene(int i)
 			(*mScenes[mScene].Panels())[i]->SetVisible(true);
 		}
 		mTurretPanelsVis = false;
+		mPauseMenu = false;
 	}
 	mScenes[mScene].SetVisible(true);
 	SetPaused(i != 2);
@@ -497,8 +497,10 @@ void Menu::SetScene(int i)
 
 void Menu::SetPaused(bool b)
 {
-	mPaused = b;
-	mWin->setMouseCursorVisible(mPaused);
+	if (mPaused != b){
+		mPaused = b;
+		mWin->setMouseCursorVisible(mPaused);
+	}
 }
 
 bool Menu::GamePaused()

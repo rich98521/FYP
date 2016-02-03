@@ -32,6 +32,7 @@ void Level::LoadLevel(int level)
 	ClearVector(&mCores);
 	ClearVector(&mEnemies);
 	ClearVector(&mExplosions);
+	ClearVector(&mMissiles);
 	mEntities.clear();
 	mWaves.clear();
 	mPlayerLocs.clear();
@@ -142,6 +143,10 @@ void Level::AddEntity(Entity* e)
 	{
 		mExplosions.push_back(static_cast<Explosion*>(e));
 	}
+	else if (dynamic_cast<Missile*>(e) != 0)
+	{
+		mMissiles.push_back(static_cast<Missile*>(e));
+	}
 	e->LoadAssets();
 	mEntities.push_back(e);
 }
@@ -173,6 +178,11 @@ void Level::RemoveEntity(Entity* e)
 	{
 		mExplosions.erase(std::find(mExplosions.begin(), mExplosions.end(), static_cast<Explosion*>(e)));
 		delete static_cast<Explosion*>(e);
+	}
+	else if (dynamic_cast<Missile*>(e) != 0)
+	{
+		mMissiles.erase(std::find(mMissiles.begin(), mMissiles.end(), static_cast<Missile*>(e)));
+		delete static_cast<Missile*>(e);
 	}
 	mEntities.erase(std::find(mEntities.begin(), mEntities.end(), e));
 }
@@ -311,7 +321,13 @@ void Level::Update(float t)
 
 	for each (Turret* t in mTurrets)
 	{
-		t->Shoot();
+		sf::Vector2f hit = t->Shoot();
+		if (t->GetType() == 1){
+			if (hit != sf::Vector2f())
+			{
+				AddEntity(new Missile(t->Location(), mTileSize, mRen, hit));
+			}
+		}
 	}
 
 	for each (Enemy* e in mEnemies)
@@ -625,7 +641,7 @@ void Level::CheckCollision()
 		//this part detects for entity collisions with walls
 		sf::Vector2i index = sf::Vector2i((e->Location().x + mTileSize / 2) / mTileSize, (e->Location().y + mTileSize / 2) / mTileSize);
 		sf::Rect<float> r(e->Location().x - (mTileSize + e->Size().x) / 2, e->Location().y - (mTileSize + e->Size().y) / 2, (mTileSize + e->Size().x), (mTileSize + e->Size().y));
-		if (index.x > 0 && index.y > 0 && index.x < mTiles[0].size() && index.y < mTiles.size())
+		if (index.x > 0 && index.y > 0 && index.x < mTiles[0].size() && index.y < mTiles.size() && e->CanCollide())
 		{
 			bool onWall = false;
 			//uses the same directions as pathfinding to check the 8 tiles around the entity
@@ -704,29 +720,44 @@ void Level::CheckCollision()
 			tempHit = 0;
 			//checks for turret bullets hitting enemies using the same method
 			for each (Turret* t in mTurrets){
-				for each (sf::Vector2f* h in t->GetGun()->GetBullets())
+				if (t->GetType() != 1)
 				{
-					std::pair<bool, float> bullethit = BulletHit(t->Location(), e->Rect(), *h);
-					if (bullethit.first)
+					for each (sf::Vector2f* h in t->GetGun()->GetBullets())
 					{
-						if (minDist > bullethit.second)
+						std::pair<bool, float> bullethit = BulletHit(t->Location(), e->Rect(), *h);
+						if (bullethit.first)
 						{
-							tempHit = e;
-							if (t->GetType() == 0)
+							if (minDist > bullethit.second)
 							{
-								minDist = bullethit.second;
-								t->GetGun()->SetDrawRange(bullethit.second - e->Size().x / 2);
-								*h = t->Location();
-							}
-							else if (t->GetType() == 2)
-							{
-								hit.push_back(std::pair<Entity*, float>(tempHit, t->GetGun()->GetDamage()));
+								tempHit = e;
+								if (t->GetType() == 0)
+								{
+									minDist = bullethit.second;
+									t->GetGun()->SetDrawRange(bullethit.second - e->Size().x / 2);
+									*h = t->Location();
+								}
+								else if (t->GetType() == 2)
+								{
+									hit.push_back(std::pair<Entity*, float>(tempHit, t->GetGun()->GetDamage()));
+								}
 							}
 						}
 					}
+					if (tempHit != 0)
+						hit.push_back(std::pair<Entity*, float>(tempHit, t->GetGun()->GetDamage()));
 				}
-				if (tempHit != 0)
-					hit.push_back(std::pair<Entity*, float>(tempHit, t->GetGun()->GetDamage()));
+			}
+			for (int i = 0; i < mMissiles.size();i++)
+			{
+				if (mMissiles[i]->ReachedGoal())
+				{
+					float dist = sqrt((e->Location().x - mMissiles[i]->Location().x)*(e->Location().x - mMissiles[i]->Location().x) - (e->Location().y - mMissiles[i]->Location().y)*(e->Location().y - mMissiles[i]->Location().y));
+					if (dist < 50)
+					{
+						hit.push_back(std::pair<Entity*, float>(e, 2));
+						hit.push_back(std::pair<Entity*, float>(mMissiles[i], 2));
+					}
+				}
 			}
 		}
 	}
@@ -740,7 +771,12 @@ void Level::CheckCollision()
 	}
 	for each (Entity* e in dead)
 	{
-		AddEntity(new Explosion(e->Location(), mTileSize, mRen, 0.4f));
+		if (dynamic_cast<Missile*>(e) != 0)
+		{
+			AddEntity(new Explosion(e->Location(), mTileSize, mRen, 0.8f));
+		}
+		else
+			AddEntity(new Explosion(e->Location(), mTileSize, mRen, 0.4f));
 		RemoveEntity(e);
 		mPlayers[0]->AddCredits(10);
 	}

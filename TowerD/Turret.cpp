@@ -20,6 +20,13 @@ Turret::Turret(sf::Vector2f loc, int tSize, int t, Renderer* r, std::vector<Enem
 		mGun.SetColor(sf::Color(200, 200, 0, 200));
 		mGun.SetDamage(0.3f);
 	}
+	else if (mType == 1)
+	{
+		mBaseRate = 1.f;
+		mBaseDamage = 2.f;
+		mGun.SetRate(1.f);
+		mGun.SetDamage(2.f);
+	}
 	else if (mType == 2)
 	{
 		mBaseRate = 0.06f;
@@ -65,10 +72,12 @@ void Turret::Update(float t, sf::Vector2f offset, float scale)
 }
 
 //finds the closest enemy within range and shoots
-void Turret::Shoot()
+sf::Vector2f Turret::Shoot()
 {
 	float minDist = mRange;
 	sf::Vector2f enemy;
+	std::vector<sf::Vector2f*> hitPos;
+	sf::Vector2f hit;
 	for each(Enemy* e in *mEnemies)
 	{
 		sf::Vector2f diff = e->Location() - mLocation;
@@ -83,15 +92,21 @@ void Turret::Shoot()
 	{
 		float ang = atan2(enemy.y - mLocation.y, enemy.x - mLocation.x);
 		mAngle = ang / 3.14159f * 180;
-		if(mGun.Shoot(mLocation, ang).size() > 0)
+		hitPos = mGun.Shoot(mLocation, ang);
+		if (hitPos.size() > 0)
+		{
 			SoundManager::PlaySoundEffect("TurretShoot");
+			hit = enemy;
+		}
 		mShooting = true;
 	}
+	return hit;
 }
 
 void Turret::Draw(sf::Vector2f offset, float scale)
 {
-	mGun.Draw(mLocation, offset, scale);
+	if (mType != 1)
+		mGun.Draw(mLocation, offset, scale);
 	Entity::Draw(offset, scale);
 }
 
