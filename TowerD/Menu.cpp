@@ -100,6 +100,11 @@ void Menu::InitHud()
 	Sprite* s = new Sprite("../Sprites/WaveUI.png");
 	s->setPosition(sf::Vector2f(564, 0));
 	Panel* p5 = new Panel(mRen, s);
+	mHudTexts.push_back(new Text("1", "detente.ttf"));
+	mHudTexts.back()->setPosition(sf::Vector2f(30, 5));
+	mHudTexts.back()->setCharacterSize(24);
+	mHudTexts.back()->setColor(sf::Color(200, 0, 0, 255));
+	p5->AddText(mHudTexts.back());
 	mScenes[2].AddPanel(p5);
 	Sprite* s2 = new Sprite("../Sprites/HealthFuelUI.png");
 	s2->setPosition(sf::Vector2f(1, 837));
@@ -463,6 +468,7 @@ void Menu::Update()
 		std::pair<int, int> ammo = mLevel->GetPlayer()->GetGun()->GetAmmo();
 		mHudTexts[0]->setString(std::to_string(ammo.first) + " / " + std::to_string(ammo.second));
 		mHudTexts[1]->setString("Credits: " + std::to_string(mLevel->GetPlayer()->GetCredits()));
+		mHudTexts[2]->setString(std::to_string(mLevel->GetWave()));
 		mHudRects[0]->first.setScale(mLevel->GetPlayer()->Health() / mLevel->GetPlayer()->GetMaxHealth(), 1);
 		mHudRects[1]->first.setScale(mLevel->GetPlayer()->JetFuel() / mLevel->GetPlayer()->GetMaxFuel(), 1);
 		UpdateTurretMenus();

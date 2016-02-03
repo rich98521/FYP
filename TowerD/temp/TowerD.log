@@ -1,10 +1,82 @@
-﻿Build started 03/02/2016 23:07:11.
+﻿Build started 03/02/2016 23:53:49.
      1>Project "D:\Projects\TowerD\TowerD\TowerD.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I"C:\SFML-2.1\include" /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _LIB /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"temp\TowerD.pch" /Fo"temp\\" /Fd"temp\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt Missile.cpp
-         Missile.cpp
-     1>d:\projects\towerd\towerd\missile.cpp(23): warning C4244: 'argument' : conversion from 'const int' to 'float', possible loss of data
-     1>d:\projects\towerd\towerd\missile.cpp(24): warning C4244: 'argument' : conversion from 'const int' to 'float', possible loss of data
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I"C:\SFML-2.1\include" /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _LIB /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"temp\TowerD.pch" /Fo"temp\\" /Fd"temp\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt Level.cpp
+         Level.cpp
+     1>d:\projects\towerd\towerd\player.h(60): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
+     1>d:\projects\towerd\towerd\player.h(61): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
+     1>d:\projects\towerd\towerd\player.h(62): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
+     1>d:\projects\towerd\towerd\player.h(63): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
+     1>d:\projects\towerd\towerd\player.h(64): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
+     1>d:\projects\towerd\towerd\player.h(65): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
+     1>d:\projects\towerd\towerd\player.h(66): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
+     1>d:\projects\towerd\towerd\player.h(67): warning C4244: 'return' : conversion from 'float' to 'int', possible loss of data
+     1>d:\projects\towerd\towerd\player.h(68): warning C4244: 'return' : conversion from 'float' to 'int', possible loss of data
+     1>d:\projects\towerd\towerd\player.h(69): warning C4244: 'return' : conversion from 'float' to 'int', possible loss of data
+     1>d:\projects\towerd\towerd\player.h(70): warning C4244: 'return' : conversion from 'float' to 'int', possible loss of data
+     1>d:\projects\towerd\towerd\player.h(71): warning C4244: 'return' : conversion from 'float' to 'int', possible loss of data
+     1>d:\projects\towerd\towerd\player.h(72): warning C4244: 'return' : conversion from 'float' to 'int', possible loss of data
+     1>d:\projects\towerd\towerd\player.h(73): warning C4244: 'return' : conversion from 'float' to 'int', possible loss of data
+     1>d:\projects\towerd\towerd\level.cpp(57): warning C4018: '<' : signed/unsigned mismatch
+     1>d:\projects\towerd\towerd\level.cpp(77): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>d:\projects\towerd\towerd\level.cpp(82): warning C4018: '<' : signed/unsigned mismatch
+     1>d:\projects\towerd\towerd\level.cpp(89): warning C4018: '<' : signed/unsigned mismatch
+     1>d:\projects\towerd\towerd\level.cpp(107): warning C4018: '<' : signed/unsigned mismatch
+     1>d:\projects\towerd\towerd\level.cpp(108): warning C4018: '<' : signed/unsigned mismatch
+     1>d:\projects\towerd\towerd\level.cpp(212): warning C4018: '<' : signed/unsigned mismatch
+     1>d:\projects\towerd\towerd\level.cpp(214): warning C4018: '<' : signed/unsigned mismatch
+     1>d:\projects\towerd\towerd\level.cpp(220): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>d:\projects\towerd\towerd\level.cpp(238): warning C4018: '>=' : signed/unsigned mismatch
+     1>d:\projects\towerd\towerd\level.cpp(283): warning C4018: '<' : signed/unsigned mismatch
+     1>d:\projects\towerd\towerd\level.cpp(320): warning C4244: 'argument' : conversion from 'float' to 'unsigned int', possible loss of data
+     1>d:\projects\towerd\towerd\level.cpp(342): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>d:\projects\towerd\towerd\level.cpp(343): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>d:\projects\towerd\towerd\level.cpp(421): warning C4018: '<' : signed/unsigned mismatch
+     1>d:\projects\towerd\towerd\level.cpp(492): warning C4018: '<' : signed/unsigned mismatch
+     1>d:\projects\towerd\towerd\level.cpp(495): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>d:\projects\towerd\towerd\level.cpp(496): warning C4244: 'argument' : conversion from 'double' to 'float', possible loss of data
+     1>d:\projects\towerd\towerd\level.cpp(522): warning C4018: '<' : signed/unsigned mismatch
+     1>d:\projects\towerd\towerd\level.cpp(524): warning C4018: '<' : signed/unsigned mismatch
+     1>d:\projects\towerd\towerd\level.cpp(530): warning C4018: '<' : signed/unsigned mismatch
+     1>d:\projects\towerd\towerd\level.cpp(531): warning C4018: '<' : signed/unsigned mismatch
+     1>d:\projects\towerd\towerd\level.cpp(541): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>d:\projects\towerd\towerd\level.cpp(595): warning C4244: 'argument' : conversion from 'float' to 'unsigned int', possible loss of data
+     1>d:\projects\towerd\towerd\level.cpp(607): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>d:\projects\towerd\towerd\level.cpp(618): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>d:\projects\towerd\towerd\level.cpp(644): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>d:\projects\towerd\towerd\level.cpp(646): warning C4018: '<' : signed/unsigned mismatch
+     1>d:\projects\towerd\towerd\level.cpp(656): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>d:\projects\towerd\towerd\level.cpp(752): warning C4018: '<' : signed/unsigned mismatch
+     1>d:\projects\towerd\towerd\level.cpp(786): warning C4018: '<' : signed/unsigned mismatch
+     1>d:\projects\towerd\towerd\level.cpp(815): warning C4018: '<' : signed/unsigned mismatch
+     1>d:\projects\towerd\towerd\level.cpp(851): warning C4018: '<' : signed/unsigned mismatch
+     1>d:\projects\towerd\towerd\level.cpp(854): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\program files (x86)\microsoft visual studio 12.0\vc\include\utility(144): warning C4244: 'initializing' : conversion from 'int' to 'float', possible loss of data
+                 d:\projects\towerd\towerd\level.cpp(458) : see reference to function template instantiation 'std::pair<sf::Vector2i,float>::pair<sf::Vector2i&,int,void>(_Other1,_Other2 &&)' being compiled
+                 with
+                 [
+                     _Other1=sf::Vector2i &
+         ,            _Other2=int
+                 ]
+                 d:\projects\towerd\towerd\level.cpp(458) : see reference to function template instantiation 'std::pair<sf::Vector2i,float>::pair<sf::Vector2i&,int,void>(_Other1,_Other2 &&)' being compiled
+                 with
+                 [
+                     _Other1=sf::Vector2i &
+         ,            _Other2=int
+                 ]
+     1>c:\program files (x86)\microsoft visual studio 12.0\vc\include\utility(144): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
+                 d:\projects\towerd\towerd\level.cpp(462) : see reference to function template instantiation 'std::pair<sf::Vector2i,float>::pair<sf::Vector2i&,double,void>(_Other1,_Other2 &&)' being compiled
+                 with
+                 [
+                     _Other1=sf::Vector2i &
+         ,            _Other2=double
+                 ]
+                 d:\projects\towerd\towerd\level.cpp(462) : see reference to function template instantiation 'std::pair<sf::Vector2i,float>::pair<sf::Vector2i&,double,void>(_Other1,_Other2 &&)' being compiled
+                 with
+                 [
+                     _Other1=sf::Vector2i &
+         ,            _Other2=double
+                 ]
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"D:\Projects\TowerD\temp\TowerD.exe" /INCREMENTAL /NOLOGO /LIBPATH:"C:\SFML-2.1\lib" kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"D:\Projects\TowerD\temp\TowerD.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:\Projects\TowerD\temp\TowerD.lib" /MACHINE:X86 temp\Button.obj
          temp\Camera.obj
@@ -26,10 +98,9 @@
          temp\Tile.obj
          temp\TowerD.obj
          temp\Turret.obj
-         LINK : D:\Projects\TowerD\temp\TowerD.exe not found or not built by the last incremental link; performing full link
          TowerD.vcxproj -> D:\Projects\TowerD\temp\TowerD.exe
      1>Done Building Project "D:\Projects\TowerD\TowerD\TowerD.vcxproj" (Build target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:00.76
+Time Elapsed 00:00:01.21

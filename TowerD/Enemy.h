@@ -26,8 +26,12 @@ public:
 	bool GoalReached();
 	sf::Vector2i GetGoal(){ return mPath.back().first; }
 	int GetCore()
-	{ 
-		return mCore; 
+	{
+		return mCore;
+	};
+	void SetCore(int c)
+	{
+		mCore = c;
 	};
 	int Type(){ return mType; }
 	~Enemy();

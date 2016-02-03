@@ -94,6 +94,7 @@ public:
 	bool GameOver(){ return mGameOver; };
 	bool Won(){ return mWin; };
 	void LoadNextLevel(){ LoadLevel(mCurrentLevel + 1); };
+	int GetWave(){ return mWave; }
 
 };
 

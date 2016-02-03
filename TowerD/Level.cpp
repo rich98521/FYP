@@ -208,7 +208,7 @@ void Level::Update(float t)
 		int millisecondsNow = (int)mGameClock.getElapsedTime().asMilliseconds();
 		if ((int)mGameClock.getElapsedTime().asMilliseconds() > mNextSpawnTime)
 		{
-			mNextSpawnTime = millisecondsNow + 200;
+			mNextSpawnTime = millisecondsNow + 400;
 			for (int i = 0; i < mEnemySpawns.size(); i++)
 			{
 				for (int i2 = 0; i2 < mWaves[mWave][i].size(); i2++)
@@ -218,8 +218,10 @@ void Level::Update(float t)
 						if (mWaves[mWave][i][i2].second.first > 0)
 						{
 							AddEntity(new Enemy(sf::Vector2f(mEnemySpawns[i]) + sf::Vector2f(8 - rand() % 16, 8 - rand() % 16), mTileSize, mWaves[mWave][i][i2].second.second, mRen, mPlayerLocs, min(i, (int)mCores.size()-1)));
-							if (mWaves[mWave][i][i2].second.second == 2 && mWeakPath[0].size() > 0)
+							if (mWaves[mWave][i][i2].second.second == 2 && mWeakPath[0].size() > 0){
 								mEnemies.back()->SetPath(mWeakPath[0]);
+								mEnemies.back()->SetCore(-1);
+							}
 							else
 								mEnemies.back()->SetPath(mArrowPaths[i]);
 							mWaves[mWave][i][i2].second.first--;
@@ -788,9 +790,11 @@ void Level::CheckCollision()
 			if (mCores.size() > 0)
 			{
 				//damages core and kills enemy
-				if (!mCores[mEnemies[i]->GetCore()]->Hit(2)){
-					//RemoveEntity(mCores[mEnemies[i]->GetCore()]); 
-					mGameOver = true;
+				if (mEnemies[i]->GetCore() >= 0){
+					if (!mCores[mEnemies[i]->GetCore()]->Hit(2)){
+						//RemoveEntity(mCores[mEnemies[i]->GetCore()]); 
+						mGameOver = true;
+					}
 				}
 				if (!mEnemies[i]->Hit(10))
 				{
