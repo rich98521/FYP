@@ -76,7 +76,7 @@ private:
 	sf::Clock mPauseClock;
 	sf::Clock mRespawnTimer;
 	bool mPlayerSpawning = false;
-	int mWave = 0;
+	int mWave = 0, mWaveCount = 0;
 	int mEnemiesLeft = 0;
 	int mNextSpawnTime = 0;
 	std::vector<std::pair<sf::Vector2i, float>> CalcPath(sf::Vector2i, sf::Vector2i, std::vector<std::vector<Tile*>>*);
@@ -88,6 +88,7 @@ private:
 	int mPlayerCount = 0;
 	int mLastId = 0;
 	bool mLevelUntouched = true, mStartRecieved;
+	string player2Name;
 
 public:
 	Level(int, sf::Vector2i, Renderer*);
@@ -98,6 +99,7 @@ public:
 	void CheckCollision();
 	void ProcessInput(sf::Event, int);
 	Player* GetPlayer();
+	Player* GetPlayer2(){ return mPlayers[1]; }
 	std::vector<Turret*>* GetTurrets() { return &mTurrets; };
 	Camera* GetCam(){ return &mCam; };
 	void RestartCurrentWave();
@@ -111,6 +113,8 @@ public:
 	bool LevelUntouched(){ return mLevelUntouched; }
 	int CurrentLevel(){ return mCurrentLevel; }
 	void AddPlayer2();
+	bool Defending(){ return mDefensePhase; }
+	string GetPlayer2Name(){ return player2Name; }
 
 };
 

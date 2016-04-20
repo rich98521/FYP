@@ -118,6 +118,7 @@ void Level::LoadLevel(int level)
 			}
 		}
 	}
+	mWaveCount = mWaves.size();
 	myReadFile.close();
 	//nodes used in pathfinding
 	mNodes = new Node *[mMapSize.x * mMapSize.y];
@@ -186,9 +187,6 @@ void Level::LoadMultiplayerLevel(int level)
 		AddEntity(new Player(sf::Vector2f(mPlayerSpawn) + sf::Vector2f(spawnDir*mTileSize), mTileSize, mRen), 5000);
 		AddEntity(new Player(sf::Vector2f(mPlayerSpawn) + sf::Vector2f(spawnDir*mTileSize), mTileSize, mRen), -1);
 		mPlayerLocs.push_back(mPlayers.back()->Pos());
-		//waves stored as a vector for each wave of vectors for each enemy spawn of vectors
-		//for each spawn group of pairs of the spawn time and a pair containing enemy type and count
-		mWaves.push_back(std::vector<std::vector<std::pair<int, std::pair<int, int>>>>());
 	}
 	myReadFile.close();
 	//nodes used in pathfinding
@@ -207,7 +205,7 @@ void Level::LoadMultiplayerLevel(int level)
 	mGameOver = false;
 	mWin = false;
 
-	mPlayerCount = 1;
+	mPlayerCount = 2;
 }
 
 //void Level::LoadLevel(FullMapPacket map)
@@ -361,6 +359,8 @@ void Level::AddEntity(Entity* e, int id)
 		Turret* tur = static_cast<Turret*>(e);
 		mTurrets.push_back(tur);
 		mLevelUntouched = false;
+		Tile* t = mTiles[tur->Location().y / mTileSize][tur->Location().x / mTileSize];
+		t->SetOccupied(true);
 		if (Network::Host())
 		{
 			sf::Packet packet;
@@ -567,8 +567,11 @@ void Level::Update(float t)
 			{
 				EntityRotatePacket p = EntityRotatePacket();
 				packet >> p;
-				mEntityIds[p.id]->SetAng(p.ang);
-				mEntityIds[p.id]->SetBaseAng(p.baseAng);
+				if (mEntityIds.count(p.id) > 0)
+				{
+					mEntityIds[p.id]->SetAng(p.ang);
+					mEntityIds[p.id]->SetBaseAng(p.baseAng);
+				}
 			}
 			else if (type == NEWTILE) //
 			{
@@ -592,11 +595,42 @@ void Level::Update(float t)
 			{
 				GunShotPacket p = GunShotPacket();
 				packet >> p;
-				mEntityIds[p.id]->GetGun()->Shoot(mEntityIds[p.id]->Location(), p.angle);
+				if (mEntityIds.count(p.id) > 0)
+				{
+					mEntityIds[p.id]->GetGun()->Shoot(mEntityIds[p.id]->Location(), p.angle);
+					if (dynamic_cast<Player*>(mEntityIds[p.id]) != 0)
+						SoundManager::PlaySoundEffect("PlayerShoot");
+					else if (dynamic_cast<Enemy*>(mEntityIds[p.id]) != 0)
+						SoundManager::PlaySoundEffect("Enemy" + std::to_string(static_cast<Enemy*>(mEntityIds[p.id])->Type() + 1) + "Shoot");
+					else if (dynamic_cast<Turret*>(mEntityIds[p.id]) != 0)
+						SoundManager::PlaySoundEffect("TurretShoot");
+				}
 			}
 			else if (type == WAVESTART)
 			{
-				mStartRecieved = true;
+				WaveStartPacket p = WaveStartPacket();
+				packet >> p;
+				mDefensePhase = false;
+				mPlayers[0]->SetDefensePhase(mDefensePhase);
+				mGameClock.restart();
+				mPauseTime = 0;
+				SoundManager::PlayMusic("Fighting");
+				mWeakPath.clear();
+				mWeakPath.push_back(CalcWeakPoint(0));
+				mNextSpawnTime = 0;
+				mEnemiesLeft = p.enemyCount;
+				mWaveCount = p.waveCount;
+				mWave = p.currentWave;
+			}
+			else if (type == DISCONNECT)
+			{
+				Network::Disconnect();
+			}
+			else if (type == UPDATENAME)
+			{
+				PlayerNamePacket p = PlayerNamePacket();
+				packet >> p;
+				player2Name = p.name;
 			}
 			packet = Network::UdpListen();
 		}
@@ -642,7 +676,34 @@ void Level::Update(float t)
 		}
 		if (Network::Host())
 		{
-
+			for each (Enemy* e in mEnemies)
+			{
+				if (e->AccVelChange())
+				{
+					EntityMovePacket packet;
+					packet.id = e->GetId();
+					packet.xAcc = e->GetAccel().x;
+					packet.yAcc = e->GetAccel().y;
+					packet.xVel = e->GetVelocity().x;
+					packet.yVel = e->GetVelocity().y;
+					packet.xPos = e->Location().x;
+					packet.yPos = e->Location().y;
+					packet.zPos = e->Height();
+					sf::Packet p = sf::Packet();
+					p << packet;
+					Network::SendUdp(p);
+				}
+				if (e->AngChange())
+				{
+					EntityRotatePacket packet;
+					packet.id = e->GetId();
+					packet.ang = e->GetAng();
+					packet.baseAng = e->GetBaseAng();
+					sf::Packet p = sf::Packet();
+					p << packet;
+					Network::SendUdp(p);
+				}
+			}
 		}
 	}
 
@@ -679,7 +740,7 @@ void Level::Update(float t)
 			mPlayers[0]->SetDefensePhase(mDefensePhase);
 			SoundManager::PlayMusic("Building");
 			mWave++;
-			if (mWave >= mWaves.size())
+			if (mWave >= mWaveCount)
 			{
 				mWin = true;
 				SoundManager::PlayMusic("Win");
@@ -1141,11 +1202,14 @@ void Level::CheckCollision()
 		{
 			for each (Entity* e2 in mEntities)
 			{
-				if (e != e2 && e->CanCollide() && e2->CanCollide())
+				if (!((e2->GetId() == 1 && e->GetId() == 5000) || (e->GetId() == 1 && e2->GetId() == 5000)))
 				{
-					sf::Vector2f ePos = e->Location();
-					if (e->Collision(e2->Location(), e2->Size().x / 3.f));
-					e2->Collision(ePos, e->Size().x / 3.f);
+					if (e != e2 && e->CanCollide() && e2->CanCollide())
+					{
+						sf::Vector2f ePos = e->Location();
+						if (e->Collision(e2->Location(), e2->Size().x / 3.f))
+							e2->Collision(ePos, e->Size().x / 3.f);
+					}
 				}
 			}
 		}
@@ -1395,11 +1459,12 @@ void Level::CheckCollision()
 		}
 		for each (Entity *e in dead)
 		{
-			if (!(dynamic_cast<Missile*>(e) != 0 || dynamic_cast<Grenade*>(e) != 0))
+			if (dynamic_cast<Enemy*>(e) != 0)
 			{
 				mPlayers[0]->AddCredits(10);
 			}
-			RemoveEntity(e, -1);
+			if (dynamic_cast<Player*>(e) == 0)
+				RemoveEntity(e, -1);
 		}
 	}
 	for each (Player* p in mPlayers)
@@ -1430,19 +1495,12 @@ void Level::RestartCurrentWave()
 
 void Level::ProcessInput(sf::Event e, int modifierKeys)
 {
-	if (((!Network::Host() && mStartRecieved) || ((e.type == sf::Event::KeyReleased && e.key.code == sf::Keyboard::Return) || (e.type == sf::Event::JoystickButtonReleased && e.joystickButton.button == Controller::BACK))) && mDefensePhase)
+	if ((((e.type == sf::Event::KeyReleased && e.key.code == sf::Keyboard::Return) || (e.type == sf::Event::JoystickButtonReleased && e.joystickButton.button == Controller::BACK))) && mDefensePhase)
 	{
 		mDefensePhase = false;
 		mPlayers[0]->SetDefensePhase(mDefensePhase);
 		mGameClock.restart();
 		mPauseTime = 0;
-		mEnemiesLeft = 0;
-		for (int i = 0; i < mWaves[mWave].size(); i++)
-		{
-			std::vector<std::pair<int, std::pair<int, int>>>::iterator it = mWaves[mWave][i].begin();
-			for (int i2 = 0; i2 < mWaves[mWave][i].size(); i2++, it++)
-				mEnemiesLeft += it->second.first;
-		}
 		SoundManager::PlayMusic("Fighting");
 		mWeakPath.clear();
 		mWeakPath.push_back(CalcWeakPoint(0));
@@ -1450,7 +1508,17 @@ void Level::ProcessInput(sf::Event e, int modifierKeys)
 		mStartRecieved = false;
 		if (Network::Host())
 		{
+			mEnemiesLeft = 0;
+			for (int i = 0; i < mWaves[mWave].size(); i++)
+			{
+				std::vector<std::pair<int, std::pair<int, int>>>::iterator it = mWaves[mWave][i].begin();
+				for (int i2 = 0; i2 < mWaves[mWave][i].size(); i2++, it++)
+					mEnemiesLeft += it->second.first;
+			}
 			WaveStartPacket packet = WaveStartPacket();
+			packet.enemyCount = mEnemiesLeft;
+			packet.currentWave = mWave;
+			packet.waveCount = mWaveCount;
 			sf::Packet p;
 			p << packet;
 			Network::SendUdp(p);

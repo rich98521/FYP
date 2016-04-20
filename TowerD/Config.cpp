@@ -26,15 +26,35 @@ int Config::ScreenHeight()
 	return mScreenHeight;
 }
 
+sf::Packet& operator <<(sf::Packet& packet, const PlayerNamePacket& ent)
+{
+	return packet << (byte)UPDATENAME << ent.name;
+}
+
+sf::Packet& operator >>(sf::Packet& packet, PlayerNamePacket& ent)
+{
+	return packet >> ent.name;
+}
+
+
+sf::Packet& operator <<(sf::Packet& packet, const DisconnectPacket& ent)
+{
+	return packet << (byte)DISCONNECT;
+}
+
+sf::Packet& operator >>(sf::Packet& packet, DisconnectPacket& ent)
+{
+	return packet;
+}
 
 sf::Packet& operator <<(sf::Packet& packet, const WaveStartPacket& ent)
 {
-	return packet << (byte)WAVESTART;
+	return packet << (byte)WAVESTART << ent.enemyCount << ent.waveCount << ent.currentWave;
 }
 
 sf::Packet& operator >>(sf::Packet& packet, WaveStartPacket& ent)
 {
-	return packet;
+	return packet >> ent.enemyCount >> ent.waveCount >> ent.currentWave;
 }
 
 sf::Packet& operator <<(sf::Packet& packet, const TurretPacket& ent)

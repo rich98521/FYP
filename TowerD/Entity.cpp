@@ -116,7 +116,10 @@ void Entity::Collision(sf::IntRect e)
 	{
 		//moves entity to closest tile edge along y
 		mLocation.y = (int)(mLocation.y + e.height / 2) / e.width * e.width + ((e.height - Size().y) / 2 - 0.001f) * (mVelocity.y / fabs(mVelocity.y));
-		SetVel(sf::Vector2f(mVelocity.x, mVelocity.y * -1 * mCoRestitution));
+		if (mId != 5000 && Network::Host())
+			SetVel(sf::Vector2f(mVelocity.x, mVelocity.y * -1 * mCoRestitution));
+		else
+			mVelocity.y *= -1 * mCoRestitution;
 	}
 	//checks if colliding horizontally
 	if (mLastLocation.y < e.top + (e.height + Size().y) / 2 &&
@@ -124,7 +127,10 @@ void Entity::Collision(sf::IntRect e)
 	{
 		//moves entity to closest tile edge along x
 		mLocation.x = (int)(mLocation.x + e.width / 2) / e.height * e.height + ((e.width - Size().x) / 2 - 0.001f)* (mVelocity.x / fabs(mVelocity.x));
+		if (mId != 5000 && Network::Host())
 		SetVel(sf::Vector2f(mVelocity.x * -1 * mCoRestitution, mVelocity.y));
+		else
+			mVelocity.x *= -1 * mCoRestitution;
 	}
 }
 

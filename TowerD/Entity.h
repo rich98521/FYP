@@ -42,9 +42,17 @@ protected:
 	int mId = 0;
 	bool mAngleChange, mAccVelChange;
 	float mLastAngle;
-	void SetAngle(float a){ if (a != mAngle && abs(mAngle - mLastAngle) > 5 ){ mAngleChange = true; mLastAngle = mAngle; } mAngle = a; }
+	sf::Vector2f mLastAccel;
+	void SetAngle(float a){ if (a != mAngle && abs(a - mLastAngle) > 5 ){ mAngleChange = true; mLastAngle = a; } mAngle = a; }
 	void SetBaseAngle(float a){ if (a != mBaseAngle){ mAngleChange = true; } mBaseAngle = a; }
-	void SetAcc(sf::Vector2f a){ if (a != mAccel){ mAccVelChange = true; } mAccel = a; }
+	void SetAcc(sf::Vector2f a)
+	{
+		if (mAccel != a && (abs((a - mLastAccel).x) > 2 || abs((a - mLastAccel).y) > 2))
+		{
+			mAccVelChange = true; mLastAccel = a;
+		}
+		mAccel = a;
+	}
 	void SetVel(sf::Vector2f v){ if (v != mVelocity){ mAccVelChange = true; } mVelocity = v; }
 	void SetH(float h){ if (h != mHeight){ mAccVelChange = true; } mHeight = h; }
 

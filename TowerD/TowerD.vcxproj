@@ -84,12 +84,12 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>SFML_USE_STATIC_STD_LIBS ;CURL_STATICLIB;WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SFML_SDK)\include;D:\Projects\TowerD\Server\curl-7.47.0\curl-7.47.0\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SFML_SDK)\include;C:\Users\lab422\Desktop\TowerDefense\FYP-master\Server\curl-7.47.0\curl-7.47.0\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SFML_SDK)\lib;D:\Projects\TowerD\Server\build\lib\Debug</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SFML_SDK)\lib;C:\Users\lab422\Desktop\TowerDefense\FYP-master\Server\build\lib\Debug</AdditionalLibraryDirectories>
       <AdditionalDependencies>libcurl.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>

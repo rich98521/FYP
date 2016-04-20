@@ -1,7 +1,16 @@
-﻿Build started 20/04/2016 13:25:56.
-     1>Project "D:\Projects\TowerD\TowerD\TowerD.vcxproj" on node 2 (Build target(s)).
-     1>Link:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"D:\Projects\TowerD\temp\TowerD.exe" /INCREMENTAL /NOLOGO /LIBPATH:"C:\SFML-2.1\lib" /LIBPATH:D:\Projects\TowerD\Server\build\lib\Debug libcurl.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"D:\Projects\TowerD\temp\TowerD.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:\Projects\TowerD\temp\TowerD.lib" /MACHINE:X86 temp\Button.obj
+﻿Build started 20/04/2016 20:52:06.
+     1>Project "C:\Users\lab422\Desktop\TowerDefense\FYP-master\TowerD\TowerD.vcxproj" on node 2 (Build target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I"C:\SFML-2.3.2\include" /I"C:\Users\lab422\Desktop\TowerDefense\FYP-master\Server\curl-7.47.0\curl-7.47.0\include" /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D SFML_USE_STATIC_STD_LIBS /D CURL_STATICLIB /D WIN32 /D _DEBUG /D _CONSOLE /D _LIB /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"temp\TowerD.pch" /Fo"temp\\" /Fd"temp\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt Enemy.cpp
+         Enemy.cpp
+     1>c:\users\lab422\desktop\towerdefense\fyp-master\towerd\enemy.cpp(52): warning C4305: '=' : truncation from 'double' to 'float'
+     1>c:\users\lab422\desktop\towerdefense\fyp-master\towerd\enemy.cpp(53): warning C4244: 'argument' : conversion from 'const int' to 'float', possible loss of data
+     1>c:\users\lab422\desktop\towerdefense\fyp-master\towerd\enemy.cpp(68): warning C4244: 'argument' : conversion from 'const int' to 'float', possible loss of data
+     1>c:\users\lab422\desktop\towerdefense\fyp-master\towerd\enemy.cpp(73): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\lab422\desktop\towerdefense\fyp-master\towerd\enemy.cpp(74): warning C4244: 'argument' : conversion from 'const int' to 'float', possible loss of data
+     1>c:\users\lab422\desktop\towerdefense\fyp-master\towerd\enemy.cpp(95): warning C4305: '-=' : truncation from 'double' to 'float'
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\lab422\Desktop\TowerDefense\FYP-master\temp\TowerD.exe" /INCREMENTAL /NOLOGO /LIBPATH:"C:\SFML-2.3.2\lib" /LIBPATH:"C:\Users\lab422\Desktop\TowerDefense\FYP-master\Server\build\lib\Debug" libcurl.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\lab422\Desktop\TowerDefense\FYP-master\temp\TowerD.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\lab422\Desktop\TowerDefense\FYP-master\temp\TowerD.lib" /MACHINE:X86 temp\Button.obj
          temp\Camera.obj
          temp\Config.obj
          temp\Core.obj
@@ -25,83 +34,9 @@
          temp\Tile.obj
          temp\TowerD.obj
          temp\Turret.obj
-         LINK : D:\Projects\TowerD\temp\TowerD.exe not found or not built by the last incremental link; performing full link
-     1>libcurl.lib(file.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(file.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(timeval.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(timeval.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(base64.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(base64.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(hostip.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(hostip.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(progress.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(progress.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(formdata.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(formdata.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(cookie.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(cookie.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(http.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(http.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(sendf.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(sendf.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(ftp.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(ftp.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(url.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(url.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(dict.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(dict.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(if2ip.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(if2ip.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(speedcheck.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(speedcheck.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(getenv.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(getenv.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(escape.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(escape.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(mprintf.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(mprintf.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(telnet.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(telnet.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(netrc.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(netrc.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(getinfo.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(getinfo.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(transfer.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(transfer.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(strequal.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(strequal.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(easy.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(easy.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(curl_fnmatch.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(curl_fnmatch.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(fileinfo.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(fileinfo.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(ftplistparser.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(ftplistparser.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(wildcard.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(wildcard.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(http_chunks.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(http_chunks.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(strtok.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(strtok.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(connect.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(connect.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(llist.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(llist.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(hash.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(hash.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(multi.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(multi.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(share.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(share.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(http_digest.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(http_digest.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(md5.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(md5.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(inet_pton.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(inet_pton.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(strerror.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(strerror.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(hostip6.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(hostip6.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(hostsyn.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(hostsyn.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(inet_ntop.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(inet_ntop.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(parsedate.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(parsedate.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(select.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(select.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(tftp.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(tftp.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(splay.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(splay.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(strdup.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(strdup.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(socks.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(socks.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(rawstr.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(rawstr.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(curl_addrinfo.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(curl_addrinfo.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(socks_sspi.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(socks_sspi.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(curl_sspi.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(curl_sspi.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(slist.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(slist.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(nonblock.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(nonblock.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(curl_memrchr.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(curl_memrchr.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(imap.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(imap.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(pop3.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(pop3.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(smtp.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(smtp.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(pingpong.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(pingpong.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(rtsp.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(rtsp.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(warnless.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(warnless.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(hmac.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(hmac.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(curl_gethostname.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(curl_gethostname.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(gopher.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(gopher.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(http_negotiate_sspi.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(http_negotiate_sspi.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(http_proxy.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(http_proxy.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(curl_ntlm.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(curl_ntlm.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(curl_sasl.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(curl_sasl.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(conncache.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(conncache.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(pipeline.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(pipeline.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(dotdot.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(dotdot.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(curl_sasl_sspi.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(curl_sasl_sspi.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(vtls.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(vtls.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-     1>libcurl.lib(schannel.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'libcurl.lib(schannel.obj)' or at 'D:\Projects\TowerD\temp\vc120.pdb'; linking object as if no debug info
-         TowerD.vcxproj -> D:\Projects\TowerD\temp\TowerD.exe
-     1>Done Building Project "D:\Projects\TowerD\TowerD\TowerD.vcxproj" (Build target(s)).
+         TowerD.vcxproj -> C:\Users\lab422\Desktop\TowerDefense\FYP-master\temp\TowerD.exe
+     1>Done Building Project "C:\Users\lab422\Desktop\TowerDefense\FYP-master\TowerD\TowerD.vcxproj" (Build target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:00.73
+Time Elapsed 00:00:00.58

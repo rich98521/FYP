@@ -79,7 +79,7 @@ void Enemy::Update(float t, sf::Vector2f offset, float scale)
 			}
 		}
 		float ang = atan2(target.y - mLocation.y, target.x - mLocation.x);
-		mAccel = sf::Vector2f(cos(ang), sin(ang)) * 200.f;
+		SetAcc(sf::Vector2f(cos(ang), sin(ang)) * 200.f);
 
 		float diff = mPath[currentNode].second - mPath[currentNode - 1].second;
 		diff += (diff > pi) ? -(pi * 2) : (diff < -pi) ? (pi * 2) : 0;
@@ -102,17 +102,18 @@ void Enemy::Update(float t, sf::Vector2f offset, float scale)
 
 void Enemy::Shoot(sf::Vector2f player, float dist)
 {
-	mAngle = mBaseAngle;
+	float a = mBaseAngle;
 	if (mType != 2)
 	{
 		if (dist < mGun.GetRange())
 		{
 			float ang = atan2(player.y - mLocation.y, player.x - mLocation.x);
-			mAngle = ang / 3.14159f * 180;
+			a = ang / 3.14159f * 180;
 			if (mGun.Shoot(mLocation, ang).size() > 0)
 				SoundManager::PlaySoundEffect("Enemy" + std::to_string(mType + 1) + "Shoot");
 		}
 	}
+	SetAngle(a);
 }
 
 void Enemy::Draw(sf::Vector2f offset, float scale)

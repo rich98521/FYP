@@ -17,7 +17,7 @@ private:
 	std::array<std::array<float, 3>, 5> mUpgradeTable;
 	std::array<int, 5> mUpgradeCosts;
 	int mLevel = 0;
-	int mBaseDamage, mBaseRate, mBaseRange;
+	float mBaseDamage, mBaseRate, mBaseRange;
 	int missileAimDelay = 0;
 	Sprite* mHighlightSprite;
 	bool mHighlighted;

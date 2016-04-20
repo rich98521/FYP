@@ -9,7 +9,7 @@ void Network::Init()
 	//cout << Get("servers/", { {} }) << endl;
 	//cout << Post("updateserver/", { { { { "type", "delete" } }, { { "name", "test7" } } } });
 	mPort = 32640;
-	mPort2 = 32641;
+	mPort2 = 32640;
 	mTcpPort = 32642;
 	mUdpSocket.setBlocking(false);
 	mConnected = false;
@@ -111,15 +111,15 @@ void Network::SendUdp(sf::Packet packet)
 	}
 	else
 	{
-		cout << "Sending to: " << mConnectedIp << ", Port: " << mPort2 << ", Size: " << packet.getDataSize() << endl;
+		//cout << "Sending to: " << mConnectedIp << ", Port: " << mPort2 << ", Size: " << packet.getDataSize() << endl;
 	}
 }
 
 sf::Packet Network::UdpListen()
 {
 	mUdpSocket.receive(mPacket, sf::IpAddress(mConnectedIp), mPort);
-	if(mPacket.getDataSize() > 0)
-		cout << "Recieving from: " << mConnectedIp << ", Port: " << mPort << ", Size: " << mPacket.getDataSize() << endl;
+	//if(mPacket.getDataSize() > 0)
+	//	cout << "Recieving from: " << mConnectedIp << ", Port: " << mPort << ", Size: " << mPacket.getDataSize() << endl;
 	return mPacket;
 }
 

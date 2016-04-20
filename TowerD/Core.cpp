@@ -5,6 +5,7 @@ Core::Core(sf::Vector2f loc, int tSize, Renderer* r)
 	: Entity(loc, tSize, r)
 {
 	mCollision = false;
+	mHealth = 500;
 }
 
 void Core::LoadAssets()

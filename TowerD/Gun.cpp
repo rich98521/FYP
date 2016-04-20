@@ -32,13 +32,13 @@ void Gun::LoadAssets()
 std::vector<sf::Vector2f*> Gun::Shoot(sf::Vector2f pos, float ang)
 {
 	mBulletHitPos.clear();
-	if ((mClock.getElapsedTime().asSeconds() > mRate && mMag != 0 && mReloadClock.getElapsedTime().asSeconds() > mReloadRate) || (!Network::Host() && mOwnerId != 5000))
+	if ((mClock.getElapsedTime().asSeconds() > mRate && mMag != 0 && mReloadClock.getElapsedTime().asSeconds() > mReloadRate) || (Network::Host() == (mOwnerId == 5000)))
 	{
 		mShot = true;
+		float newAng = ang;
 		for (int i = 0; i < mBulletCount; i++)
 		{
-			float newAng = ang;
-			if (mType == 0 && !Network::Host() && mOwnerId != 5000)
+			if (mType == 0 && (!Network::Host() == (mOwnerId == 5000)))
 				newAng = ang + (((rand() % 200) - 100) / (100.f)) * (3.14159f  * (1 - mAccuracy));
 			mBulletHitPos.push_back(new sf::Vector2f(pos + sf::Vector2f(cos(newAng), sin(newAng)) * mRange));
 			mBulletSprites[i]->setColor(mBulletColor);
@@ -51,7 +51,7 @@ std::vector<sf::Vector2f*> Gun::Shoot(sf::Vector2f pos, float ang)
 		if (Network::Host() || mOwnerId == 5000)
 		{
 			GunShotPacket packet;
-			packet.angle = ang;
+			packet.angle = newAng;
 			packet.id = mOwnerId;
 			sf::Packet p = sf::Packet();
 			p << packet;

@@ -14,7 +14,7 @@ const static enum Controller {
 	A, B, X, Y, LB, RB, BACK, START, LA, RA
 };
 const static enum PacketType {
-	ENTITYMOVE, NEWENTITY, NEWTILE, ENTITYDAMAGE, ENTITYROTATE, LOADMAP, NEWGRENADE, NEWTURRET, NEWMISSILE, GUNSHOT, WAVESTART
+	ENTITYMOVE, NEWENTITY, NEWTILE, ENTITYDAMAGE, ENTITYROTATE, LOADMAP, NEWGRENADE, NEWTURRET, NEWMISSILE, GUNSHOT, WAVESTART, DISCONNECT, UPDATENAME
 };
 const static enum EntityType {
 	CORE, ENEMY, EXPLOSION, GRENADE, MISSILE, PLAYER, TURRET
@@ -68,8 +68,20 @@ sf::Packet& operator <<(sf::Packet& packet, const NewTilePacket& ent);
 
 sf::Packet& operator >>(sf::Packet& packet, NewTilePacket& ent);
 
+struct PlayerNamePacket
+{
+	char name[24];
+};
+
+sf::Packet& operator <<(sf::Packet& packet, const PlayerNamePacket& ent);
+
+sf::Packet& operator >>(sf::Packet& packet, PlayerNamePacket& ent);
+
 struct WaveStartPacket
 {
+	int enemyCount;
+	int waveCount;
+	int currentWave;
 };
 
 sf::Packet& operator <<(sf::Packet& packet, const WaveStartPacket& ent);
@@ -79,12 +91,21 @@ sf::Packet& operator >>(sf::Packet& packet, WaveStartPacket& ent);
 struct EntityDamagePacket
 {
 	int id;
-	byte health;
+	float health;
 };
 
 sf::Packet& operator <<(sf::Packet& packet, const EntityDamagePacket& ent);
 
 sf::Packet& operator >>(sf::Packet& packet, EntityDamagePacket& ent);
+
+struct DisconnectPacket
+{
+
+};
+
+sf::Packet& operator <<(sf::Packet& packet, const DisconnectPacket& ent);
+
+sf::Packet& operator >>(sf::Packet& packet, DisconnectPacket& ent);
 
 struct LoadMapPacket
 {

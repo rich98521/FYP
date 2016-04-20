@@ -44,6 +44,7 @@ public:
 	static bool Connected(){ return mConnected; }
 	static string GetLocalIP();
 	static bool Host(){ return mHost; };
+	static void Disconnect(){ mConnected = false; mTcpSocket.disconnect(); mListener.close(); }
 };
 
 #endif

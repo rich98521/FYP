@@ -232,6 +232,12 @@ void Menu::InitHud()
 	mCountdown->setCharacterSize(20);
 	mCountdown->setColor(sf::Color(210, 0, 0));
 	mScenes[GAME]->AddText(mCountdown);
+	mHudTexts.push_back(new Text("Player1", "detente.ttf"));
+	mHudTexts.back()->setColor(sf::Color(0, 0, 200, 200));
+	mScenes[GAME]->AddText(mHudTexts.back());
+	mHudTexts.push_back(new Text("Player2", "detente.ttf"));
+	mHudTexts.back()->setColor(sf::Color(200, 0, 0, 200));
+	mScenes[GAME]->AddText(mHudTexts.back());
 }
 
 void Menu::UpdateTurretMenus()
@@ -633,6 +639,11 @@ void Menu::Update()
 						mLevel->LoadMultiplayerLevel(p.number);
 						SetScene(GAME);
 					}
+					PlayerNamePacket p2 = PlayerNamePacket();
+					strcpy_s(p2.name, (*mScenes[OPTIONS]->TextBoxes())[0]->GetValue().c_str());
+					sf::Packet packet2 = sf::Packet();
+					packet2 << p2;
+					Network::SendUdp(packet2);
 				}
 			}
 		}
@@ -666,6 +677,11 @@ void Menu::Update()
 					packet << p;
 					Network::SendUdp(packet);
 					mLevel->AddPlayer2();
+					PlayerNamePacket p2 = PlayerNamePacket();
+					strcpy_s(p2.name, (*mScenes[OPTIONS]->TextBoxes())[0]->GetValue().c_str());
+					sf::Packet packet2 = sf::Packet();
+					packet2 << p2;
+					Network::SendUdp(packet2);
 					update[2] = { { "count", std::to_string(mLevel->PlayerCount()) } };
 					Network::Post("updateserver/", update);
 				}
@@ -683,11 +699,21 @@ void Menu::Update()
 			else if (text == "Quit")
 			{
 				//mWin->close();
+				DisconnectPacket p = DisconnectPacket();
+				sf::Packet packet = sf::Packet();
+				packet << p;
+				Network::SendUdp(packet);
+				Network::Disconnect();
 				mScenes[mScene]->SetCanFocus(false);
 				SetScene(MAIN);
 			}
 			else if (text == "Next Level")
 			{
+				DisconnectPacket p = DisconnectPacket();
+				sf::Packet packet = sf::Packet();
+				packet << p;
+				Network::SendUdp(packet);
+				Network::Disconnect();
 				mLevel->LoadNextLevel();
 			}
 			else if (text == "Weapon")
@@ -823,6 +849,11 @@ void Menu::Update()
 		{
 			if (text == "Back")
 			{
+				PlayerNamePacket p = PlayerNamePacket();
+				strcpy_s(p.name, (*mScenes[OPTIONS]->TextBoxes())[0]->GetValue().c_str());
+				sf::Packet packet = sf::Packet();
+				packet << p;
+				Network::SendUdp(packet);
 				SetScene(mPreviousScene);
 			}
 		}
@@ -874,6 +905,16 @@ void Menu::Update()
 		mHudTexts[1]->setString("Credits: " + std::to_string(mLevel->GetPlayer()->GetCredits()));
 		mHudTexts[2]->setString(std::to_string(mLevel->GetWave()));
 		mHudTexts[3]->setString(std::to_string(mLevel->GetPlayer()->GetGrenadeCount()));
+		mHudTexts[4]->setString((*mScenes[OPTIONS]->TextBoxes())[0]->GetValue());
+		mHudTexts[4]->setPosition(sf::Vector2f((mLevel->GetPlayer()->Location() + sf::Vector2f(-10, -20) - mCam->Offset())*mCam->Scale()));
+		if (mLevel->PlayerCount() > 1)
+		{
+			mHudTexts[5]->setString(mLevel->GetPlayer2Name());
+			mHudTexts[5]->setPosition(sf::Vector2f((mLevel->GetPlayer2()->Location() + sf::Vector2f(-10, -20) - mCam->Offset())*mCam->Scale()));
+			mHudTexts[5]->SetVisible(true);
+		}
+		else
+			mHudTexts[5]->SetVisible(false);
 		mHudRects[0]->first.setScale(mLevel->GetPlayer()->Health() / mLevel->GetPlayer()->GetMaxHealth(), 1);
 		mHudRects[1]->first.setScale(mLevel->GetPlayer()->JetFuel() / mLevel->GetPlayer()->GetMaxFuel(), 1);
 		UpdateTurretMenus();
@@ -883,11 +924,13 @@ void Menu::Update()
 			mSelectedButton = 16;
 		(*mScenes[GAME]->Panels())[12]->SetVisible(mLevel->GameOver());
 		(*mScenes[GAME]->Panels())[13]->SetVisible(mLevel->Won());
-		SetPaused(mLevel->GameOver() || mLevel->Won() || mPauseMenu);
+		SetPaused((mLevel->GameOver() || mLevel->Won() || mPauseMenu) && !Network::Connected());
 		for (auto it = mTurretPanels.begin(); it != mTurretPanels.end(); it++)
 			it->second->Highlight(false);
 		if(mSelectedTurret != 0)
 		mSelectedTurret->Highlight(true);
+		mCountdown->SetVisible(mLevel->Defending());
+
 	}
 
 }

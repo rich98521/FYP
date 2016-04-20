@@ -17,6 +17,8 @@ Player::Player(sf::Vector2f loc, int tSize, Renderer* r)
 	mGun.SetDamage(0.4f);
 	mCredits = 200;
 	mGrenadePouch = 2;
+	mLastAccel = sf::Vector2f();
+	mLastAngle = 0;
 }
 
 void Player::SetId(int i)
