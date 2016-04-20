@@ -11,6 +11,7 @@ public:
 	void Update(float, sf::Vector2f, float);
 	void LoadAssets();
 	void Draw(sf::Vector2f, float);
+	float GetScale(){ return mScale; }
 };
 
 

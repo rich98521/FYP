@@ -62,6 +62,21 @@ void SoundManager::StopMusic()
 		mMusics[mPlayingSong]->stop();
 }
 
+void SoundManager::SetMusicVolume(int v)
+{
+	mMusicVolume = v;
+	for (auto it = mMusics.begin(); it != mMusics.end(); it++)
+		it->second->setVolume(mMusicVolume);
+}
+
+void SoundManager::SetEffectVolume(int v)
+{
+	mEffectVolume = v;
+	for (auto it = mEffects.begin(); it != mEffects.end(); it++)
+		it->second->setVolume(mEffectVolume);
+}
+
 std::map<std::string, sf::Music*> SoundManager::mMusics;
 std::map<std::string, sf::Sound*> SoundManager::mEffects;
+int SoundManager::mMusicVolume, SoundManager::mEffectVolume;
 string SoundManager::mPlayingSong;

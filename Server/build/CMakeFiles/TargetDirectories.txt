@@ -1,0 +1,4 @@
+C:/Users/lab422/Desktop/build/CMakeFiles/ALL_BUILD.dir
+C:/Users/lab422/Desktop/build/CMakeFiles/ZERO_CHECK.dir
+C:/Users/lab422/Desktop/build/src/CMakeFiles/curl.dir
+C:/Users/lab422/Desktop/build/lib/CMakeFiles/libcurl.dir

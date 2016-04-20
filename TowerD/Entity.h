@@ -2,7 +2,9 @@
 #define ENTITY_H
 #include "Tile.h"
 #include "Sprite.h"
+#include "Network.h"
 #include "Renderer.h"
+#include "Gun.h"
 
 
 class Entity
@@ -36,6 +38,15 @@ protected:
 	float mHeight = 0;
 	bool mOnWall = false, canMove = false;
 	bool mCollision = true;
+	float mCoRestitution = 0;
+	int mId = 0;
+	bool mAngleChange, mAccVelChange;
+	float mLastAngle;
+	void SetAngle(float a){ if (a != mAngle && abs(mAngle - mLastAngle) > 5 ){ mAngleChange = true; mLastAngle = mAngle; } mAngle = a; }
+	void SetBaseAngle(float a){ if (a != mBaseAngle){ mAngleChange = true; } mBaseAngle = a; }
+	void SetAcc(sf::Vector2f a){ if (a != mAccel){ mAccVelChange = true; } mAccel = a; }
+	void SetVel(sf::Vector2f v){ if (v != mVelocity){ mAccVelChange = true; } mVelocity = v; }
+	void SetH(float h){ if (h != mHeight){ mAccVelChange = true; } mHeight = h; }
 
 public:
 	Entity(sf::Vector2f, int, Renderer*);
@@ -43,17 +54,31 @@ public:
 	virtual void Update(float, sf::Vector2f, float);
 	virtual void LoadAssets();
 	void Collision(sf::IntRect);
-	void Collision(sf::Vector2f, float);
+	bool Collision(sf::Vector2f, float);
 	sf::Vector2f Location() const;
 	sf::Vector2f Size() const;
 	virtual void Draw(sf::Vector2f, float);
 	sf::IntRect Rect() const;
 	virtual bool Hit(float);
+	virtual Gun* GetGun(){ return NULL; }
 	float Health();
 	float Height();
 	void SetOnWall(bool);
 	bool CanCollide(){ return mCollision; }
+	sf::Vector2f GetVelocity(){ return mVelocity; }
+	sf::Vector2f GetAccel(){ return mAccel; }
 	bool Alive(){ return mAlive; };
+	float GetRestitution(){ return mCoRestitution; }
+	int GetId(){ return mId; }
+	virtual void SetId(int);
+	void SetPosVelAcc(sf::Vector2f p, sf::Vector2f v, sf::Vector2f a){ mLocation = p; mVelocity = v; mAccel = a; }
+	void SetHeight(float h){ mHeight = h; }
+	void SetAng(float a){ mAngle = a; }
+	void SetBaseAng(float a){ mBaseAngle = a; }
+	float GetAng(){ return mAngle; }
+	float GetBaseAng(){ return mBaseAngle; }
+	bool AngChange(){ bool b = mAngleChange; mAngleChange = false; return b; }
+	bool AccVelChange(){ bool b = mAccVelChange; mAccVelChange = false; return b; }
 	~Entity();
 };
 

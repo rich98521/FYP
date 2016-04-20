@@ -18,11 +18,13 @@ public:
 	static void PlayMusic(string);
 	static void StopMusic();
 	static string mPlayingSong;
-
+	static void SetMusicVolume(int);
+	static void SetEffectVolume(int);
 
 private:
 	static std::map<string, sf::Music*> mMusics;
 	static std::map<string, sf::Sound*> mEffects;
+	static int mMusicVolume, mEffectVolume;
 	std::vector<sf::SoundBuffer*> mBuffers;
 
 };

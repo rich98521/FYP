@@ -14,6 +14,9 @@
 #endif 
 #pragma comment(lib,"opengl32.lib") 
 #pragma comment(lib,"glu32.lib") 
+#pragma comment(lib, "wldap32.lib")
+#pragma comment(lib, "ws2_32.lib")
+#pragma comment(lib, "winmm.lib")
 
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -21,11 +24,15 @@
 #include "Renderer.h"
 #include "Menu.h"
 #include "SoundManager.h"
+#include "Network.h"
+#include "curl/curl.h"
 #include <list>
 
 int main()
 {
 	Config::Init();
+	curl_global_init(CURL_GLOBAL_ALL);
+	Network::Init();
 	sf::RenderWindow window(sf::VideoMode(Config::ScreenWidth(), Config::ScreenHeight(), 32), "TowerDefense");
 	srand(time(NULL));
 	const int tileSize = 32;
@@ -35,31 +42,52 @@ int main()
 	Level level(tileSize, sf::Vector2i(Config::ScreenWidth(), Config::ScreenHeight()), &r);
 	Menu menu(&r, &window, &level, level.GetCam());
 	sf::Clock clock;
-	float drawInterval = 0.0166f, updateInterval = 0.0033f;
+	float drawInterval = 0.0166f, updateInterval = 0.0043f;
 	float drawTime = 0, updateTime = 0;
+	bool ctrl = false, shft = false , alt = false;
+	unsigned int modifierKeys = 0;
 	
 	while (window.isOpen())
 	{
 		sf::Event Event;
 		while (window.pollEvent(Event))
 		{
+			if (Event.type == sf::Event::KeyPressed)
+			{
+				if (Event.key.code == sf::Keyboard::LControl || Event.key.code == sf::Keyboard::RControl)
+					ctrl = true;
+				else if (Event.key.code == sf::Keyboard::LShift || Event.key.code == sf::Keyboard::RShift)
+					shft = true;
+				else if (Event.key.code == sf::Keyboard::LAlt || Event.key.code == sf::Keyboard::RAlt)
+					alt = true;
+			}
+			else if (Event.type == sf::Event::KeyReleased)
+			{
+				if (Event.key.code == sf::Keyboard::LControl || Event.key.code == sf::Keyboard::RControl)
+					ctrl = false;
+				else if (Event.key.code == sf::Keyboard::LShift || Event.key.code == sf::Keyboard::RShift)
+					shft = false;
+				else if (Event.key.code == sf::Keyboard::LAlt || Event.key.code == sf::Keyboard::RAlt)
+					alt = false;
+			}
+			modifierKeys = (ctrl ? ModifierKeys::Control : 0) | (shft ? ModifierKeys::Shift : 0) | (alt ? ModifierKeys::Alt : 0);
 			if (Event.type == sf::Event::Closed)
 				window.close();
 			else if (Event.type == sf::Event::KeyPressed)
 			{
-				menu.ProcessInput(Event);
+				menu.ProcessInput(Event, modifierKeys);
 				if (!menu.GamePaused())
-					level.ProcessInput(Event);
+					level.ProcessInput(Event, modifierKeys);
 			}
-			else if (Event.type == sf::Event::MouseButtonPressed|| Event.type == sf::Event::MouseMoved)
+			else if (Event.type == sf::Event::MouseButtonPressed || Event.type == sf::Event::JoystickButtonPressed || Event.type == sf::Event::JoystickMoved || Event.type == sf::Event::MouseMoved)
 			{
-				if (!menu.ProcessInput(Event))
-					level.ProcessInput(Event);
+				if (!menu.ProcessInput(Event, modifierKeys))
+					level.ProcessInput(Event, modifierKeys);
 			}
-			else if (Event.type == sf::Event::KeyReleased || Event.type == sf::Event::MouseButtonReleased)
+			else if (Event.type == sf::Event::KeyReleased || Event.type == sf::Event::MouseButtonReleased || Event.type == sf::Event::JoystickButtonReleased)
 			{
-				menu.ProcessInput(Event);
-				level.ProcessInput(Event);
+				menu.ProcessInput(Event, modifierKeys);
+				level.ProcessInput(Event, modifierKeys);
 			}
 		}
 		float time = clock.getElapsedTime().asSeconds();

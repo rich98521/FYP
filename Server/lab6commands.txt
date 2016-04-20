@@ -1,0 +1,20 @@
+ps aux | grep python
+kill
+
+mysql -u root -p98521
+use database1
+select * from Scores;
+
+cd Desktop
+server ant
+
+ssh -l ubuntu -i /d/Projects/TowerD/Server/richardLahert.pem 52.38.28.13
+
+add name score
+check name
+
+use - PATH
+C:\Users\lab422\Downloads\apache-ant-1.9.6-bin\apache-ant-1.9.6\bin
+
+system - ANT_HOME
+C:\Users\lab422\Downloads\apache-ant-1.9.6-bin\apache-ant-1.9.6\

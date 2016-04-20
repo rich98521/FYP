@@ -2,6 +2,7 @@
 #define GUN_H
 #include "Sprite.h" 
 #include "Renderer.h" 
+#include "Network.h" 
 #include "SoundManager.h" 
 
 
@@ -25,6 +26,7 @@ private:
 	std::vector<Sprite*> mBulletSprites;
 	std::vector<sf::Vector2f*> mBulletHitPos;
 	sf::Color mBulletColor;
+	int mOwnerId;
 
 public:
 	Gun() 
@@ -47,6 +49,9 @@ public:
 	void SetMaxAmmo(int);
 	void SetColor(sf::Color);
 	void SetBulletCount(int);
+	int GetOwnerId(){ return mOwnerId; }
+	void SetOwnerId(int id){ mOwnerId = id; }
+	void ClearBullets(){ mBulletHitPos.clear(); }
 	std::pair<int, int> GetAmmo();
 	~Gun();
 };

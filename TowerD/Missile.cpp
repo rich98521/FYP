@@ -5,16 +5,16 @@ Missile::Missile(sf::Vector2f loc, int tSize, Renderer* r, sf::Vector2f target)
 	: Entity(loc, tSize, r), mTarget(target)
 {
 	//mLocation += sf::Vector2f(tSize - 8, tSize - 8);
-	mCollision = false;
-	mHeight = 48;
+	mHeight = 132;
 	mStartHeight = mHeight;
 	sf::Vector2f diff = mTarget - mLocation;
 	mStartDist = sqrt(diff.x * diff.x + diff.y * diff.y);
 	mAngle = atan2(diff.y, diff.x);
-	mAccel = sf::Vector2f(cos(mAngle), sin(mAngle)) * 800.f;
+	mAccel = sf::Vector2f(cos(mAngle), sin(mAngle)) * 900.f;
 	canMove = true;
 	mCollision = false;
 	mHealth = 1;	
+	mScale = .6f;
 }
 
 void Missile::LoadAssets()
@@ -37,7 +37,7 @@ void Missile::Update(float t, sf::Vector2f offset, float scale)
 	Entity::Update(t, offset, scale);
 	mAngle = mBaseAngle;
 	mDist = sqrt((mLocation.x - mTarget.x)*(mLocation.x - mTarget.x) + (mLocation.y - mTarget.y)*(mLocation.y - mTarget.y));
-	mHeight = (mDist / mStartDist)*mHeight;
+	mHeight = (mDist / mStartDist)*mStartHeight;
 }
 
 void Missile::Draw(sf::Vector2f offset, float scale)

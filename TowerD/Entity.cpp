@@ -19,15 +19,32 @@ void Entity::LoadAssets()
 	ren->Add(mSprite, mSpriteLayer);
 }
 
+void Entity::SetId(int i)
+{
+	mId = i;
+}
+
 //damages health and returns bool indicating if the shot
 //killed the entity
 bool Entity::Hit(float damage)
 {
-	mHealth -= damage;
-	if (mHealth <= 0)
+	if (mHealth > 0)
 	{
-		mHealth = 0;
-		mAlive = false;
+		mHealth -= damage;
+		if (mHealth <= 0)
+		{
+			mHealth = 0;
+			mAlive = false;
+		}
+		if (Network::Host())
+		{
+			EntityDamagePacket packet;
+			packet.id = mId;
+			packet.health = mHealth;
+			sf::Packet p = sf::Packet();
+			p << packet;
+			Network::SendUdp(p);
+		}
 	}
 	return mAlive;
 }
@@ -99,7 +116,7 @@ void Entity::Collision(sf::IntRect e)
 	{
 		//moves entity to closest tile edge along y
 		mLocation.y = (int)(mLocation.y + e.height / 2) / e.width * e.width + ((e.height - Size().y) / 2 - 0.001f) * (mVelocity.y / fabs(mVelocity.y));
-		mVelocity.y = 0;
+		SetVel(sf::Vector2f(mVelocity.x, mVelocity.y * -1 * mCoRestitution));
 	}
 	//checks if colliding horizontally
 	if (mLastLocation.y < e.top + (e.height + Size().y) / 2 &&
@@ -107,12 +124,12 @@ void Entity::Collision(sf::IntRect e)
 	{
 		//moves entity to closest tile edge along x
 		mLocation.x = (int)(mLocation.x + e.width / 2) / e.height * e.height + ((e.width - Size().x) / 2 - 0.001f)* (mVelocity.x / fabs(mVelocity.x));
-		mVelocity.x = 0;
+		SetVel(sf::Vector2f(mVelocity.x * -1 * mCoRestitution, mVelocity.y));
 	}
 }
 
 //collision with entity response used by all entities
-void Entity::Collision(sf::Vector2f pos, float size)
+bool Entity::Collision(sf::Vector2f pos, float size)
 {
 	if (canMove)
 	{
@@ -128,10 +145,12 @@ void Entity::Collision(sf::Vector2f pos, float size)
 				else
 					diff /= dist;
 				mLocation -= diff * (intersect / 2.f);
-				mVelocity -= diff * (intersect / 20.f);
+				SetVel(mVelocity - (diff * (intersect / 20.f)));
+				return true;
 			}
 		}
 	}
+	return false;
 }
 
 //drawing is handled by the renderer

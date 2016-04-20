@@ -16,6 +16,13 @@ Player::Player(sf::Vector2f loc, int tSize, Renderer* r)
 	canMove = true;
 	mGun.SetDamage(0.4f);
 	mCredits = 200;
+	mGrenadePouch = 2;
+}
+
+void Player::SetId(int i)
+{
+	Entity::SetId(i);
+	mGun.SetOwnerId(i);
 }
 
 void Player::LoadAssets()
@@ -53,19 +60,19 @@ void Player::LoadAssets()
 	Entity::LoadAssets();
 }
 
-void Player::ProcessInput(sf::Event e, sf::Vector2f offset, float scale)
+void Player::ProcessInput(sf::Event e, int modifierKeys, sf::Vector2f offset, float scale)
 {
 	if (mAlive)
 	{
 		if (e.type == sf::Event::KeyPressed){
 			if (e.key.code == sf::Keyboard::A)
-				dir.x = -1;
+				dir.x = -100;
 			else if (e.key.code == sf::Keyboard::D)
-				dir.x = 1;
+				dir.x = 100;
 			else if (e.key.code == sf::Keyboard::W)
-				dir.y = -1;
+				dir.y = -100;
 			else if (e.key.code == sf::Keyboard::S)
-				dir.y = 1;
+				dir.y = 100;
 			else if (e.key.code == sf::Keyboard::Space)
 				mJetpack = true;
 			else if (e.key.code == sf::Keyboard::R)
@@ -110,13 +117,13 @@ void Player::ProcessInput(sf::Event e, sf::Vector2f offset, float scale)
 		}
 		else if (e.type == sf::Event::KeyReleased)
 		{
-			if (e.key.code == sf::Keyboard::A && dir.x == -1)
+			if (e.key.code == sf::Keyboard::A && dir.x == -100)
 				dir.x = 0;
-			else if (e.key.code == sf::Keyboard::D && dir.x == 1)
+			else if (e.key.code == sf::Keyboard::D && dir.x == 100)
 				dir.x = 0;
-			else if (e.key.code == sf::Keyboard::W && dir.y == -1)
+			else if (e.key.code == sf::Keyboard::W && dir.y == -100)
 				dir.y = 0;
-			else if (e.key.code == sf::Keyboard::S && dir.y == 1)
+			else if (e.key.code == sf::Keyboard::S && dir.y == 100)
 				dir.y = 0;
 			else if (e.key.code == sf::Keyboard::Space)
 				mJetpack = false;
@@ -124,6 +131,100 @@ void Player::ProcessInput(sf::Event e, sf::Vector2f offset, float scale)
 		else if (e.type == sf::Event::MouseMoved)
 		{
 			mouseLast = sf::Vector2i(e.mouseMove.x, e.mouseMove.y);
+		}
+		else if (e.type == sf::Event::JoystickMoved)
+		{
+			if (e.joystickMove.axis == sf::Joystick::Axis::U)
+			{
+				int d = 0;
+				xDeadZone = true;
+				if (e.joystickMove.position > 20){
+					d = 1;
+					xDeadZone = false;
+				}
+				else if (e.joystickMove.position < -20){
+					d = -1;
+					xDeadZone = false;
+				}
+				if (!yDeadZone)
+					d = e.joystickMove.position > 0 ? 1 : -1;
+				if (d != 0)
+					mJoystickLook.x = (((abs(e.joystickMove.position))*d) / 90.f);
+			}
+			else if (e.joystickMove.axis == sf::Joystick::Axis::R)
+			{
+				int d = 0;
+				yDeadZone = true;
+				if (e.joystickMove.position > 20){
+					d = 1;
+					yDeadZone = false;
+				}
+				else if (e.joystickMove.position < -20){
+					d = -1;
+					yDeadZone = false;
+				}
+				if (!xDeadZone)
+					d = e.joystickMove.position > 0 ? 1 : -1;
+				if (d != 0)
+					mJoystickLook.y = (((abs(e.joystickMove.position))*d) / 90.f);
+			}
+			else if (e.joystickMove.axis == sf::Joystick::Axis::X)
+			{
+				dir.x = 0;
+				if (e.joystickMove.position > 25 || e.joystickMove.position < -25)
+					dir.x = e.joystickMove.position;
+			}
+			else if (e.joystickMove.axis == sf::Joystick::Axis::Y)
+			{
+				dir.y = 0;
+				if (e.joystickMove.position > 25||e.joystickMove.position < -25)
+					dir.y = e.joystickMove.position;
+			}
+			else if (e.joystickMove.axis == sf::Joystick::Axis::Z)
+			{
+				mLDown = false;
+				//mRDown = false;
+				//if (e.joystickMove.position > 15)
+				//	mRDown = true;
+				if (e.joystickMove.position < -15)
+				{
+					if (!triggerDown)
+					{
+						mLDown = true;
+						triggerDown = true;
+					}
+				}
+				else
+					triggerDown = false;
+			}
+			float joyAng = atan2(mJoystickLook.y, mJoystickLook.x);
+			float joyDist = sqrt(mJoystickLook.x*mJoystickLook.x + mJoystickLook.y*mJoystickLook.y);
+			float dist = 64;
+			if (joyDist > .5f)
+				dist += (joyDist - .5f) * 192;
+			mouseLast = sf::Vector2i((Config::ScreenWidth() / 2) + cos(joyAng) * dist, (Config::ScreenHeight() / 2) + sin(joyAng) * dist);
+		}
+		else if (e.type == sf::Event::JoystickButtonPressed )
+		{
+			if (e.joystickButton.button == Controller::LB)
+				mRDown = true;
+			else if (e.joystickButton.button == Controller::X)
+			{
+				if (mEquipped > 0)
+					mGhosts[mEquipped - 1]->SetVisible(false);
+				mEquipped = (mEquipped + 1) % 5;
+				if (mEquipped > 0)
+					mGhosts[mEquipped - 1]->SetVisible(true);
+			}
+			else if (e.joystickButton.button == Controller::RB)
+				mJetpack = true;
+		}
+		else if (e.type == sf::Event::JoystickButtonReleased)
+		{
+			if (e.joystickButton.button == Controller::LB)
+				mRDown = false;
+			else if (e.joystickButton.button == Controller::RB)
+				mJetpack = false;
 		}
 		else if (e.type == sf::Event::MouseButtonPressed && e.mouseButton.button == sf::Mouse::Button::Left)
 		{
@@ -141,13 +242,40 @@ void Player::ProcessInput(sf::Event e, sf::Vector2f offset, float scale)
 		{
 			mRDown = false;
 		}
-		mAccel = sf::Vector2f(0, 0);
+		sf::Vector2f acc = sf::Vector2f(0,0);
 		//sets top sprites angle to direction of acceleration
 		if (!(dir.x == 0 && dir.y == 0))
 		{
 			float ang = atan2(dir.y, dir.x);
-			mAccel = sf::Vector2f(cos(ang), sin(ang)) * mSpeed;
+			acc = (sf::Vector2f(dir) / 100.f) * mSpeed;
 		}
+		SetAcc(acc);
+	}
+}
+
+bool Player::GetGrenade()
+{
+	if (mGrenade)
+	{
+		mGrenade = false;
+		return true;
+	}
+	return false;
+}
+
+float Player::GetAimAngle()
+{
+	return mAngle;
+}
+
+void Player::SetDefensePhase(bool b)
+{
+	mDefensePhase = b;
+	if (mDefensePhase)
+	{
+		mGrenadeCount = mGrenadePouch;
+		mHealth = mMaxHealth;
+		mGun.Reload();
 	}
 }
 
@@ -164,8 +292,9 @@ void Player::Update(float t, sf::Vector2f offset, float scale)
 			mJetPackEmptied = false;
 		float change = ((mJetpack && mJetFuel > 0) && !mJetPackEmptied ? t : -t) * 160;
 		//player height increases/decreases depending on jetpack/if theyre on a wall
-		mHeight += mOnWall ? abs(change) : change;
-		mHeight = fmax(fmin(mHeight, mTileSize + (mJetpack ? 5 : 0)), 0);
+		float h = mHeight;
+		h += mOnWall ? abs(change) : change;
+		SetH(fmax(fmin(h, mTileSize + (mJetpack ? 5 : 0)), 0));
 		//jetfuel increases/decreases at different rates depending on whether jetpack is in use
 		mJetFuel -= change * (mJetpack && !mJetPackEmptied ? 1.5f : 1);
 		mJetFuel = fmax(fmin(mJetFuel, mJetFuelMax), 0);
@@ -186,7 +315,8 @@ void Player::Update(float t, sf::Vector2f offset, float scale)
 		mBaseAngle2 += fabs(diff) > 90 ? 180 : 0;
 		mBaseAngle2 = mBaseAngle2 > 180 ? mBaseAngle2 - 360 : mBaseAngle2;
 
-		Aim(offset, scale);
+		if (Network::Host() == (mId != 5000))
+			Aim(offset, scale);
 		float ang = mAngle / 180.f * 3.14159f;
 		mPlacePos = sf::Vector2i(mLocation + sf::Vector2f(mTileSize / 2, mTileSize / 2) + sf::Vector2f(cos(ang), sin(ang)) * (float)(mTileSize * sqrt(2)));
 		mPlacePos.x = (int)(mPlacePos.x / 32) * 32;
@@ -207,6 +337,15 @@ void Player::Update(float t, sf::Vector2f offset, float scale)
 				SetVisible(true);
 			}
 		}
+		if (mRDown && mEquipped == 0 && mGrenadeCount > 0 && !mThrown)
+		{
+			mGrenade = true;
+			mThrown = true;
+			if (!mDefensePhase)
+				mGrenadeCount--;
+		}
+		if (!mRDown)
+			mThrown = false;
 	}
 }
 
@@ -228,7 +367,7 @@ void Player::Aim(sf::Vector2f offset, float scale)
 	//calculates world aim position and sets top sprite to that angle
 	if (mAlive){
 		mAimLoc = sf::Vector2i((mouseLast.x / scale) + offset.x, (mouseLast.y / scale) + offset.y);
-		mAngle = (atan2(mAimLoc.y - mLocation.y, mAimLoc.x - mLocation.x) / 3.14159f * 180);
+		SetAngle(atan2(mAimLoc.y - mLocation.y, mAimLoc.x - mLocation.x) / 3.14159f * 180);
 	}
 }
 
@@ -249,6 +388,11 @@ bool Player::Hit(float damage)
 			mLocation = mSpawnPos;
 			mLDown = false;
 			mAimLoc = sf::Vector2i(mLocation);
+		}
+		else
+		{
+			if(mHealth < 3)
+				SoundManager::PlaySoundEffect("HealthLow");
 		}
 	}
 	return true;

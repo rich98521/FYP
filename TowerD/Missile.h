@@ -14,6 +14,7 @@ public:
 	void LoadAssets();
 	void Draw(sf::Vector2f, float);
 	bool ReachedGoal();
+	sf::Vector2f GetTarget(){ return mTarget; }
 };
 
 

@@ -1,0 +1,10 @@
+﻿Build started 27/01/2016 12:31:54.
+     1>Project "C:\Users\lab422\Desktop\build\ALL_BUILD.vcxproj" on node 2 (Build target(s)).
+     1>CustomBuild:
+         Building Custom Rule C:/Users/lab422/Downloads/curl-7.47.0/curl-7.47.0/CMakeLists.txt
+         CMake does not need to re-run because C:\Users\lab422\Desktop\build\CMakeFiles\generate.stamp is up-to-date.
+     1>Done Building Project "C:\Users\lab422\Desktop\build\ALL_BUILD.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:00.07

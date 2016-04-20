@@ -1,0 +1,109 @@
+﻿Build started 27/01/2016 12:31:47.
+     1>Project "C:\Users\lab422\Desktop\build\src\curl.vcxproj" on node 2 (Build target(s)).
+     1>CustomBuild:
+         Building Custom Rule C:/Users/lab422/Downloads/curl-7.47.0/curl-7.47.0/src/CMakeLists.txt
+         CMake does not need to re-run because C:\Users\lab422\Desktop\build\src\CMakeFiles\generate.stamp is up-to-date.
+         Generating tool_hugehelp.c
+       ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /IC:\Users\lab422\Desktop\build\include\curl /I"C:\Users\lab422\Downloads\curl-7.47.0\curl-7.47.0\include" /I"C:\Users\lab422\Downloads\curl-7.47.0\curl-7.47.0\lib" /IC:\Users\lab422\Desktop\build\lib /IC:\Users\lab422\Desktop\build\include /I"C:\Users\lab422\Downloads\curl-7.47.0\curl-7.47.0\src" /Zi /nologo /W3 /WX- /Od /Ob0 /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D HAVE_CONFIG_H /D _WIN32_WINNT=0x0501 /D _CRT_SECURE_NO_DEPRECATE /D _CRT_NONSTDC_NO_DEPRECATE /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"curl.dir\Debug\\" /Fd"curl.dir\Debug\vc120.pdb" /Gd /TC /analyze- /errorReport:prompt "C:\Users\lab422\Downloads\curl-7.47.0\curl-7.47.0\src\slist_wc.c" "C:\Users\lab422\Downloads\curl-7.47.0\curl-7.47.0\src\tool_binmode.c" "C:\Users\lab422\Downloads\curl-7.47.0\curl-7.47.0\src\tool_bname.c" "C:\Users\lab422\Downloads\curl-7.47.0\curl-7.47.0\src\tool_cb_dbg.c" "C:\Users\lab422\Downloads\curl-7.47.0\curl-7.47.0\src\tool_cb_hdr.c" "C:\Users\lab422\Downloads\curl-7.47.0\curl-7.47.0\src\tool_cb_prg.c" "C:\Users\lab422\Downloads\curl-7.47.0\curl-7.47.0\src\tool_cb_rea.c" "C:\Users\lab422\Downloads\curl-7.47.0\curl-7.47.0\src\tool_cb_see.c" "C:\Users\lab422\Downloads\curl-7.47.0\curl-7.47.0\src\tool_cb_wrt.c" "C:\Users\lab422\Downloads\curl-7.47.0\curl-7.47.0\src\tool_cfgable.c" "C:\Users\lab422\Downloads\curl-7.47.0\curl-7.47.0\src\tool_convert.c" "C:\Users\lab422\Downloads\curl-7.47.0\curl-7.47.0\src\tool_dirhie.c" "C:\Users\lab422\Downloads\curl-7.47.0\curl-7.47.0\src\tool_doswin.c" "C:\Users\lab422\Downloads\curl-7.47.0\curl-7.47.0\src\tool_easysrc.c" "C:\Users\lab422\Downloads\curl-7.47.0\curl-7.47.0\src\tool_formparse.c" "C:\Users\lab422\Downloads\curl-7.47.0\curl-7.47.0\src\tool_getparam.c" "C:\Users\lab422\Downloads\curl-7.47.0\curl-7.47.0\src\tool_getpass.c" "C:\Users\lab422\Downloads\curl-7.47.0\curl-7.47.0\src\tool_help.c" "C:\Users\lab422\Downloads\curl-7.47.0\curl-7.47.0\src\tool_helpers.c" "C:\Users\lab422\Downloads\curl-7.47.0\curl-7.47.0\src\tool_homedir.c" C:\Users\lab422\Desktop\build\src\tool_hugehelp.c "C:\Users\lab422\Downloads\curl-7.47.0\curl-7.47.0\src\tool_libinfo.c" "C:\Users\lab422\Downloads\curl-7.47.0\curl-7.47.0\src\tool_main.c" "C:\Users\lab422\Downloads\curl-7.47.0\curl-7.47.0\src\tool_metalink.c" "C:\Users\lab422\Downloads\curl-7.47.0\curl-7.47.0\src\tool_mfiles.c" "C:\Users\lab422\Downloads\curl-7.47.0\curl-7.47.0\src\tool_msgs.c" "C:\Users\lab422\Downloads\curl-7.47.0\curl-7.47.0\src\tool_operate.c" "C:\Users\lab422\Downloads\curl-7.47.0\curl-7.47.0\src\tool_operhlp.c" "C:\Users\lab422\Downloads\curl-7.47.0\curl-7.47.0\src\tool_panykey.c" "C:\Users\lab422\Downloads\curl-7.47.0\curl-7.47.0\src\tool_paramhlp.c" "C:\Users\lab422\Downloads\curl-7.47.0\curl-7.47.0\src\tool_parsecfg.c" "C:\Users\lab422\Downloads\curl-7.47.0\curl-7.47.0\src\tool_strdup.c" "C:\Users\lab422\Downloads\curl-7.47.0\curl-7.47.0\src\tool_setopt.c" "C:\Users\lab422\Downloads\curl-7.47.0\curl-7.47.0\src\tool_sleep.c" "C:\Users\lab422\Downloads\curl-7.47.0\curl-7.47.0\src\tool_urlglob.c" "C:\Users\lab422\Downloads\curl-7.47.0\curl-7.47.0\src\tool_util.c" "C:\Users\lab422\Downloads\curl-7.47.0\curl-7.47.0\src\tool_vms.c" "C:\Users\lab422\Downloads\curl-7.47.0\curl-7.47.0\src\tool_writeenv.c" "C:\Users\lab422\Downloads\curl-7.47.0\curl-7.47.0\src\tool_writeout.c" "C:\Users\lab422\Downloads\curl-7.47.0\curl-7.47.0\src\tool_xattr.c" "C:\Users\lab422\Downloads\curl-7.47.0\curl-7.47.0\lib\strtoofft.c" "C:\Users\lab422\Downloads\curl-7.47.0\curl-7.47.0\lib\rawstr.c" "C:\Users\lab422\Downloads\curl-7.47.0\curl-7.47.0\lib\nonblock.c" "C:\Users\lab422\Downloads\curl-7.47.0\curl-7.47.0\lib\warnless.c"
+         slist_wc.c
+         tool_binmode.c
+         tool_bname.c
+         tool_cb_dbg.c
+         tool_cb_hdr.c
+         tool_cb_prg.c
+         tool_cb_rea.c
+         tool_cb_see.c
+     1>C:\Users\lab422\Downloads\curl-7.47.0\curl-7.47.0\src\tool_cb_see.c(82): warning C4244: 'function' : conversion from 'curl_off_t' to 'long', possible loss of data
+         tool_cb_wrt.c
+         tool_cfgable.c
+         tool_convert.c
+         tool_dirhie.c
+         tool_doswin.c
+         tool_easysrc.c
+         tool_formparse.c
+         tool_getparam.c
+         tool_getpass.c
+         tool_help.c
+         tool_helpers.c
+         tool_homedir.c
+         Generating Code...
+         Compiling...
+         tool_hugehelp.c
+         tool_libinfo.c
+         tool_main.c
+         tool_metalink.c
+         tool_mfiles.c
+         tool_msgs.c
+         tool_operate.c
+         tool_operhlp.c
+         tool_panykey.c
+         tool_paramhlp.c
+         tool_parsecfg.c
+         tool_strdup.c
+         tool_setopt.c
+         tool_sleep.c
+         tool_urlglob.c
+         tool_util.c
+         tool_vms.c
+         tool_writeenv.c
+         tool_writeout.c
+         tool_xattr.c
+         Generating Code...
+         Compiling...
+         strtoofft.c
+         rawstr.c
+         nonblock.c
+         warnless.c
+         Generating Code...
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\lab422\Desktop\build\src\Debug\curl.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib ..\lib\Debug\libcurl.lib winmm.lib ws2_32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Users/lab422/Desktop/build/src/Debug/curl.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Users/lab422/Desktop/build/src/Debug/curl.lib" /MACHINE:X86 /SAFESEH  /machine:X86 /debug curl.dir\Debug\slist_wc.obj
+         curl.dir\Debug\tool_binmode.obj
+         curl.dir\Debug\tool_bname.obj
+         curl.dir\Debug\tool_cb_dbg.obj
+         curl.dir\Debug\tool_cb_hdr.obj
+         curl.dir\Debug\tool_cb_prg.obj
+         curl.dir\Debug\tool_cb_rea.obj
+         curl.dir\Debug\tool_cb_see.obj
+         curl.dir\Debug\tool_cb_wrt.obj
+         curl.dir\Debug\tool_cfgable.obj
+         curl.dir\Debug\tool_convert.obj
+         curl.dir\Debug\tool_dirhie.obj
+         curl.dir\Debug\tool_doswin.obj
+         curl.dir\Debug\tool_easysrc.obj
+         curl.dir\Debug\tool_formparse.obj
+         curl.dir\Debug\tool_getparam.obj
+         curl.dir\Debug\tool_getpass.obj
+         curl.dir\Debug\tool_help.obj
+         curl.dir\Debug\tool_helpers.obj
+         curl.dir\Debug\tool_homedir.obj
+         curl.dir\Debug\tool_hugehelp.obj
+         curl.dir\Debug\tool_libinfo.obj
+         curl.dir\Debug\tool_main.obj
+         curl.dir\Debug\tool_metalink.obj
+         curl.dir\Debug\tool_mfiles.obj
+         curl.dir\Debug\tool_msgs.obj
+         curl.dir\Debug\tool_operate.obj
+         curl.dir\Debug\tool_operhlp.obj
+         curl.dir\Debug\tool_panykey.obj
+         curl.dir\Debug\tool_paramhlp.obj
+         curl.dir\Debug\tool_parsecfg.obj
+         curl.dir\Debug\tool_strdup.obj
+         curl.dir\Debug\tool_setopt.obj
+         curl.dir\Debug\tool_sleep.obj
+         curl.dir\Debug\tool_urlglob.obj
+         curl.dir\Debug\tool_util.obj
+         curl.dir\Debug\tool_vms.obj
+         curl.dir\Debug\tool_writeenv.obj
+         curl.dir\Debug\tool_writeout.obj
+         curl.dir\Debug\tool_xattr.obj
+         curl.dir\Debug\strtoofft.obj
+         curl.dir\Debug\rawstr.obj
+         curl.dir\Debug\nonblock.obj
+         curl.dir\Debug\warnless.obj
+         curl.vcxproj -> C:\Users\lab422\Desktop\build\src\Debug\curl.exe
+     1>Done Building Project "C:\Users\lab422\Desktop\build\src\curl.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:07.12

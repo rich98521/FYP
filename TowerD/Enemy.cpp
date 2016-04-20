@@ -1,12 +1,11 @@
 #include "stdafx.h"
 #include "Enemy.h"
 
-Enemy::Enemy(sf::Vector2f loc, int tSize, int t, Renderer* r, std::vector<sf::Vector2f*> players, int c)
-	: Entity(loc, tSize, r), mType(t), mGun(r, -1, 0), mCore(c)
+Enemy::Enemy(sf::Vector2f loc, int tSize, int t, Renderer* r, int c, int s)
+	: Entity(loc, tSize, r), mType(t), mGun(r, -1, 0), mCore(c), mSpawn(s)
 {
 	mBaseSpriteLayer = CHARACTERBASE;
 	mSpriteLayer = CHARACTERTOP;
-	mPlayers = players;
 	canMove = true;
 	mGun.SetDamage(0.4f);
 	///////////////////////////////
@@ -36,6 +35,12 @@ Enemy::Enemy(sf::Vector2f loc, int tSize, int t, Renderer* r, std::vector<sf::Ve
 	{
 		mGoalDist = 600;
 	}
+}
+
+void Enemy::SetId(int i)
+{
+	Entity::SetId(i);
+	mGun.SetOwnerId(i);
 }
 
 void Enemy::LoadAssets()

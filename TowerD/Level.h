@@ -15,6 +15,8 @@ using namespace std;
 #include "SoundManager.h"
 #include "Explosion.h"
 #include "Missile.h"
+#include "Grenade.h"
+#include "Network.h"
 
 struct Node
 {
@@ -58,35 +60,43 @@ private:
 	std::vector<Turret*> mTurrets;
 	std::vector<Explosion*> mExplosions;
 	std::vector<Missile*> mMissiles;
+	std::vector<Grenade*> mGrenades;
 	std::vector<Tile*> mWalls;
 	sf::Vector2i mMapSize;
 	Node** mNodes;
 	bool CalcArrowPath(sf::Vector2i);
 	template<typename T>
 	void ClearVector(std::vector<T>*);
-	void AddEntity(Entity*);
-	void RemoveEntity(Entity*);
+	void AddEntity(Entity*, int);
+	void RemoveEntity(Entity*, int);
+	std::map<int, Entity*> mEntityIds;
 	bool mDefensePhase = true;
 	bool mWin = false;
 	sf::Clock mGameClock;
+	sf::Clock mPauseClock;
 	sf::Clock mRespawnTimer;
 	bool mPlayerSpawning = false;
 	int mWave = 0;
 	int mEnemiesLeft = 0;
 	int mNextSpawnTime = 0;
 	std::vector<std::pair<sf::Vector2i, float>> CalcPath(sf::Vector2i, sf::Vector2i, std::vector<std::vector<Tile*>>*);
-	void SetTile(Tile*, int, int);
+	void SetTile(Tile*, int, int, bool);
 	std::vector<std::pair<sf::Vector2i, float>> CalcWeakPoint(int);
 	bool mGameOver;
 	int mCurrentLevel;
+	int mPauseTime = 0, mPauseSpawnTime;
+	int mPlayerCount = 0;
+	int mLastId = 0;
+	bool mLevelUntouched = true, mStartRecieved;
 
 public:
 	Level(int, sf::Vector2i, Renderer*);
 	void LoadLevel(int);
+	void LoadMultiplayerLevel(int);
 	void Update(float);
 	void Draw(sf::RenderWindow*);
 	void CheckCollision();
-	void ProcessInput(sf::Event);
+	void ProcessInput(sf::Event, int);
 	Player* GetPlayer();
 	std::vector<Turret*>* GetTurrets() { return &mTurrets; };
 	Camera* GetCam(){ return &mCam; };
@@ -94,7 +104,13 @@ public:
 	bool GameOver(){ return mGameOver; };
 	bool Won(){ return mWin; };
 	void LoadNextLevel(){ LoadLevel(mCurrentLevel + 1); };
-	int GetWave(){ return mWave; }
+	int GetWave(){ return mWave+1; }
+	void ClearLevel();
+	void Pause(bool);
+	int PlayerCount(){ return mPlayerCount; }
+	bool LevelUntouched(){ return mLevelUntouched; }
+	int CurrentLevel(){ return mCurrentLevel; }
+	void AddPlayer2();
 
 };
 

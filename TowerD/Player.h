@@ -3,6 +3,7 @@
 #include "Entity.h"	
 #include "Gun.h"	
 #include "SoundManager.h"
+#include "Network.h"
 #include <array>
 
 class Player : public Entity
@@ -34,14 +35,19 @@ private:
 	std::array<float, 5> mRateTable;
 	std::array<int, 5> mAmmoTable;
 	std::array<int, 5> mUpgradeCosts;
-	std::array<float, 7> mLevels;
+	std::array<float, 8> mLevels;
+	bool mGrenade, mThrown;
+	int mGrenadeCount, mGrenadePouch;
+	bool mDefensePhase, xDeadZone, yDeadZone, triggerDown;
+	sf::Vector2f mJoystickLook;
 
 public:
 	Player(sf::Vector2f, int, Renderer*);
-	void ProcessInput(sf::Event, sf::Vector2f, float);
+	void ProcessInput(sf::Event, int, sf::Vector2f, float);
 	void Update(float, sf::Vector2f, float);
 	void Draw(sf::Vector2f, float);
 	void LoadAssets();
+	void SetId(int);
 	sf::Vector2i* AimPos();
 	sf::Vector2f* Pos();
 	std::pair<int, sf::Vector2i> GetPlace();
@@ -55,15 +61,17 @@ public:
 	float JetFuel();
 	void AddCredits(int);
 	int GetCredits() { return mCredits; };
+	int GetEquipped() { return mEquipped; };
 	float GetMaxHealth(){ return mMaxHealth; };
 	float GetMaxFuel(){ return mJetFuelMax; };
 	void SetAccuracyLevel(int l) { mGun.SetAccuracy(mAccTable[l]); mLevels[0] = l; };
 	void SetDamageLevel(int l) { mGun.SetDamage(mDamTable[l]);  mLevels[1] = l; };
 	void SetRateLevel(int l) { mGun.SetRate(mRateTable[l]);  mLevels[2] = l; };
 	void SetAmmoLevel(int l) { mGun.SetMaxAmmo(mAmmoTable[l]);  mLevels[3] = l; };
-	void SetHealthLevel(int l) { mMaxHealth = 10 + 2 * l; mLevels[4] = l; };
+	void SetHealthLevel(int l) { mMaxHealth = 10 + 2 * l; mHealth = mMaxHealth; mLevels[4] = l; };
 	void SetFuelLevel(int l) { mJetFuelMax = 250 + 50 * l; mLevels[5] = l; };
 	void SetSpeedLevel(int l) { mSpeed = 800 + 80 * l;  mLevels[6] = l; };
+	void SetPouchLevel(int l) { mGrenadePouch = 2 * (l + 1); mGrenadeCount += 2;  mLevels[7] = l; };
 	int GetAccuracyLevel() { return mLevels[0]; };
 	int GetDamageLevel() { return mLevels[1]; };
 	int GetRateLevel() { return mLevels[2]; };
@@ -71,7 +79,13 @@ public:
 	int GetHealthLevel() { return mLevels[4]; };
 	int GetFuelLevel() { return mLevels[5]; };
 	int GetSpeedLevel() { return mLevels[6]; };
+	int GetPouchLevel() { return mLevels[7]; };
 	int GetUpgradeCost(int l){ return mUpgradeCosts[l]; };
+	bool GetGrenade();
+	float GetAimAngle();
+	void SetDefensePhase(bool);
+	int GetGrenadeCount(){ return mGrenadeCount; }
+	sf::Vector2i GetCursorPos(){ return mouseLast; };
 
 	~Player();
 };

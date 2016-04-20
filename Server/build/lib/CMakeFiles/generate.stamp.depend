@@ -1,0 +1,5 @@
+# CMake generation dependency list for this directory.
+C:/Users/lab422/Downloads/curl-7.47.0/curl-7.47.0/lib/CMakeLists.txt
+C:/Users/lab422/Downloads/curl-7.47.0/curl-7.47.0/include/curl/curlbuild.h.cmake
+C:/Users/lab422/Downloads/curl-7.47.0/curl-7.47.0/lib/curl_config.h.cmake
+C:/Users/lab422/Desktop/build/lib/Makefile.inc.cmake

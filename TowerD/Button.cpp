@@ -13,7 +13,7 @@ Button::Button(sf::FloatRect r, string text, Renderer* ren) : mRect(r), mText(te
 	mBackground.first.setFillColor(sf::Color(210, 100, 0, 255));
 	mBackground.first.setPosition(mRect.left, mRect.top);
 	mBackground.first.setSize(sf::Vector2f(mRect.width, mRect.height));
-	mOverlay.first.setFillColor(sf::Color(160, 160, 160, 72));
+	mOverlay.first.setFillColor(sf::Color(160, 160, 160, 80));
 	ren->Add(&mBackground);
 	ren->Add(&mOverlay);
 	ren->Add(&mText);
@@ -44,13 +44,13 @@ Button::Button(sf::FloatRect r, string text, float fontSize, Renderer* ren) : mR
 	mString = text;
 	mText.setColor(sf::Color(255, 255, 255, 255));
 	mText.setCharacterSize(fontSize);
-	mText.setPosition(r.left + (r.width - mText.getLocalBounds().width) / 2.f, r.top + (r.height - mText.getLocalBounds().height) / 2.f - mText.getLocalBounds().top);
+	SetText(mString);
 	mOverlay.first.setPosition(r.left, r.top);
 	mOverlay.first.setSize(sf::Vector2f(r.width, r.height));
 	mBackground.first.setFillColor(sf::Color(210, 100, 0, 255));
 	mBackground.first.setPosition(mRect.left, mRect.top);
 	mBackground.first.setSize(sf::Vector2f(mRect.width, mRect.height));
-	mOverlay.first.setFillColor(sf::Color(160, 160, 160, 72));
+	mOverlay.first.setFillColor(sf::Color(160, 160, 160, 80));
 	ren->Add(&mBackground);
 	ren->Add(&mOverlay);
 	ren->Add(&mText);
@@ -75,7 +75,7 @@ Button::Button(sf::FloatRect r, string text, string imPath, Renderer* ren) : mRe
 	mBackground.first.setFillColor(sf::Color(210, 100, 0, 255));
 	mBackground.first.setPosition(mRect.left, mRect.top);
 	mBackground.first.setSize(sf::Vector2f(mRect.width, mRect.height));
-	mOverlay.first.setFillColor(sf::Color(160, 160, 160, 40));
+	mOverlay.first.setFillColor(sf::Color(160, 160, 160, 80));
 	ren->Add(&mBackground);
 	ren->Add(&mPicture);
 	ren->Add(&mOverlay);
@@ -94,7 +94,7 @@ void Button::SetText(string s)
 {
 	mString = s;
 	mText.setString(s);
-	mText.setPosition(mRect.left + (mRect.width - mText.getLocalBounds().width) / 2.f, mRect.top + (mRect.height - mText.getLocalBounds().height) / 2.f);
+	mText.setPosition(mRect.left + (mRect.width - mText.getLocalBounds().width) / 2.f, mRect.top + (mRect.height - mText.getLocalBounds().height) / 2.f - mText.getLocalBounds().top);
 }
 
 void Button::SetFontSize(float s)
@@ -112,6 +112,8 @@ bool Button::IsClicked()
 {
 	bool ans = mClicked;
 	mClicked = false;
+	if(ans)
+		mToggle = !mToggle;
 	return ans;
 }
 
@@ -147,22 +149,51 @@ void Button::Offset(sf::Vector2f o)
 
 //checks if mouse was first down and then up on the button 
 //for button to be clicked
-void Button::Update(sf::Vector2i m, bool down)
+void Button::Update(sf::Vector2i m, bool down, bool controllerSelect)
 {
+	if (mUnSelected)
+		mUnSelected = false;
+	bool selected = mSelected;
 	if (mVisible)
 	{
-		bool contained = mRect.contains(sf::Vector2f(m));
-		if (!down)
-			mOut = false;
-		if (down && !contained)
-			mOut = true;
-		mOverlay.second = !contained;
-		if (!mOut){
-			if (mDown && !down && contained)
+		if (controllerSelect)
+		{
+			if (mOverlay.second == true)
+			{
+				SoundManager::PlaySoundEffect("ButtonHover");
+				mOverlay.second = false;
+			}
+			if (!down && mDown)
 				mClicked = true;
 			mDown = down;
 		}
+		else
+		{
+			bool contained = mRect.contains(sf::Vector2f(m));
+			if (contained)
+			{
+				if (mOverlay.second == true)
+				{
+					SoundManager::PlaySoundEffect("ButtonHover");
+				}
+			}
+			if (!down)
+				mOut = false;
+			if (down && !contained)
+				mOut = true;
+			mOverlay.second = !contained;
+			if (!mOut){
+				if (mDown && !down && contained)
+					mClicked = true;
+				mDown = down;
+			}
+		}
+		mSelected = !mOverlay.second;
+		if (selected && !mSelected)
+			mUnSelected = true;
 	}
+	else
+		mSelected = false;
 }
 
 void Button::SetVisible(bool v)
